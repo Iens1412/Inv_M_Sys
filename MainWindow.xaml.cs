@@ -20,5 +20,25 @@ namespace Inv_M_Sys
         {
             InitializeComponent();
         }
+
+        private void NavigateToProducts(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Views.ProductsPage());
+        }
+
+        private void NavigateToCategories(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Views.CategoriesPage());
+        }
+
+        private void NavigateToReports(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Views.ReportsPage());
+        }
+
+        private void NavigateToUsers(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Views.UsersPage());
+        }
     }
 }
