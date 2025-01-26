@@ -1,8 +1,0 @@
-﻿<Page x:Class="Inv_M_Sys.Views.ProductsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Products">
-    <Grid>
-        <TextBlock Text="This is the Products Page" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-    </Grid>
-</Page>

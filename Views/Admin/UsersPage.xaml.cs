@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inv_M_Sys.Views
+namespace Inv_M_Sys.Views.Admin
 {
     /// <summary>
-    /// Interaction logic for CategoriesPage.xaml
+    /// Interaction logic for UsersPage.xaml
     /// </summary>
-    public partial class CategoriesPage : Page
+    public partial class UsersPage : Page
     {
-        public CategoriesPage()
+        public UsersPage()
         {
             InitializeComponent();
         }

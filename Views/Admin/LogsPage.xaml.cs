@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inv_M_Sys.Views
+namespace Inv_M_Sys.Views.Admin
 {
     /// <summary>
-    /// Interaction logic for NotificationsPage.xaml
+    /// Interaction logic for LogsPage.xaml
     /// </summary>
-    public partial class NotificationsPage : Page
+    public partial class LogsPage : Page
     {
-        public NotificationsPage()
+        public LogsPage()
         {
             InitializeComponent();
         }
