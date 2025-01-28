@@ -64,9 +64,10 @@
             </Grid.RowDefinitions>
 
             <!--Buttons to Other Pages-->
+            <!--Button Products-->
             <Grid Grid.Column="0" Grid.Row="0">
 
-                <Button Width="150" Height="120" Background="White" BorderBrush="White" BorderThickness="1" 
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
                         HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
@@ -75,16 +76,378 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Card Title" FontSize="18" FontWeight="Bold" Foreground="Red" Margin="0,5,0,0" TextAlignment="Center"/>
+                                        <TextBlock Text="Products" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
-                                    <Image Source="Resources/Images/sample.png" Height="60" VerticalAlignment="Bottom"/>
+                                    <Ellipse Height="10" Stroke="red" Fill="Red" Width="10" Margin="40,98,98,10"/>
+                                    <Path Fill="Red" HorizontalAlignment="Center" Height="14" StrokeThickness="5" Margin="0,87,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="57" RenderTransformOrigin="0.5,0.5">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-5.121"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M50,103 L118.98737,89.353653"/>
+                                        </Path.Data>
+                                    </Path>
+
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="14" StrokeThickness="5" Margin="9,65,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="69" RenderTransformOrigin="0.5,0.5">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-96.633"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M50,103 L118.98737,89.353653"/>
+                                        </Path.Data>
+                                    </Path>
+
+                                    <Rectangle HorizontalAlignment="Center" Height="15" Margin="0,74,0,0" Stroke="Red" VerticalAlignment="Top" Width="39" RenderTransformOrigin="0.5,0.5" StrokeThickness="3">
+                                        <Rectangle.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-15.462"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+
+                                    <Rectangle HorizontalAlignment="Left" Height="15" Margin="49,57,0,0" Stroke="Red" VerticalAlignment="Top" Width="39" RenderTransformOrigin="0.5,0.5" StrokeThickness="3" >
+                                        <Rectangle.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-15.462"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+
 
                                 </Grid>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Categories-->
+            <Grid Grid.Column="2" Grid.Row="0">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Categories" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Rectangle HorizontalAlignment="Left" Height="53" Margin="48,50,0,0" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="3"/>
+                                    <Rectangle HorizontalAlignment="Left" Height="53" Margin="80,50,0,0" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="3"/>
+                                    <Label Margin="48,50,80,15">
+                                        <TextBlock Text="C&#10;A&#10;T" 
+                                                   FontSize="14"
+                                                   Foreground="Red"
+                                                   LineStackingStrategy="BlockLineHeight" 
+                                                   LineHeight="15" 
+                                                   TextAlignment="Left" 
+                                                   VerticalAlignment="Center" Width="10"/>
+                                    </Label>
+
+                                    <Label Margin="80,50,50,15">
+                                        <TextBlock Text="C&#10;A&#10;T" 
+                                                   FontSize="14"
+                                                   Foreground="Red"
+                                                   LineStackingStrategy="BlockLineHeight" 
+                                                   LineHeight="15" 
+                                                   TextAlignment="Left" 
+                                                   VerticalAlignment="Center" Width="10"/>
+                                    </Label>
+
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Oreders-->
+            <Grid Grid.Column="1" Grid.Row="0">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Orders" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Rectangle HorizontalAlignment="Center" Height="59" Margin="0,44,0,0" Stroke="Red" VerticalAlignment="Top" Width="48" StrokeThickness="3"/>
+                                    <Label Content="Orders" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="48"/>
+                                    <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,74,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,79,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,95,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                        </Path.Data>
+                                    </Path>
+
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Restock-->
+            <Grid Grid.Column="0" Grid.Row="1">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Restock" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="37" Margin="44,63,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="2" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M43.888889,63.426791 L43.888889,97.760125"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="2" Margin="44,97,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="64" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M44.5,98 L107.22222,98"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="38" Margin="106,62,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="2" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M108,98 L108,63"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="17" Margin="106,47.8,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="25" StrokeThickness="2">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M107.5,63 L131.80556,49.093458"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path Fill="Red" HorizontalAlignment="Left" Height="15" Margin="20.8,49.9,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="26" RenderTransformOrigin="0.5,0.5" StrokeThickness="2">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-119.238"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M107.5,63 L131.80556,49.093458"/>
+                                        </Path.Data>
+                                    </Path>
+
+                                    <Rectangle HorizontalAlignment="Left" Height="10" Margin="50,85,0,0" Grid.Row="2" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="2"/>
+                                    <Rectangle HorizontalAlignment="Left" Height="10" Margin="50,70,0,0" Grid.Row="2" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="2"/>
+                                    <Rectangle HorizontalAlignment="Left" Height="10" Margin="80,70,0,0" Grid.Row="2" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="2"/>
+                                    <Rectangle HorizontalAlignment="Left" Height="10" Margin="80,85,0,0" Grid.Row="2" Stroke="Red" VerticalAlignment="Top" Width="20" StrokeThickness="2"/>
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Reports-->
+            <Grid Grid.Column="1" Grid.Row="2">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Reports" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Grid>
+                                        <Rectangle HorizontalAlignment="Center" Height="59" Margin="0,44,0,0" Stroke="Red" VerticalAlignment="Top" Width="48" StrokeThickness="3"/>
+                                        <Label Content="Report" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="48"/>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,74,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,79,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,95,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                    </Grid>
+
+                                    <Grid Margin="30,10,0,0">
+                                        <Rectangle Fill="#FFE8E8E8" HorizontalAlignment="Center" Height="59" Margin="0,44,0,0" Stroke="Red" VerticalAlignment="Top" Width="48" StrokeThickness="3"/>
+                                        <Label Content="Report" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="48"/>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,74,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,79,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,95,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                    </Grid>
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Schedule-->
+            <Grid Grid.Column="2" Grid.Row="1">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Schedule" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Grid>
+                                        <Rectangle HorizontalAlignment="Center" Height="48" Margin="5,54,0,0" Stroke="Red" VerticalAlignment="Top" Width="86" StrokeThickness="2"/>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="57,47,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="2" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M57.111111,59 L57.111111,46.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="96,47,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="2" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M57.111111,59 L57.111111,46.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="34,60,0,0" Stroke="Red" Stretch="Fill" VerticalAlignment="Top" Width="85" RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="-0.718"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                            <Path.Data>
+                                                <PathGeometry Figures="M35.611111,69.093458 L119.5,70.093458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="41,70,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="18" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M40.611111,69.593458 L58,69.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="68,70,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="18" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M40.611111,69.593458 L58,69.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="96,70,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="18" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M40.611111,69.593458 L58,69.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="41,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="18" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M40.611111,69.593458 L58,69.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="2" Margin="68,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="18" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M40.611111,69.593458 L58,69.593458"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Rectangle Fill="#FF46DADA" HorizontalAlignment="Left" Height="12" Margin="97,79,0,0" Stroke="Black" VerticalAlignment="Top" Width="16"/>
+                                        
+
+                                    </Grid>
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
                 </Button>
             </Grid>
         </Grid>
