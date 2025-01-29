@@ -45,12 +45,14 @@
             <Button Grid.Column="2" Background="#57AEFF" 
                 Width="150" Height="30"
                 Content="Log Out"
+                FontFamily="Times New Roman"
                 FontSize="20"
                 FontWeight="Bold"
                 Foreground="Red"
                 BorderBrush="Transparent"/>
         </Grid>
 
+        <!--Body with Buttons-->
         <Grid Grid.Column="1" Grid.Row="1" Background="#E8E8E8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -76,7 +78,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Products" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Products" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -152,7 +154,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Categories" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Categories" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -199,7 +201,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Orders" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Orders" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -236,7 +238,7 @@
             </Grid>
 
             <!--Button Restock-->
-            <Grid Grid.Column="0" Grid.Row="1">
+            <Grid Grid.Column="1" Grid.Row="1">
 
                 <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
                     HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -247,7 +249,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Restock" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Restock" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -310,7 +312,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Reports" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Reports" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -341,7 +343,7 @@
 
                                     <Grid Margin="30,10,0,0">
                                         <Rectangle Fill="#FFE8E8E8" HorizontalAlignment="Center" Height="59" Margin="0,44,0,0" Stroke="Red" VerticalAlignment="Top" Width="48" StrokeThickness="3"/>
-                                        <Label Content="Report" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="48"/>
+                                        <Label Content="Report" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top" Width="48" Margin="0,44,0,0"/>
                                         <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,74,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
                                             <Path.Data>
                                                 <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
@@ -384,7 +386,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Schedule" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Schedule" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -463,7 +465,7 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Logs" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Logs" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
@@ -525,13 +527,13 @@
                                 <Grid>
                                     <!-- Text -->
                                     <StackPanel VerticalAlignment="Top" Margin="10">
-                                        <TextBlock Text="Logs" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                        <TextBlock Text="Users" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Image -->
                                     <Grid>
                                         <Ellipse Fill="Red" HorizontalAlignment="Center" Height="36" Margin="0,64,0,0" Stroke="Red" VerticalAlignment="Top" Width="46"/>
-                                        <Ellipse Fill="Red" HorizontalAlignment="Center" Height="21" Margin="0,43,0,0" Stroke="Red" VerticalAlignment="Top" Width="21"/>
+                                        <Ellipse Fill="Red" HorizontalAlignment="Center" Height="25" Margin="0,39,0,0" Stroke="Red" VerticalAlignment="Top" Width="25"/>
                                         <Border Background="Red" HorizontalAlignment="Center" Height="26" Margin="0,82,0,0" 
                                                 BorderThickness="1,0,1,1" BorderBrush="Red" VerticalAlignment="Top" Width="46"/>
 
@@ -636,13 +638,68 @@
                                             <Ellipse
 
                                             Width="25" Canvas.Top="3.125" StrokeThickness="0.9375" Stroke="Black" Canvas.Left="3.125" Height="25" Fill="Red"/>
-                                            
+
                                             <!-- Gear Inner Circle -->
                                             <Ellipse Width="12.5" Height="12.5"
                                                      Stroke="Black" StrokeThickness="0.625"
                                                      Fill="White"
                                                      Canvas.Left="9.375" Canvas.Top="9.375"/>
                                         </Canvas>
+                                    </Grid>
+
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+
+            <!--Button Customers-->
+            <Grid Grid.Column="0" Grid.Row="1">
+
+                <Button Width="150" Height="120" Background="#E8E8E8" BorderBrush="#E8E8E8" BorderThickness="1" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <Grid>
+                                    <!-- Text -->
+                                    <StackPanel VerticalAlignment="Top" Margin="10">
+                                        <TextBlock Text="Customers" FontFamily="Times New Roman" FontSize="22" FontWeight="Bold" Foreground="Black" TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Image -->
+                                    <Grid>
+                                        <Ellipse Fill="Red" HorizontalAlignment="Left" Height="15" Margin="90,59,0,0" Stroke="Red" VerticalAlignment="Top" Width="15"/>
+
+                                        <Rectangle HorizontalAlignment="Center" Height="59" Margin="0,44,0,0" Stroke="Red" VerticalAlignment="Top" Width="48" StrokeThickness="3"/>
+                                        <Label Content="Orders" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="48"/>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,74,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,79,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,84,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="Black" HorizontalAlignment="Center" Height="1" Margin="0,95,0,0" Stroke="Black" Stretch="Fill" VerticalAlignment="Top" Width="29" StrokeThickness="2">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M58.666667,74 L86.666667,74"/>
+                                            </Path.Data>
+                                        </Path>
+                                        <Border Background="Red" HorizontalAlignment="Left" Height="16" Margin="80,87,0,0" 
+                                                BorderThickness="1,0,1,1" BorderBrush="Red" VerticalAlignment="Top" Width="36"/>
+                                        <Ellipse Fill="Red" HorizontalAlignment="Left" Height="26" Margin="80,74,0,0" Stroke="Red" VerticalAlignment="Top" Width="36"/>
+
                                     </Grid>
 
                                 </Grid>
