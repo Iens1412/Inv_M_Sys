@@ -4,11 +4,216 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
+      xmlns:other="clr-namespace:Inv_M_Sys.Converter"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="NotificationsPage">
 
-    <Grid>
-        
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="RoundedButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                        CornerRadius="15" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+
+            <!-- Hover Effect -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="SrchRefButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="15" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="#02C125"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+
+            <!-- Hover Effect -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+
+    </Page.Resources>
+
+    <Grid Background="#E8E8E8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.07*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--Top-->
+        <Grid Background="#57AEFF" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.6*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Log Out Button-->
+            <Grid Grid.Column="2">
+                <Button Background="#57AEFF" 
+                        Width="150"
+                        Content="Log Out"
+                        FontFamily="Times New Roman"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="Red"
+                        BorderBrush="Transparent" Margin="0,-1,79,-1"/>
+
+                <Button Background="#57AEFF" 
+                        Width="20"
+                        Content="X"
+                        FontFamily="Times New Roman"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="Red"
+                        BorderBrush="Transparent" Margin="199,-1,10,-1" RenderTransformOrigin="-1.084,0.562"/>
+
+                <Button Background="#57AEFF" 
+                    Width="20"
+                    Content="⬜"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    BorderBrush="Transparent" Margin="155,-1,54,-1" RenderTransformOrigin="-1.084,0.562"/>
+            </Grid>
+
+            <!--Note And Home Buttons-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!--Notifications Button-->
+                <Button Grid.Column="1" Background="#57AEFF" Width="50" Height="30" BorderBrush="Transparent">
+                    <Canvas Width="20" Height="20">
+                        <Path Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" 
+                            Fill="Yellow" HorizontalAlignment="Center" Canvas.Top="-2" VerticalAlignment="Top" />
+                    </Canvas>
+                </Button>
+
+                <!--Home Button-->
+                <Button Grid.Column="0" Background="#57AEFF" Width="50" Height="30" BorderBrush="Transparent" Content="Home" FontSize="16" FontWeight="Bold" Foreground="Red" FontFamily="Times New Roman" />
+            </Grid>
+        </Grid>
+
+        <!--notifications text place-->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <!-- Content TextBlock (Takes the rest of the space) -->
+            </Grid.RowDefinitions>
+
+            <!-- Title Label -->
+            <Label Content="Title" Width="70" Height="40" FontFamily="Times New Roman" 
+                   FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" 
+                   VerticalAlignment="Top" Margin="0,10,0,0" Grid.Row="0" Foreground="Red"/>
+
+            <!-- Title TextBlock -->
+            <Border CornerRadius="10" Height="30" Background="White" BorderBrush="Gray" BorderThickness="1"
+                    Margin="20,10,20,0" Padding="5" Grid.Row="1">
+                <TextBlock Foreground="Black" FontFamily="Times New Roman"/>
+            </Border>
+
+            <!-- Content Label -->
+            <Label Content="Content" Width="113" Height="40" FontFamily="Times New Roman" 
+                   FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" 
+                   VerticalAlignment="Top" Margin="0,10,0,0" Grid.Row="2" Foreground="Red"/>
+
+            <!-- Content TextBlock (Expands to fill the remaining space) -->
+            <Border CornerRadius="10" Background="White" BorderBrush="Gray" BorderThickness="1"
+                    Margin="20,10,20,10" Padding="10" Grid.Row="3">
+                <TextBlock Foreground="Black" FontFamily="Times New Roman"
+                           TextWrapping="Wrap"/>
+            </Border>
+        </Grid>
+        <!--Buttons and list for notifications-->
+        <Grid Grid.Column="0" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Outer Container with ListView -->
+            <Border Background="#FFFFFF" 
+                    BorderBrush="#CCCCCC" 
+                    BorderThickness="1" 
+                    CornerRadius="15"
+                    Padding="10"
+                    Margin="10"
+                    Grid.Row="0">
+
+                <ListView x:Name="SalesListView" Visibility="Visible"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="Transparent" 
+                          BorderThickness="0" 
+                          AlternationCount="2">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header=" ID" Width="20" DisplayMemberBinding="{Binding SaleID}" />
+                            <GridViewColumn Header="Title" Width="140" DisplayMemberBinding="{Binding Product}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+
+            <!-- Buttons Row -->
+            <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Bottom">
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="Clear" 
+                FontFamily="Times New Roman" Width="180" Height="32" Margin="0,0,0,10"/>
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="Delete" 
+                FontFamily="Times New Roman" Width="180" Height="32" Margin="0,0,0,10"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

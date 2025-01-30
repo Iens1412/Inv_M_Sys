@@ -4,11 +4,226 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
+      xmlns:other="clr-namespace:Inv_M_Sys.Converter"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RestockPage">
 
-    <Grid>
-        
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="RoundedButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                        CornerRadius="15" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+
+            <!-- Hover Effect -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="SrchRefButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="15" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="#02C125"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+
+            <!-- Hover Effect -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+
+    </Page.Resources>
+
+    <Grid Background="#E8E8E8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.07*"/>
+            <RowDefinition Height="0.14*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--Top-->
+        <Grid Background="#57AEFF" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.6*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Log Out Button-->
+            <Grid Grid.Column="2">
+                <Button Background="#57AEFF" 
+                        Width="150"
+                        Content="Log Out"
+                        FontFamily="Times New Roman"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="Red"
+                        BorderBrush="Transparent" Margin="0,-1,79,-1"/>
+
+                <Button Background="#57AEFF" 
+                        Width="20"
+                        Content="X"
+                        FontFamily="Times New Roman"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="Red"
+                        BorderBrush="Transparent" Margin="199,-1,10,-1" RenderTransformOrigin="-1.084,0.562"/>
+
+                <Button Background="#57AEFF" 
+                    Width="20"
+                    Content="⬜"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    BorderBrush="Transparent" Margin="155,-1,54,-1" RenderTransformOrigin="-1.084,0.562"/>
+            </Grid>
+
+            <!--Note And Home Buttons-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!--Notifications Button-->
+                <Button Grid.Column="1" Background="#57AEFF" Width="50" Height="30" BorderBrush="Transparent">
+                    <Canvas Width="20" Height="20">
+                        <Path Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" 
+                            Fill="Yellow" HorizontalAlignment="Center" Canvas.Top="-2" VerticalAlignment="Top" />
+                    </Canvas>
+                </Button>
+
+                <!--Home Button-->
+                <Button Grid.Column="0" Background="#57AEFF" Width="50" Height="30" BorderBrush="Transparent" Content="Home" FontSize="16" FontWeight="Bold" Foreground="Red" FontFamily="Times New Roman" />
+            </Grid>
+        </Grid>
+
+        <!--Buttons-->
+        <Grid Grid.Column="0" Grid.Row="2">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="auto">
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="New" FontFamily="Times New Roman" Width="180" Height="32"/>
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="Edit" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="Open" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
+                <Button Style="{StaticResource RoundedButtonStyle}" Content="Delete" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
+                <!-- Add spacer -->
+                <Border Height="180" />
+            </StackPanel>
+        </Grid>
+
+        <!--Search and Refresh-->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="26*"/>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition Width="15*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--search bar-->
+            <Grid Grid.Column="1">
+                <Border Width="200" Height="30" CornerRadius="15" Background="White" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Grid>
+                        <!-- Placeholder Text -->
+                        <TextBlock x:Name="PlaceholderText"
+                       Text="Enter text here..."
+                       Foreground="Gray"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="10,0,0,0"
+                       IsHitTestVisible="False"
+                       Visibility="{Binding Text, ElementName=RoundedTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                        <!-- TextBox -->
+                        <TextBox x:Name="RoundedTextBox"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     Padding="10,0"
+                     Foreground="Black"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!--Buttons for search and Refresh-->
+            <Grid Grid.Column="2" Grid.ColumnSpan="2">
+                <Button Content="Search" FontFamily="Times new roman" Width="120" Height="30" HorizontalAlignment="Left"  Style="{StaticResource SrchRefButtonStyle}"/>
+                <Button Content="Refresh" FontFamily="Times new roman" Width="120" Height="30" HorizontalAlignment="Left"  Style="{StaticResource SrchRefButtonStyle}" Margin="136,11,0,11"/>
+            </Grid>
+
+        </Grid>
+
+        <!--List for the info-->
+        <Grid Grid.Column="1" Grid.Row="2">
+            <!-- Outer Container -->
+            <Border Background="#FFFFFF" 
+            BorderBrush="#CCCCCC" 
+            BorderThickness="1" 
+            CornerRadius="15"
+            Padding="10"
+            Margin="10">
+
+                <StackPanel>
+                    <!-- Users ListView -->
+                    <ListView x:Name="SalesListView" Visibility="Visible"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      Background="Transparent" BorderThickness="0" AlternationCount="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="40" DisplayMemberBinding="{Binding SaleID}" />
+                                <GridViewColumn Header="Title" Width="170" DisplayMemberBinding="{Binding Product}" />
+                                <GridViewColumn Header="Description" Width="170" DisplayMemberBinding="{Binding Amount}" />
+                                <GridViewColumn Header="Date" Width="170" DisplayMemberBinding="{Binding Date}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

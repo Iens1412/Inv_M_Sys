@@ -149,7 +149,6 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="auto">
                 <Button Style="{StaticResource RoundedButtonStyle}" Content="New" FontFamily="Times New Roman" Width="180" Height="32"/>
                 <Button Style="{StaticResource RoundedButtonStyle}" Content="Edit" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
-                <Button Style="{StaticResource RoundedButtonStyle}" Content="Open" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
                 <Button Style="{StaticResource RoundedButtonStyle}" Content="Delete" FontFamily="Times New Roman" Width="180" Height="32" Margin="0,20,0,0"/>
                 <!-- Add spacer -->
                 <Border Height="180" />
