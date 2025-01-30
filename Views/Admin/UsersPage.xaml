@@ -224,5 +224,90 @@
                 </StackPanel>
             </Border>
         </Grid>
+        
+        <!--container to add or update User-->
+        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        Margin="20" CornerRadius="40"
+        Background="#e8e8e8" BorderBrush="Black" BorderThickness="2">
+
+            <Grid Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <!-- Push last element down -->
+                </Grid.RowDefinitions>
+
+                <!-- Title -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="User Information" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" Margin="0,10"/>
+
+                <!-- First Name -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
+                    <TextBlock Text="First Name" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Last Name -->
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
+                    <TextBlock Text="Last Name" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Phone -->
+                <StackPanel Grid.Row="3" Margin="10">
+                    <TextBlock Text="Phone Number" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Email -->
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="10">
+                    <TextBlock Text="Email" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Username -->
+                <StackPanel Grid.Row="5" Margin="10">
+                    <TextBlock Text="Username" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Password -->
+                <StackPanel Grid.Row="5" Grid.Column="1" Margin="10">
+                    <TextBlock Text="Password" FontSize="14" FontWeight="Bold"/>
+                    <Border  BorderBrush="Black" BorderThickness="1" Background="#F0F0F0" CornerRadius="10" Padding="5">
+                        <TextBox Height="35" BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Submit Button -->
+                <Button Grid.Row="7" Content="Submit"
+                Background="#5F84FF" Foreground="White"
+                FontSize="16" FontWeight="Bold"
+                HorizontalAlignment="Center" Width="150" Height="40"
+                Margin="0,20,0,20" BorderThickness="0"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
