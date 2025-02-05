@@ -444,6 +444,7 @@
 
             <!--  Grid to Hold Everything  -->
             <Grid>
+
                 <Grid.RowDefinitions>
                     <!--  Title  -->
                     <RowDefinition Height="0.2*" />

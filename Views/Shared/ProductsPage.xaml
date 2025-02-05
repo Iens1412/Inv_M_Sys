@@ -401,7 +401,8 @@
             Background="#E8E8E8"
             BorderBrush="Black"
             BorderThickness="2"
-            CornerRadius="40">
+            CornerRadius="40"
+            Visibility="Collapsed">
 
             <!--  Grid to Hold Everything  -->
             <Grid>
