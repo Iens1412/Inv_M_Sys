@@ -440,7 +440,7 @@
             BorderBrush="Black"
             BorderThickness="2"
             CornerRadius="40"
-            Visibility="Collapsed">
+            Visibility="Visible">
 
             <!--  Grid to Hold Everything  -->
             <Grid>

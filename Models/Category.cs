@@ -10,7 +10,6 @@ namespace Inv_M_Sys.Models
     {
         public int CategoryID { get; set; }
         public string Name { get; set; }
-        public string ImagePath { get; set; }
 
         public ICollection<Product> Products { get; set; }
     }

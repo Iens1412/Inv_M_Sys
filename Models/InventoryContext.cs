@@ -13,7 +13,6 @@ namespace Inv_M_Sys.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseNpgsql("Host=172.18.0.2;Port=5432;Database=DevDB;Username=dev_user;Password=DevPassword123");
-            optionsBuilder.UseSqlite("Data Source=Services/DevDB.db");
         }
 
         public DbSet<Product> Products { get; set; }

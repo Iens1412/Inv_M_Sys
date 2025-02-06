@@ -563,7 +563,6 @@
                         Height="40"
                         Margin="0,20,0,20"
                         HorizontalAlignment="Center"
-                        Click="GenerateReport_Click"
                         Content="Generate Report"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}" />
@@ -638,19 +637,16 @@
                         Orientation="Horizontal">
                         <Button
                             Background="Red"
-                            Click="ExportPDF_Click"
                             Content="Export as PDF"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Green"
-                            Click="ExportExcel_Click"
                             Content="Export as Excel"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Orange"
-                            Click="ExportCSV_Click"
                             Content="Export as CSV"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
@@ -660,7 +656,6 @@
                     <Button
                         Grid.Row="3"
                         Background="Gray"
-                        Click="BackToMainPage_Click"
                         Content="Back"
                         Style="{StaticResource RoundedExportButtonStyle}" />
                 </Grid>

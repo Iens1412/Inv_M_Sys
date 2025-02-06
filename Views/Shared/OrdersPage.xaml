@@ -290,7 +290,6 @@
                     <ComboBox
                         x:Name="CategoryComboBox"
                         Height="35"
-                        SelectionChanged="OnCategorySelected"
                         Style="{StaticResource CatComboBoxStyle}">
                         <ComboBoxItem Content="All Categories" IsSelected="True" />
                     </ComboBox>
@@ -451,7 +450,6 @@
                                                 Height="30"
                                                 Background="Red"
                                                 BorderThickness="0"
-                                                Click="RemoveItem_Click"
                                                 Content="❌"
                                                 FontSize="14"
                                                 FontWeight="Bold"
