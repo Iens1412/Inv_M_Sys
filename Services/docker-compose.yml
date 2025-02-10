@@ -6,9 +6,9 @@ services:
     container_name: inventory_db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: inventory
+      POSTGRES_USER: ${POSTGRES_USER:-admin} # Uses the value from an environment variable, fallback to 'admin'
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123} # Uses env variable, fallback to 'admin123'
+      POSTGRES_DB: ${POSTGRES_DB:-inventory} # Uses env variable, fallback to 'inventory'
     ports:
       - "5433:5432"
     volumes:
