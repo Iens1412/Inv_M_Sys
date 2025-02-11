@@ -217,12 +217,10 @@
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
                     <Button
-                        Click="SaveSettings_Click"
                         Content="Save Settings"
                         Style="{StaticResource RoundedButtonStyle}" />
                     <Button
                         Background="Green"
-                        Click="TestConnection_Click"
                         Content="Test Connection"
                         Style="{StaticResource RoundedButtonStyle}" />
                 </StackPanel>

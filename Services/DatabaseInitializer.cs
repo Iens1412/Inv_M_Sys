@@ -156,21 +156,21 @@ public static class DatabaseInitializer
                 Console.WriteLine("✅ Owner account exists. No changes made.");
             }
 
-            // Session Table (for Authentication)
+            // ✅ Fix: Make UserId UNIQUE in UserSessions
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS UserSessions (
-                SessionId SERIAL PRIMARY KEY,
-                UserId INTEGER NOT NULL REFERENCES Users(Id) ON DELETE CASCADE,
-                Token TEXT NOT NULL UNIQUE,
-                ExpiryDate TIMESTAMP NOT NULL
+            SessionId SERIAL PRIMARY KEY,
+            UserId INTEGER NOT NULL UNIQUE REFERENCES Users(Id) ON DELETE CASCADE,
+            Token TEXT NOT NULL UNIQUE,
+            ExpiryDate TIMESTAMP NOT NULL
             );";
             cmd.ExecuteNonQuery();
 
-            // Session Table (for Owner Authentication)
+            // ✅ Fix: Make UserId UNIQUE in OwnerSessions
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS OwnerSessions (
-                SessionId SERIAL PRIMARY KEY,
-                UserId INTEGER NOT NULL REFERENCES Owner(Id) ON DELETE CASCADE,
-                Token TEXT NOT NULL UNIQUE,
-                ExpiryDate TIMESTAMP NOT NULL
+            SessionId SERIAL PRIMARY KEY,
+            UserId INTEGER NOT NULL UNIQUE REFERENCES Owner(Id) ON DELETE CASCADE,
+            Token TEXT NOT NULL UNIQUE,
+            ExpiryDate TIMESTAMP NOT NULL
             );";
             cmd.ExecuteNonQuery();
         }
