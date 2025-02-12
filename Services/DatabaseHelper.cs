@@ -28,14 +28,22 @@ public static class DatabaseHelper
 
                 if (conn.State == ConnectionState.Open)
                 {
-                    try
+                    if (!IsDatabaseInitialized()) // Only initialize if not already initialized
                     {
-                        DatabaseInitializer.InitializeDatabase(conn); // Pass the connection
-                        MessageBox.Show("✅ Database Initialized Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        try
+                        {
+                            MessageBox.Show("🔹 First-time setup: Initializing database...");
+                            DatabaseInitializer.InitializeDatabase(conn);
+                            MessageBox.Show("✅ Database Initialized Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"❌ Database Initialization Failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show($"❌ Database Initialization Failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Console.WriteLine("✅ Database already initialized. Skipping setup.");
                     }
                 }
             }
@@ -43,7 +51,27 @@ public static class DatabaseHelper
         catch (Exception ex)
         {
             Console.WriteLine("❌ Database connection failed: " + ex.Message);
-            MessageBox.Show("❌ Database connection failed: " + ex.Message, "Database Connection Faild", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("❌ Database connection failed: " + ex.Message, "Database Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public static bool IsDatabaseInitialized()
+    {
+        try
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'", conn))
+                {
+                    int tableCount = Convert.ToInt32(cmd.ExecuteScalar());
+                    return tableCount > 0; // If tables exist, the database is initialized
+                }
+            }
+        }
+        catch (Exception)
+        {
+            return false; // If connection fails, assume DB is not initialized
         }
     }
 }

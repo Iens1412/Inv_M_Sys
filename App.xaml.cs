@@ -15,10 +15,6 @@ namespace Inv_M_Sys
 
             // ✅ Initialize the database connection when the app starts
             DatabaseHelper.TestConnection();
-
-            // ✅ Start the MainWindow after the database check
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
         }
     }
 

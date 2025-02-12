@@ -14,7 +14,7 @@ namespace Inv_M_Sys.Services
         public static string CurrentSessionToken { get; private set; }
         public static DateTime? SessionExpiry { get; private set; } // Stores session expiry time
 
-        private const int SESSION_DURATION_MINUTES = 1; // 5 minutes for testing (change to 720 for 12 hours)
+        private const int SESSION_DURATION_MINUTES = 60; // 5 minutes for testing (change to 720 for 12 hours)
 
         public static void CreateUserSession(string username)
         {
@@ -43,7 +43,7 @@ namespace Inv_M_Sys.Services
                             if (reader.Read())
                             {
                                 string token = GenerateSessionToken(); // Generate a unique token
-                                DateTime expiryDate = DateTime.UtcNow.AddMinutes(SESSION_DURATION_MINUTES); // Set expiry time
+                                DateTime expiryDate = DateTime.Now.AddMinutes(SESSION_DURATION_MINUTES); // Set expiry time
                                 int userId = reader.GetInt32(0); // Store user ID
 
                                 // 🛠 Close the reader before executing a new command
