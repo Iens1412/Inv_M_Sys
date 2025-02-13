@@ -8,10 +8,15 @@
     Title="HomeWindow"
     Width="800"
     Height="450"
+    ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     WindowStyle="None"
     mc:Ignorable="d">
     <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
+        <Frame
+            x:Name="MainFrame"
+            JournalOwnership="OwnsJournal"
+            NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>

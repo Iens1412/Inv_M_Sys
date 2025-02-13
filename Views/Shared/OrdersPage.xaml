@@ -243,17 +243,17 @@
                         Text="Select Customer" />
                     <ListView
                         x:Name="CustomersListView"
-                        Height="150"
+                        Height="auto"
                         Background="Transparent"
                         BorderThickness="0">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="50"
+                                    Width="auto"
                                     DisplayMemberBinding="{Binding CustomerID}"
                                     Header="ID" />
                                 <GridViewColumn
-                                    Width="200"
+                                    Width="auto"
                                     DisplayMemberBinding="{Binding FullName}"
                                     Header="Name" />
                             </GridView>
@@ -266,11 +266,13 @@
         <!--  **Product Selection & Quantity Input**  -->
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <!--  Takes full height  -->
+                <RowDefinition Height="Auto" />
+                <!--  Quantity & Add button at bottom  -->
             </Grid.RowDefinitions>
 
+            <!--  Product Selection (Stretches to Fill Available Space)  -->
             <Border
                 Grid.Row="0"
                 Margin="10"
@@ -279,58 +281,71 @@
                 BorderBrush="#CCCCCC"
                 BorderThickness="1"
                 CornerRadius="15">
-                <StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <!--  Select Product Text  -->
+                        <RowDefinition Height="*" />
+                        <!--  Product List (Expands to fill space)  -->
+                    </Grid.RowDefinitions>
+
                     <TextBlock
+                        Grid.Row="0"
                         Margin="0,0,0,5"
                         FontSize="16"
                         FontWeight="Bold"
                         Text="Select Product" />
 
-                    <!--  Product Category Dropdown (Styled)  -->
+                    <!--  Product Category Dropdown  -->
                     <ComboBox
                         x:Name="CategoryComboBox"
+                        Grid.Row="0"
                         Height="35"
+                        Margin="0,0,0,15"
                         Style="{StaticResource CatComboBoxStyle}">
                         <ComboBoxItem Content="All Categories" IsSelected="True" />
                     </ComboBox>
 
-
                     <!--  Product List  -->
                     <ListView
                         x:Name="ProductsListView"
-                        Height="150"
+                        Grid.Row="2"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Background="Transparent"
                         BorderThickness="0">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="50"
+                                    Width="auto"
                                     DisplayMemberBinding="{Binding ProductID}"
                                     Header="ID" />
                                 <GridViewColumn
-                                    Width="200"
+                                    Width="auto"
                                     DisplayMemberBinding="{Binding ProductName}"
                                     Header="Name" />
                                 <GridViewColumn
-                                    Width="80"
+                                    Width="auto"
                                     DisplayMemberBinding="{Binding Price}"
                                     Header="Price" />
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
 
-            <!--  **Quantity Field & Add Button**  -->
+            <!--  Quantity Input + Add Button (Now Anchored to Bottom)  -->
             <StackPanel
                 Grid.Row="1"
                 Margin="10"
                 HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
                 Orientation="Horizontal">
 
                 <!--  Quantity Input  -->
                 <Border
                     Width="200"
+                    Margin="0,0,0,20"
                     Padding="5"
                     BorderBrush="Violet"
                     BorderThickness="0,0,0,2">
@@ -419,26 +434,26 @@
                 CornerRadius="15">
                 <ListView
                     x:Name="OrderBasketListView"
-                    Height="200"
+                    Height="auto"
                     HorizontalAlignment="Stretch"
                     Background="Transparent"
                     BorderThickness="0">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn
-                                Width="200"
+                                Width="auto"
                                 DisplayMemberBinding="{Binding ProductName}"
                                 Header="Product" />
                             <GridViewColumn
-                                Width="80"
+                                Width="auto"
                                 DisplayMemberBinding="{Binding Quantity}"
                                 Header="Quantity" />
                             <GridViewColumn
-                                Width="80"
+                                Width="auto"
                                 DisplayMemberBinding="{Binding Price}"
                                 Header="Price" />
                             <GridViewColumn
-                                Width="100"
+                                Width="auto"
                                 DisplayMemberBinding="{Binding TotalPrice}"
                                 Header="Total" />
                             <GridViewColumn Width="80" Header="Actions">

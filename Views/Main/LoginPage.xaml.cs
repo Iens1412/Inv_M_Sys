@@ -123,24 +123,25 @@ namespace Inv_M_Sys.Views.Main
         {
             Window parentWindow = Window.GetWindow(this);
 
-            HomeWindow HomeWindow = new HomeWindow();
+            HomeWindow homeWindow = new HomeWindow();
+
             // Check if logged in as Owner
             if (SessionManager.CurrentOwnerId.HasValue)
             {
-                HomeWindow.NavigateToPage(new Views.Main.OwnerPage());
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
             }
             // Check if logged in as Admin
             else if (SessionManager.CurrentUserRole == "Admin")
             {
-                HomeWindow.NavigateToPage(new Views.Main.AdminMainPage());
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
             }
             // Default User Role (Regular User)
             else
             {
-                HomeWindow.NavigateToPage(new Views.Main.UserMainPage());
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
             }
 
-            HomeWindow.Show();
+            homeWindow.Show();
             parentWindow?.Close();
         }
 

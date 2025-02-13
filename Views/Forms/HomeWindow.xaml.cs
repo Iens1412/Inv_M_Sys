@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System;
 using System.Windows.Threading;
 using Inv_M_Sys.Services;
+using Inv_M_Sys.Views.Main;
 
 namespace Inv_M_Sys.Views.Forms
 {
@@ -27,7 +28,7 @@ namespace Inv_M_Sys.Views.Forms
         public HomeWindow()
         {
             InitializeComponent();
-
+            NavigateToPage(new Views.Main.DashboardPage(this));
             _sessionTimer = new DispatcherTimer();
             _sessionTimer.Interval = TimeSpan.FromMinutes(1);
             _sessionTimer.Tick += CheckSessionStatus;
@@ -38,7 +39,10 @@ namespace Inv_M_Sys.Views.Forms
         // Method to navigate to different pages inside HomeWindow
         public void NavigateToPage(Page page)
         {
-            MainFrame.NavigationService.Navigate(page);
+            if (MainFrame.Content != page)
+            {
+                MainFrame.NavigationService.Navigate(page);
+            }
         }
 
         private void CheckSessionStatus(object sender, EventArgs e)
