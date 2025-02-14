@@ -167,7 +167,8 @@ namespace Inv_M_Sys.Views.Admin
                 : new ObservableCollection<User>(UsersList.Where(u =>
                     u.FirstName.ToLower().Contains(query) ||
                     u.LastName.ToLower().Contains(query) ||
-                    u.Email.ToLower().Contains(query)));
+                    u.Email.ToLower().Contains(query) ||
+                    u.Role.ToLower().Contains(query)));
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e) => LoadUsers();
