@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inv_M_Sys.Views.Forms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,12 @@ namespace Inv_M_Sys.Views.Shared
     /// </summary>
     public partial class NotificationsPage : Page
     {
-        public NotificationsPage()
+        private readonly HomeWindow _homeWindow;
+
+        public NotificationsPage(HomeWindow homeWindow)
         {
             InitializeComponent();
+            _homeWindow = homeWindow;
         }
     }
 }

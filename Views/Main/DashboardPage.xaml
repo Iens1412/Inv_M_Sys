@@ -1276,7 +1276,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Users_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border

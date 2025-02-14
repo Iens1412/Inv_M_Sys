@@ -39,8 +39,12 @@ namespace Inv_M_Sys.Views.Main
 
         private void Orders_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Clicked");
             _homeWindow.NavigateToPage(new Views.Shared.OrdersPage(_homeWindow));
+        }
+
+        private void Users_Click(object sender, RoutedEventArgs e)
+        {
+            _homeWindow.NavigateToPage(new Views.Admin.UsersPage(_homeWindow));
         }
     }
 }

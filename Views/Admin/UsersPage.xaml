@@ -172,6 +172,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -183,6 +184,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -192,15 +194,16 @@
 
                 <Button
                     Width="20"
-                    Margin="155,-1,54,-1"
+                    Margin="155,-1,54,0"
+                    VerticalAlignment="Center"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="_"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
-                    Foreground="Red"
-                    RenderTransformOrigin="-1.084,0.562" />
+                    Foreground="Red" />
             </Grid>
 
             <!--  Note And Home Buttons  -->
@@ -215,7 +218,8 @@
                     Width="50"
                     Height="30"
                     Background="#57AEFF"
-                    BorderBrush="Transparent">
+                    BorderBrush="Transparent"
+                    Click="Note_Click">
                     <Canvas Width="20" Height="20">
                         <Path
                             Canvas.Top="-2"
@@ -233,6 +237,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -251,6 +256,7 @@
                 <Button
                     Width="180"
                     Height="32"
+                    Click="New_Click"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -258,6 +264,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Edit_Click"
                     Content="Edit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -265,6 +272,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Delete_Click"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -323,6 +331,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
+                    Click="Search_Click"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -331,6 +340,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
+                    Click="Refresh_Click"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -348,44 +358,50 @@
                 BorderBrush="#CCCCCC"
                 BorderThickness="1"
                 CornerRadius="15">
-
-                <StackPanel>
-                    <!--  Users ListView  -->
-                    <ListView
-                        x:Name="SalesListView"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        AlternationCount="2"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Visibility="Visible">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn
-                                    Width="70"
-                                    DisplayMemberBinding="{Binding SaleID}"
-                                    Header="User ID" />
-                                <GridViewColumn
-                                    Width="160"
-                                    DisplayMemberBinding="{Binding Product}"
-                                    Header="Name" />
-                                <GridViewColumn
-                                    Width="160"
-                                    DisplayMemberBinding="{Binding Amount}"
-                                    Header="Email" />
-                                <GridViewColumn
-                                    Width="160"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Phone Number" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </StackPanel>
+                <!--  Users ListView  -->
+                <ListView
+                    x:Name="SalesListView"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    AlternationCount="2"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Visibility="Visible">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn
+                                Width="70"
+                                DisplayMemberBinding="{Binding UserID}"
+                                Header="User ID" />
+                            <GridViewColumn
+                                Width="160"
+                                DisplayMemberBinding="{Binding FirstName}"
+                                Header="First Name" />
+                            <GridViewColumn
+                                Width="160"
+                                DisplayMemberBinding="{Binding LastName}"
+                                Header="Last Name" />
+                            <GridViewColumn
+                                Width="160"
+                                DisplayMemberBinding="{Binding Email}"
+                                Header="Email" />
+                            <GridViewColumn
+                                Width="160"
+                                DisplayMemberBinding="{Binding Phone}"
+                                Header="Phone Number" />
+                            <GridViewColumn
+                                Width="160"
+                                DisplayMemberBinding="{Binding Role}"
+                                Header="Role" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </Border>
         </Grid>
 
         <!--  container to add or update User  -->
         <Border
+            x:Name="Conatiner_User"
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
@@ -670,22 +686,26 @@
                 <!--  Buttons (Outside ScrollViewer)  -->
 
                 <Button
+                    x:Name="Submitbtn"
                     Grid.Row="2"
                     Width="150"
                     Height="40"
                     Margin="80,20,0,20"
                     HorizontalAlignment="Left"
+                    Click="Submit_Click"
                     Content="Submit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource NewOrEditButtonStyle}"
                     Visibility="Visible" />
 
                 <Button
+                    x:Name="Updatebtn"
                     Grid.Row="2"
                     Width="150"
                     Height="40"
                     Margin="80,20,0,20"
                     HorizontalAlignment="Left"
+                    Click="Update_Click"
                     Content="Update"
                     FontFamily="Times New Roman"
                     Style="{StaticResource NewOrEditButtonStyle}"
@@ -697,6 +717,7 @@
                     Height="40"
                     Margin="0,20,80,20"
                     HorizontalAlignment="Right"
+                    Click="Back_Click"
                     Content="Back"
                     FontFamily="Times New Roman"
                     Style="{StaticResource BackButtonStyle}" />
