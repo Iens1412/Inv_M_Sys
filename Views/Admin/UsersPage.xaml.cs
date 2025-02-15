@@ -33,13 +33,14 @@ namespace Inv_M_Sys.Views.Admin
         private readonly HomeWindow _homeWindow;
         private ObservableCollection<User> UsersList = new ObservableCollection<User>();
         private User SelectedUser;
+        private bool isLoading = false;
 
         public UsersPage(HomeWindow homeWindow)
         {
             InitializeComponent();
             _homeWindow = homeWindow;
             LoadRoles();
-            LoadUsers();
+            _ = LoadUsersAsync();
         }
 
         private void LoadRoles()
@@ -248,127 +249,36 @@ namespace Inv_M_Sys.Views.Admin
                     u.Role.ToString().ToLower().Contains(query)));
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e) => LoadUsers();
+        private void Refresh_Click(object sender, RoutedEventArgs e) => _ = LoadUsersAsync();
 
-        private void Submit_Click(object sender, RoutedEventArgs e)
+        private async void Submit_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                UserRole selectedRoleEnum = Enum.Parse<UserRole>((RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
-
-                // ✅ Prevent Admin from adding another Admin
-                if (SessionManager.CurrentUserRole == "Admin" && selectedRoleEnum == UserRole.Admin)
-                {
-                    MessageBox.Show("You do not have permission to add an Admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return; // Stop execution
-                }
-
-                if (!ValidatePasswords()) return;
-                if (!ValidateUserInputs()) return;
-
-                if (UsernameExists(UsernameTextBox.Text))
-                {
-                    MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(@"
-                INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Address, Role, Username, Password) 
-                VALUES (@FirstName, @LastName, @Email, @Phone, @Address, @Role, @Username, @Password)", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Role", selectedRoleEnum.ToString());
-                        cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                LoadUsers();
-                MessageBox.Show("User added successfully.");
-                ClearForm();
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                MessageBox.Show($"Error adding user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            await AddUserAsync(); // Call the async method
         }
 
-        private void Update_Click(object sender, RoutedEventArgs e)
+        private async void Update_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedUser != null)
-            {
-                try
-                {
-
-                    if (!ValidatePasswords()) return;
-                    if (!ValidateUserInputs()) return;
-
-                    if (UsernameExists(UsernameTextBox.Text))
-                    {
-                        MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    using (var conn = DatabaseHelper.GetConnection())
-                    {
-                        conn.Open();
-                        using (var cmd = new NpgsqlCommand(@"
-                            UPDATE Users SET 
-                            FirstName = @FirstName, LastName = @LastName, Email = @Email, 
-                            PhoneNumber = @Phone, Address = @Address, Role = @Role, Username = @Username, Password = @Password 
-                            WHERE id = @UserID", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Role", (RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
-                            cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
-                            cmd.Parameters.AddWithValue("@UserID", SelectedUser.UserID);
-
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    LoadUsers();
-                    MessageBox.Show("User updated successfully.");
-                    ClearForm();
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    MessageBox.Show($"Error updating user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+            await UpdateUserAsync();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e) => ClearForm();
 
-        private void LoadUsers()
+        private async Task LoadUsersAsync()
         {
-            UsersList.Clear();
+            if (isLoading) return; // Prevent multiple calls
+            isLoading = true;
+            LoadingIndicator.Visibility = Visibility.Visible;
 
+            UsersList.Clear();
             try
             {
                 using (var conn = DatabaseHelper.GetConnection())
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
                     using (var cmd = new NpgsqlCommand("SELECT * FROM Users", conn))
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             User user = new User
                             {
@@ -383,12 +293,6 @@ namespace Inv_M_Sys.Views.Admin
                                 Role = Enum.TryParse<UserRole>(reader.GetString(8), out var role) ? role : UserRole.SellingStaff
                             };
 
-                            // ✅ Restrict Admins from seeing other Admins
-                            if (SessionManager.CurrentUserRole == "Admin" && user.Role == UserRole.Admin)
-                            {
-                                continue; // Skip adding other admins
-                            }
-
                             UsersList.Add(user);
                         }
                     }
@@ -399,6 +303,11 @@ namespace Inv_M_Sys.Views.Admin
             {
                 LogError(ex);
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                LoadingIndicator.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -431,15 +340,15 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
-        private bool UsernameExists(string username)
+        private async Task<bool> UsernameExistsAsync(string username)
         {
             using (var conn = DatabaseHelper.GetConnection())
             {
-                conn.Open();
+                await conn.OpenAsync();
                 using (var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM Users WHERE Username = @Username", conn))
                 {
                     cmd.Parameters.AddWithValue("@Username", username);
-                    return (long)cmd.ExecuteScalar() > 0;
+                    return (long)(await cmd.ExecuteScalarAsync()) > 0;
                 }
             }
         }
@@ -450,6 +359,129 @@ namespace Inv_M_Sys.Views.Admin
             File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex.Message}\n{ex.StackTrace}\n\n");
         }
 
+        private async Task AddUserAsync()
+        {
+            try
+            {
+                // Disable buttons to prevent multiple clicks
+                Submitbtn.IsEnabled = false;
+                Updatebtn.IsEnabled = false;
+
+                UserRole selectedRoleEnum = Enum.Parse<UserRole>((RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
+
+                if (SessionManager.CurrentUserRole == "Admin" && selectedRoleEnum == UserRole.Admin)
+                {
+                    MessageBox.Show("You do not have permission to add an Admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!ValidatePasswords()) return;
+                if (!ValidateUserInputs()) return;
+
+                if (await UsernameExistsAsync(UsernameTextBox.Text))
+                {
+                    MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    await conn.OpenAsync(); // 🔹 Async Open
+                    using (var cmd = new NpgsqlCommand(@"
+                INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Address, Role, Username, Password) 
+                VALUES (@FirstName, @LastName, @Email, @Phone, @Address, @Role, @Username, @Password)", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
+                        cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
+                        cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
+                        cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
+                        cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
+                        cmd.Parameters.AddWithValue("@Role", selectedRoleEnum.ToString());
+                        cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
+                        cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
+
+                        await cmd.ExecuteNonQueryAsync(); // 🔹 Async Execution
+                    }
+                }
+
+                await LoadUsersAsync(); // Refresh user list
+                MessageBox.Show("User added successfully.");
+                ClearForm();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                MessageBox.Show($"Error adding user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                // Re-enable buttons after execution
+                Submitbtn.IsEnabled = true;
+                Updatebtn.IsEnabled = true;
+            }
+        }
+
+        private async Task UpdateUserAsync()
+        {
+            if (SelectedUser != null)
+            {
+                try
+                {
+                    // Disable buttons to prevent multiple clicks
+                    Submitbtn.IsEnabled = false;
+                    Updatebtn.IsEnabled = false;
+
+                    if (!ValidatePasswords()) return;
+                    if (!ValidateUserInputs()) return;
+
+                    // 🔹 Check if username exists (async)
+                    if (await UsernameExistsAsync(UsernameTextBox.Text))
+                    {
+                        MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    using (var conn = DatabaseHelper.GetConnection())
+                    {
+                        await conn.OpenAsync(); // 🔹 Open connection asynchronously
+
+                        using (var cmd = new NpgsqlCommand(@"
+                    UPDATE Users SET 
+                    FirstName = @FirstName, LastName = @LastName, Email = @Email, 
+                    PhoneNumber = @Phone, Address = @Address, Role = @Role, Username = @Username, Password = @Password 
+                    WHERE id = @UserID", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
+                            cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
+                            cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
+                            cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
+                            cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
+                            cmd.Parameters.AddWithValue("@Role", (RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
+                            cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
+                            cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
+                            cmd.Parameters.AddWithValue("@UserID", SelectedUser.UserID);
+
+                            await cmd.ExecuteNonQueryAsync(); // 🔹 Execute the query asynchronously
+                        }
+                    }
+
+                    await LoadUsersAsync(); // 🔹 Refresh user list asynchronously
+                    MessageBox.Show("User updated successfully.");
+                    ClearForm();
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    MessageBox.Show($"Error updating user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    // Re-enable buttons after execution
+                    Submitbtn.IsEnabled = true;
+                    Updatebtn.IsEnabled = true;
+                }
+            }
+        }
     }
 
 }

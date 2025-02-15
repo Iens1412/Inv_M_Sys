@@ -403,6 +403,8 @@
             </Border>
         </Grid>
 
+        <!--Loding indicator-->
+        <TextBlock x:Name="LoadingIndicator" Grid.Column="1" Grid.Row="1" Text="Loading..." VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed" Foreground="Gray" FontSize="14" />
         <!--  container to add or update User  -->
         <Border
             x:Name="Conatiner_User"
