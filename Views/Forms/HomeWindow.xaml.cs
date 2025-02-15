@@ -28,12 +28,21 @@ namespace Inv_M_Sys.Views.Forms
         public HomeWindow()
         {
             InitializeComponent();
+            this.PreviewKeyDown += new KeyEventHandler(HomeWindow_PreviewKeyDown);
             NavigateToPage(new Views.Main.DashboardPage(this));
             _sessionTimer = new DispatcherTimer();
             _sessionTimer.Interval = TimeSpan.FromMinutes(1);
             _sessionTimer.Tick += CheckSessionStatus;
             _sessionTimer.Start();
 
+        }
+
+        private void HomeWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Back)
+            {
+                e.Handled = true; // Prevents Backspace from navigating back
+            }
         }
 
         // Method to navigate to different pages inside HomeWindow

@@ -387,6 +387,10 @@
                                 Header="Email" />
                             <GridViewColumn
                                 Width="160"
+                                DisplayMemberBinding="{Binding Username}"
+                                Header="Username" />
+                            <GridViewColumn
+                                Width="160"
                                 DisplayMemberBinding="{Binding Phone}"
                                 Header="Phone Number" />
                             <GridViewColumn
@@ -567,7 +571,10 @@
                         </StackPanel>
 
                         <!--  Username  -->
-                        <StackPanel Grid.Row="3" Margin="10">
+                        <StackPanel
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Margin="10">
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -594,8 +601,8 @@
 
                         <!--  Password  -->
                         <StackPanel
-                            Grid.Row="3"
-                            Grid.Column="1"
+                            Grid.Row="4"
+                            Grid.Column="0"
                             Margin="10">
                             <Border
                                 Padding="5"
@@ -613,24 +620,60 @@
                                         Text="Password"
                                         Visibility="Visible" />
 
-                                    <!--  Password Box  -->
-                                    <PasswordBox
-                                        x:Name="PasswordBox"
+                                    <!--  Password TextBox (Instead of PasswordBox)  -->
+                                    <TextBox
+                                        x:Name="PasswordTextBox"
                                         Padding="5,0"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        GotFocus="PasswordBox_GotFocus"
-                                        LostFocus="PasswordBox_LostFocus"
-                                        PasswordChanged="PasswordBox_PasswordChanged" />
+                                        GotFocus="PasswordTextBox_GotFocus"
+                                        LostFocus="PasswordTextBox_LostFocus"
+                                        TextChanged="PasswordTextBox_TextChanged" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!--  Confirm Password  -->
+                        <StackPanel
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            Margin="10">
+                            <Border
+                                Padding="5"
+                                BorderBrush="Violet"
+                                BorderThickness="0,0,0,2">
+                                <Grid>
+                                    <!--  Placeholder Text  -->
+                                    <TextBlock
+                                        x:Name="ConfirmPasswordPlaceholder"
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="14"
+                                        Foreground="Gray"
+                                        IsHitTestVisible="False"
+                                        Text="Password"
+                                        Visibility="Visible" />
+
+                                    <!--  Password TextBox (Instead of PasswordBox)  -->
+                                    <TextBox
+                                        x:Name="ConfirmPasswordTextBox"
+                                        Padding="5,0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        FontSize="14"
+                                        Foreground="Black"
+                                        GotFocus="PasswordTextBox_GotFocus"
+                                        LostFocus="PasswordTextBox_LostFocus"
+                                        TextChanged="PasswordTextBox_TextChanged" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
                         <!--  Address  -->
                         <StackPanel
-                            Grid.Row="4"
+                            Grid.Row="5"
                             Grid.ColumnSpan="2"
                             Margin="10">
                             <Border
@@ -659,7 +702,7 @@
 
                         <!--  Role (Dropdown)  -->
                         <StackPanel
-                            Grid.Row="5"
+                            Grid.Row="6"
                             Grid.ColumnSpan="2"
                             Margin="10">
                             <TextBlock

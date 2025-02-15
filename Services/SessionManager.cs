@@ -209,7 +209,7 @@ namespace Inv_M_Sys.Services
             }
         }
 
-        private static void ExpireSessionInDB()
+        public static void ExpireSessionInDB()
         {
             try
             {

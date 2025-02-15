@@ -21,6 +21,7 @@ using System.Windows.Shapes;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System;
 using System.Security.Cryptography;
+using System.IO;
 
 namespace Inv_M_Sys.Views.Admin
 {
@@ -58,20 +59,79 @@ namespace Inv_M_Sys.Views.Admin
             RoleComboBox.SelectedIndex = 0; // Set default selection
         }
 
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        private bool ValidateUserInputs()
         {
-            PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordBox.Password) ? Visibility.Visible : Visibility.Collapsed;
+            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(LastNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(EmailTextBox.Text) ||
+                string.IsNullOrWhiteSpace(PhoneTextBox.Text) ||
+                string.IsNullOrWhiteSpace(UsernameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(AddressTextBox.Text))
+            {
+                MessageBox.Show("All fields must be filled.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!ValidatePasswords())
+                return false;
+
+            return true;
+        }
+        private bool ValidatePasswords()
+        {
+            if (string.IsNullOrWhiteSpace(PasswordTextBox.Text) || string.IsNullOrWhiteSpace(ConfirmPasswordTextBox.Text))
+            {
+                MessageBox.Show("Password fields cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (PasswordTextBox.Text != ConfirmPasswordTextBox.Text)
+            {
+                MessageBox.Show("Passwords do not match.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
         }
 
-        private void PasswordBox_GotFocus(object sender, RoutedEventArgs e)
+        private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            PasswordPlaceholder.Visibility = Visibility.Collapsed;
+            PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void PasswordBox_LostFocus(object sender, RoutedEventArgs e)
+        private void ConfirmPasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(PasswordBox.Password))
-                PasswordPlaceholder.Visibility = Visibility.Visible;
+            ConfirmPasswordPlaceholder.Visibility = string.IsNullOrEmpty(ConfirmPasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void PasswordTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                if (textBox.Name == "PasswordTextBox")
+                {
+                    PasswordPlaceholder.Visibility = Visibility.Collapsed;
+                }
+                else if (textBox.Name == "ConfirmPasswordTextBox")
+                {
+                    ConfirmPasswordPlaceholder.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void PasswordTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                if (textBox.Name == "PasswordTextBox" && string.IsNullOrEmpty(textBox.Text))
+                {
+                    PasswordPlaceholder.Visibility = Visibility.Visible;
+                }
+                else if (textBox.Name == "ConfirmPasswordTextBox" && string.IsNullOrEmpty(textBox.Text))
+                {
+                    ConfirmPasswordPlaceholder.Visibility = Visibility.Visible;
+                }
+            }
         }
 
         private void New_Click(object sender, RoutedEventArgs e)
@@ -140,6 +200,7 @@ namespace Inv_M_Sys.Views.Admin
                 }
                 catch (Exception ex)
                 {
+                    LogError(ex);
                     MessageBox.Show($"Error deleting user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -151,7 +212,11 @@ namespace Inv_M_Sys.Views.Admin
 
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
-        private void Close_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            SessionManager.ExpireSessionInDB();
+            Application.Current.Shutdown();
+        }
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
@@ -186,6 +251,15 @@ namespace Inv_M_Sys.Views.Admin
                     return; // Stop execution
                 }
 
+                if (!ValidatePasswords()) return;
+                if (!ValidateUserInputs()) return;
+
+                if (UsernameExists(UsernameTextBox.Text))
+                {
+                    MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
@@ -200,7 +274,7 @@ namespace Inv_M_Sys.Views.Admin
                         cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
                         cmd.Parameters.AddWithValue("@Role", selectedRole);
                         cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordBox.Password));
+                        cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
 
                         cmd.ExecuteNonQuery();
                     }
@@ -212,6 +286,7 @@ namespace Inv_M_Sys.Views.Admin
             }
             catch (Exception ex)
             {
+                LogError(ex);
                 MessageBox.Show($"Error adding user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -222,6 +297,16 @@ namespace Inv_M_Sys.Views.Admin
             {
                 try
                 {
+
+                    if (!ValidatePasswords()) return;
+                    if (!ValidateUserInputs()) return;
+
+                    if (UsernameExists(UsernameTextBox.Text))
+                    {
+                        MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
                     using (var conn = DatabaseHelper.GetConnection())
                     {
                         conn.Open();
@@ -238,7 +323,7 @@ namespace Inv_M_Sys.Views.Admin
                             cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
                             cmd.Parameters.AddWithValue("@Role", (RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
                             cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordBox.Password));
+                            cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
                             cmd.Parameters.AddWithValue("@UserID", SelectedUser.UserID);
 
                             cmd.ExecuteNonQuery();
@@ -251,6 +336,7 @@ namespace Inv_M_Sys.Views.Admin
                 }
                 catch (Exception ex)
                 {
+                    LogError(ex);
                     MessageBox.Show($"Error updating user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -299,6 +385,7 @@ namespace Inv_M_Sys.Views.Admin
             }
             catch (Exception ex)
             {
+                LogError(ex);
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -310,7 +397,8 @@ namespace Inv_M_Sys.Views.Admin
             EmailTextBox.Text = "";
             PhoneTextBox.Text = "";
             UsernameTextBox.Text = "";
-            PasswordBox.Password = "";
+            PasswordTextBox.Text = "";
+            ConfirmPasswordTextBox.Text = "";
             AddressTextBox.Text = "";
             RoleComboBox.SelectedIndex = 0;
 
@@ -330,6 +418,26 @@ namespace Inv_M_Sys.Views.Admin
                 return builder.ToString();
             }
         }
+
+        private bool UsernameExists(string username)
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM Users WHERE Username = @Username", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Username", username);
+                    return (long)cmd.ExecuteScalar() > 0;
+                }
+            }
+        }
+
+        private void LogError(Exception ex)
+        {
+            string logFilePath = "error_log.txt";
+            File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex.Message}\n{ex.StackTrace}\n\n");
+        }
+
     }
 
 }
