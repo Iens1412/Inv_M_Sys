@@ -38,7 +38,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.4*" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!--  Notifications Button  -->
@@ -54,19 +54,46 @@
                 </Canvas>
             </Button>
 
-            <!--  Log Oút Button  -->
-            <Button
-                Grid.Column="2"
-                Width="150"
-                Height="30"
-                Background="#57AEFF"
-                BorderBrush="Transparent"
-                Click="LogOut_CLick"
-                Content="Log Out"
-                FontFamily="Times New Roman"
-                FontSize="20"
-                FontWeight="Bold"
-                Foreground="Red" />
+            <!--  Log Out Button  -->
+            <Grid Grid.Column="2">
+                <Button
+                    Width="150"
+                    Margin="0,-1,79,-1"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Click="LogOut_CLick"
+                    Content="Log Out"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red" />
+
+                <Button
+                    Width="20"
+                    Margin="199,-1,10,-1"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Click="Close_Click"
+                    Content="X"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    RenderTransformOrigin="-1.084,0.562" />
+
+                <Button
+                    Width="20"
+                    Margin="155,-1,54,0"
+                    VerticalAlignment="Center"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Click="Minimize_Click"
+                    Content="_"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red" />
+            </Grid>
         </Grid>
 
         <!--  Body with Buttons  -->

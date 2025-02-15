@@ -100,5 +100,12 @@ namespace Inv_M_Sys.Views.Main
 
         private void Owner_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new Views.Admin.DatabaseSettingsPage(_homeWindow));
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            SessionManager.ExpireSessionInDB();
+            Application.Current.Shutdown();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
     }
 }
