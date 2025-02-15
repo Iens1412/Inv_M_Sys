@@ -44,17 +44,22 @@ namespace Inv_M_Sys.Views.Admin
 
         private void LoadRoles()
         {
-            RoleComboBox.Items.Clear(); // Remove all previous items
+            RoleComboBox.Items.Clear();
 
-            if (SessionManager.CurrentUserRole == "Owner")
+            foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
             {
                 // ✅ Owners can see and assign all roles
-                RoleComboBox.Items.Add(new ComboBoxItem { Content = "Admin" });
+                if (SessionManager.CurrentUserRole == "Owner" || role != UserRole.Admin)
+                {
+                    if (role.ToString() == "Owner")
+                    {
+                        continue;                      
+                    }else
+                    {
+                        RoleComboBox.Items.Add(new ComboBoxItem { Content = role.ToString() });
+                    }
+                }
             }
-
-            // ✅ Both Owners and Admins can add Selling and Stock Staff
-            RoleComboBox.Items.Add(new ComboBoxItem { Content = "Selling Staff" });
-            RoleComboBox.Items.Add(new ComboBoxItem { Content = "Stock Staff" });
 
             RoleComboBox.SelectedIndex = 0; // Set default selection
         }
@@ -147,7 +152,7 @@ namespace Inv_M_Sys.Views.Admin
             if (SalesListView.SelectedItem is User user)
             {
                 // ✅ Prevent Admins from Editing Other Admins
-                if (SessionManager.CurrentUserRole == "Admin" && user.Role == "Admin")
+                if (SessionManager.CurrentUserRole == "Admin" && user.Role == UserRole.Admin)
                 {
                     MessageBox.Show("You cannot edit another admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -160,7 +165,14 @@ namespace Inv_M_Sys.Views.Admin
                 PhoneTextBox.Text = user.Phone;
                 AddressTextBox.Text = user.Address;
                 UsernameTextBox.Text = user.Username;
-                RoleComboBox.SelectedItem = user.Role;
+                foreach (var item in RoleComboBox.Items)
+                {
+                    if (item is ComboBoxItem comboBoxItem && comboBoxItem.Content.ToString() == user.Role.ToString())
+                    {
+                        RoleComboBox.SelectedItem = comboBoxItem;
+                        break;
+                    }
+                }
 
                 Submitbtn.Visibility = Visibility.Collapsed;
                 Updatebtn.Visibility = Visibility.Visible;
@@ -177,7 +189,7 @@ namespace Inv_M_Sys.Views.Admin
             if (SalesListView.SelectedItem is User user)
             {
                 // ✅ Prevent Admins from Deleting Other Admins
-                if (SessionManager.CurrentUserRole == "Admin" && user.Role == "Admin")
+                if (SessionManager.CurrentUserRole == "Admin" && user.Role == UserRole.Admin)
                 {
                     MessageBox.Show("You cannot delete another admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -233,7 +245,7 @@ namespace Inv_M_Sys.Views.Admin
                     u.FirstName.ToLower().Contains(query) ||
                     u.LastName.ToLower().Contains(query) ||
                     u.Email.ToLower().Contains(query) ||
-                    u.Role.ToLower().Contains(query)));
+                    u.Role.ToString().ToLower().Contains(query)));
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e) => LoadUsers();
@@ -242,10 +254,10 @@ namespace Inv_M_Sys.Views.Admin
         {
             try
             {
-                string selectedRole = (RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                UserRole selectedRoleEnum = Enum.Parse<UserRole>((RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
 
                 // ✅ Prevent Admin from adding another Admin
-                if (SessionManager.CurrentUserRole == "Admin" && selectedRole == "Admin")
+                if (SessionManager.CurrentUserRole == "Admin" && selectedRoleEnum == UserRole.Admin)
                 {
                     MessageBox.Show("You do not have permission to add an Admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return; // Stop execution
@@ -272,7 +284,7 @@ namespace Inv_M_Sys.Views.Admin
                         cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
                         cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
                         cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Role", selectedRole);
+                        cmd.Parameters.AddWithValue("@Role", selectedRoleEnum.ToString());
                         cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
                         cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
 
@@ -368,11 +380,11 @@ namespace Inv_M_Sys.Views.Admin
                                 Username = reader.GetString(5),
                                 Password = reader.GetString(6),
                                 Address = reader.GetString(7),
-                                Role = reader.GetString(8)
+                                Role = Enum.TryParse<UserRole>(reader.GetString(8), out var role) ? role : UserRole.SellingStaff
                             };
 
                             // ✅ Restrict Admins from seeing other Admins
-                            if (SessionManager.CurrentUserRole == "Admin" && user.Role == "Admin")
+                            if (SessionManager.CurrentUserRole == "Admin" && user.Role == UserRole.Admin)
                             {
                                 continue; // Skip adding other admins
                             }

@@ -653,7 +653,7 @@
                                         FontSize="14"
                                         Foreground="Gray"
                                         IsHitTestVisible="False"
-                                        Text="Password"
+                                        Text="Confirm Password"
                                         Visibility="Visible" />
 
                                     <!--  Password TextBox (Instead of PasswordBox)  -->

@@ -23,7 +23,7 @@ namespace Inv_M_Sys.Models
         public string Address { get; set; }
 
         [Required]
-        public string Role { get; set; }
+        public UserRole Role { get; set; }
 
         [Required]
         public string Username { get; set; }
