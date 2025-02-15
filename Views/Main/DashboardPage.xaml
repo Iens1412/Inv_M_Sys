@@ -47,7 +47,8 @@
                 Width="50"
                 Height="30"
                 Background="#57AEFF"
-                BorderBrush="Transparent">
+                BorderBrush="Transparent"
+                Click="Note_Click">
                 <Canvas Width="20" Height="20">
                     <Path Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" Fill="Yellow" />
                 </Canvas>
@@ -60,6 +61,7 @@
                 Height="30"
                 Background="#57AEFF"
                 BorderBrush="Transparent"
+                Click="LogOut_CLick"
                 Content="Log Out"
                 FontFamily="Times New Roman"
                 FontSize="20"
@@ -85,7 +87,7 @@
                     <!--  Grid for the nine buttons  -->
                     <Grid Grid.Row="0" MinHeight="410">
                         <!--  Grid for selling buttons  -->
-                        <Grid x:Name="SellingButtons">
+                        <Grid x:Name="SellingButtons" Visibility="Visible">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -99,7 +101,7 @@
                             </Grid.RowDefinitions>
 
                             <!--  Button Oreders  -->
-                            <Grid Grid.Row="0" Grid.Column="1">
+                            <Grid Grid.Row="1" Grid.Column="2">
 
                                 <Button
                                     Width="150"
@@ -220,7 +222,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Customers_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -352,7 +355,7 @@
                         </Grid>
 
                         <!--  Shared Buttons  -->
-                        <Grid x:Name="SharedButtons">
+                        <Grid x:Name="SharedButtons" Visibility="Visible">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -375,7 +378,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Restock_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -531,7 +535,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Reports_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -709,7 +714,7 @@
                             </Grid>
 
                             <!--  Button Schedule  -->
-                            <Grid Grid.Row="1" Grid.Column="2">
+                            <Grid Grid.Row="0" Grid.Column="1">
 
                                 <Button
                                     Width="150"
@@ -718,7 +723,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Schedule_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -890,7 +896,7 @@
                         </Grid>
 
                         <!--  grid for storage buttons  -->
-                        <Grid x:Name="StorageButtons">
+                        <Grid x:Name="StorageButtons" Visibility="Visible">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -913,7 +919,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Products_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1045,7 +1052,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Category_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1118,7 +1126,7 @@
                         </Grid>
 
                         <!--  Admin and owner only buttons  -->
-                        <Grid x:Name="MangeButtons">
+                        <Grid x:Name="MangeButtons" Visibility="Visible">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -1140,7 +1148,8 @@
                                     VerticalAlignment="Center"
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Click="Logs_Click">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1483,7 +1492,10 @@
 
 
                     <!--  grid for the owner only button  -->
-                    <Grid Grid.Row="1">
+                    <Grid
+                        x:Name="OwnerButton"
+                        Grid.Row="1"
+                        Visibility="Visible">
                         <!--  owner info and database info button  -->
                         <Button
                             Width="150"
@@ -1492,7 +1504,8 @@
                             VerticalAlignment="Center"
                             Background="#E8E8E8"
                             BorderBrush="#E8E8E8"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            Click="Owner_Click">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border

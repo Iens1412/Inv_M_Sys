@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inv_M_Sys.Views.Forms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,12 @@ namespace Inv_M_Sys.Views.Admin
     /// </summary>
     public partial class LogsPage : Page
     {
-        public LogsPage()
+        private readonly HomeWindow _homeWindow;
+
+        public LogsPage(HomeWindow homeWindow)
         {
             InitializeComponent();
+            _homeWindow = homeWindow;
         }
     }
 }

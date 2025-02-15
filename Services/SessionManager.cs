@@ -242,5 +242,10 @@ namespace Inv_M_Sys.Services
                 MessageBox.Show($"Error expiring session in DB: {ex.Message}", "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public static void SetUserRole(string role)
+        {
+            CurrentUserRole = role;
+        }
     }
 }
