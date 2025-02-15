@@ -27,7 +27,7 @@ namespace Inv_M_Sys.Models
             // Define the relationship between Product and Category
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)  // A Product has one Category
-                .WithMany(c => c.Products)  // A Category has many Products
+                .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryID)  // Foreign key in Product
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
         }

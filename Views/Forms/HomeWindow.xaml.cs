@@ -39,9 +39,16 @@ namespace Inv_M_Sys.Views.Forms
 
         private void HomeWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // Allow Backspace inside TextBox, PasswordBox, and ComboBox
+            if (Keyboard.FocusedElement is TextBox || Keyboard.FocusedElement is PasswordBox || Keyboard.FocusedElement is ComboBox)
+            {
+                return; // Do nothing, allow backspace to work normally
+            }
+
+            // Prevent page navigation when pressing Backspace elsewhere
             if (e.Key == Key.Back)
             {
-                e.Handled = true; // Prevents Backspace from navigating back
+                e.Handled = true;
             }
         }
 

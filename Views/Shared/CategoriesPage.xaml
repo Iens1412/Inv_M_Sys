@@ -137,7 +137,8 @@
             </Style.Triggers>
         </Style>
 
-        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+        <other:EmptyTextToVisibilityConverter x:Key="CategoryTextToVisibilityConverter" />
+        <other:EmptyTextToVisibilityConverter x:Key="SearchTextToVisibilityConverter" />
 
     </Page.Resources>
 
@@ -171,6 +172,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -182,6 +184,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -194,7 +197,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="_"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -214,7 +218,8 @@
                     Width="50"
                     Height="30"
                     Background="#57AEFF"
-                    BorderBrush="Transparent">
+                    BorderBrush="Transparent"
+                    Click="Note_Click">
                     <Canvas Width="20" Height="20">
                         <Path
                             Canvas.Top="-2"
@@ -232,6 +237,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -248,38 +254,33 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
                 <Button
+                    x:Name="NewBtn"
                     Width="180"
                     Height="32"
+                    Click="New_Click"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
                 <Button
+                    x:Name="UpdateBtn"
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Update_Click"
                     Content="Update"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
                 <Button
+                    x:Name="DeleteBtn"
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Delete_Click"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
                 <!--  Add spacer  -->
-                <Border Height="180" Padding="4">
-                    <TextBlock
-                        Width="180"
-                        Margin="4"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        FontFamily="Times New Roman"
-                        FontSize="14"
-                        Text="Please fill the Category name and click new to create a new Category.                                Or Double Click the Category from the List, then change the text in the text field above.                                 Then click Update to update the Category Name."
-                        TextAlignment="Justify"
-                        TextWrapping="Wrap" />
-                </Border>
+                <Border Height="180" Padding="4" />
             </StackPanel>
         </Grid>
 
@@ -306,14 +307,14 @@
                     <Grid>
                         <!--  Placeholder Text  -->
                         <TextBlock
-                            x:Name="PlaceholderText"
+                            x:Name="SearchPlaceholderText"
                             Margin="10,0,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Foreground="Gray"
                             IsHitTestVisible="False"
                             Text="Enter text here..."
-                            Visibility="{Binding Text, ElementName=RoundedTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                            Visibility="{Binding Text, ElementName=RoundedTextBox, Converter={StaticResource SearchTextToVisibilityConverter}}" />
                         <!--  TextBox  -->
                         <TextBox
                             x:Name="RoundedTextBox"
@@ -322,7 +323,8 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            TextChanged="RoundedTextBox_TextChanged" />
                     </Grid>
                 </Border>
             </Grid>
@@ -333,6 +335,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
+                    Click="Search_Click"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -341,6 +344,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
+                    Click="Refresh_Click"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -368,16 +372,17 @@
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
+                        SelectionChanged="CategorysListView_SelectionChanged"
                         Visibility="Visible">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="Auto"
+                                    Width="100"
                                     DisplayMemberBinding="{Binding CatID}"
                                     Header="ID" />
                                 <GridViewColumn
-                                    Width="Auto"
-                                    DisplayMemberBinding="{Binding Category}"
+                                    Width="400"
+                                    DisplayMemberBinding="{Binding CategoryName}"
                                     Header="Name" />
                             </GridView>
                         </ListView.View>
@@ -399,6 +404,7 @@
 
                 <Grid>
                     <TextBlock
+                        x:Name="CategoryPlaceholderText"
                         Margin="5,0,0,0"
                         VerticalAlignment="Center"
                         FontSize="14"
@@ -406,14 +412,15 @@
                         IsHitTestVisible="False"
                         Text="Category Name"
                         TextAlignment="Center"
-                        Visibility="{Binding Text, ElementName=FirstNameTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                        Visibility="{Binding Text, ElementName=CategoryTextBox, Converter={StaticResource CategoryTextToVisibilityConverter}}" />
                     <TextBox
-                        x:Name="FirstNameTextBox"
+                        x:Name="CategoryTextBox"
                         Padding="5,0"
                         Background="Transparent"
                         BorderThickness="0"
                         FontSize="14"
-                        Foreground="Black" />
+                        Foreground="Black"
+                        TextChanged="CategoryTextBox_TextChanged" />
                 </Grid>
             </Border>
         </StackPanel>
