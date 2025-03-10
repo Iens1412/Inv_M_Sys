@@ -6,6 +6,8 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.IO;
+using Inv_M_Sys.Services;
+
 
 public static class DatabaseHelper
 {
@@ -74,4 +76,71 @@ public static class DatabaseHelper
             return false; // If connection fails, assume DB is not initialized
         }
     }
+
+    // Update database credentials (Username and Password)
+    public static void UpdateDatabaseSettings(string newUsername, string newPassword)
+    {
+        try
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"UPDATE DatabaseConfig SET Username = @newUsername, Password = @newPassword";
+
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@newUsername", newUsername);
+                    cmd.Parameters.AddWithValue("@newPassword", newPassword);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error updating database settings: " + ex.Message);
+        }
+    }
+
+    // Update owner credentials (Username and Password)
+    public static void UpdateOwnerCredentials(string newUsername, string newPassword)
+    {
+        try
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
+                string hashedPassword = HashPassword(newPassword);
+
+                string query = @"UPDATE Owner SET Username = @newUsername, Password = @newPassword WHERE Id = @ownerId";
+
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@newUsername", newUsername);
+                    cmd.Parameters.AddWithValue("@newPassword", hashedPassword);
+                    cmd.Parameters.AddWithValue("@ownerId", SessionManager.CurrentOwnerId); // Assuming owner is logged in
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error updating owner credentials: " + ex.Message);
+        }
+    }
+
+    // This method will hash the password using SHA256
+    public static string HashPassword(string password)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                builder.Append(b.ToString("x2"));
+            }
+            return builder.ToString();
+        }
+    }
+
 }
