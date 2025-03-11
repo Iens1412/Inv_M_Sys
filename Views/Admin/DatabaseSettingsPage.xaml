@@ -173,46 +173,14 @@
                     Margin="10,20,10,10"
                     FontSize="20"
                     FontWeight="Bold"
-                    Text="⚙ Database Settings" />
+                    Text="⚙ Database Testing" />
                 <StackPanel Margin="10">
-
-                    <TextBlock
-                        Margin="10,10,0,5"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Text="Database Username" />
-                    <TextBox x:Name="DbUsernameTextBox" Style="{StaticResource CustomTextBoxStyle}" />
-
-                    <TextBlock
-                        Margin="10,10,0,5"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Text="Database Password" />
-                    <TextBox x:Name="DbPasswordBox" Style="{StaticResource CustomPassBoxStyle}" />
 
                     <StackPanel
                         Margin="20"
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
                         <!--  New Buttons for Database Settings  -->
-                        <Button
-                            Width="Auto"
-                            Margin="10"
-                            Click="SaveDatabaseSettings_Click"
-                            HorizontalAlignment="Center"
-                            Background="Green"
-                            Content="Save Settings"
-                            Foreground="White"
-                            Style="{StaticResource RoundedButtonStyle}" />
-
-                        <Button
-                            Width="Auto"
-                            Margin="10"
-                            HorizontalAlignment="Center"
-                            Background="DeepSkyBlue"
-                            Content="Clear Fields"
-                            Foreground="White"
-                            Style="{StaticResource RoundedButtonStyle}" />
 
                         <Button
                             Width="Auto"

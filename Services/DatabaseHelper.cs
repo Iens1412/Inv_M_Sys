@@ -77,30 +77,6 @@ public static class DatabaseHelper
         }
     }
 
-    // Update database credentials (Username and Password)
-    public static void UpdateDatabaseSettings(string newUsername, string newPassword)
-    {
-        try
-        {
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                string query = @"UPDATE DatabaseConfig SET Username = @newUsername, Password = @newPassword";
-
-                using (var cmd = new NpgsqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@newUsername", newUsername);
-                    cmd.Parameters.AddWithValue("@newPassword", newPassword);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Error updating database settings: " + ex.Message);
-        }
-    }
-
     // Update owner credentials (Username and Password)
     public static void UpdateOwnerCredentials(string newUsername, string newPassword)
     {

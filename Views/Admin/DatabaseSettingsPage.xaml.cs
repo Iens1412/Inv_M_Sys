@@ -2,23 +2,9 @@
 using Inv_M_Sys.Views.Forms;
 using Inv_M_Sys.Views.Main;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System;
-using System.Windows;
-using Npgsql;
-using Inv_M_Sys.Services;
+using Serilog;
 
 namespace Inv_M_Sys.Views.Admin
 {
@@ -35,57 +21,51 @@ namespace Inv_M_Sys.Views.Admin
             _homeWindow = homeWindow;
         }
 
+        #region Navigation Buttons
 
+        // Handle Logout
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
+        // Handle Close Button (Shut down application)
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             SessionManager.ExpireSessionInDB();
             Application.Current.Shutdown();
         }
 
+        // Handle Minimize Button
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
+        // Navigate to Notifications Page
         private void Note_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new Views.Shared.NotificationsPage(_homeWindow));
 
+        // Navigate to Dashboard Page
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
 
-        // Handle Save Settings Button for Database
-        private void SaveDatabaseSettings_Click(object sender, RoutedEventArgs e)
-        {
-            string newDbUsername = DbUsernameTextBox.Text;
-            string newDbPassword = DbPasswordBox.Text;
+        #endregion
 
-            if (string.IsNullOrEmpty(newDbUsername) || string.IsNullOrEmpty(newDbPassword))
-            {
-                MessageBox.Show("Please fill in both username and password.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+        #region Database Settings and Owner Settings
 
-            try
-            {
-                // Update the database settings in the config or directly in DB if needed
-                DatabaseHelper.UpdateDatabaseSettings(newDbUsername, newDbPassword);
-                MessageBox.Show("Database settings updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error updating database settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        // Handle Test Connection Button for Database
+        // Test Database Connection
         private void TestDatabaseConnection_Click(object sender, RoutedEventArgs e)
         {
             DatabaseHelper.TestConnection();
         }
 
-        // Handle Update Owner Credentials Button
+
+        /// <summary>
+        /// Updates the owner credentials (username and password).
+        /// This operation requires validation to ensure that both fields are provided.
+        /// After updating the credentials, an audit record is created.
+        /// </summary>
+        /// <param name="newUsername">The new username for the owner.</param>
+        /// <param name="newPassword">The new password for the owner.</param>
         private void UpdateOwnerCredentials_Click(object sender, RoutedEventArgs e)
         {
             string newOwnerUsername = OwnerUsernameTextBox.Text;
             string newOwnerPassword = OwnerPasswordBox.Text;
 
+            // Validate that both username and password are provided
             if (string.IsNullOrEmpty(newOwnerUsername) || string.IsNullOrEmpty(newOwnerPassword))
             {
                 MessageBox.Show("Please fill in both username and password.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -94,6 +74,7 @@ namespace Inv_M_Sys.Views.Admin
 
             try
             {
+                // Call the helper method to update the owner's credentials in the database
                 DatabaseHelper.UpdateOwnerCredentials(newOwnerUsername, newOwnerPassword);
                 MessageBox.Show("Owner credentials updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -102,6 +83,14 @@ namespace Inv_M_Sys.Views.Admin
                 MessageBox.Show($"Error updating owner credentials: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
- 
+
+        private void ClearBtn_Click (object sender, RoutedEventArgs e)
+        {
+            OwnerUsernameTextBox.Text = "";
+            OwnerPasswordBox.Text = "";
+        }
+
+
+        #endregion
     }
 }
