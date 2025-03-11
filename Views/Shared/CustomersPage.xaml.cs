@@ -1,26 +1,16 @@
 ﻿using Inv_M_Sys.Services;
-using Inv_M_Sys.Views.Forms;
-using Inv_M_Sys.Views.Main;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Inv_M_Sys.Models;
 using Npgsql;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Inv_M_Sys.Views.Forms;
+using System.Net.NetworkInformation;
+using Inv_M_Sys.Views.Main;
+using Serilog;
+
 
 namespace Inv_M_Sys.Views.Shared
 {
@@ -43,6 +33,7 @@ namespace Inv_M_Sys.Views.Shared
             ApplyRoleRestrictions();
         }
 
+        #region User Checked
         private void CheckUser()
         {
             string currentUserRole = SessionManager.CurrentUserRole;
@@ -58,6 +49,7 @@ namespace Inv_M_Sys.Views.Shared
 
                 case var role when role == UserRole.StockStaff.ToString():
                     _isStorageStaff = true;
+                    ApplyRoleRestrictions();
                     MessageBox.Show("Storage Staff Access - Limited Permissions");
                     break;
 
@@ -85,6 +77,7 @@ namespace Inv_M_Sys.Views.Shared
                 MessageBox.Show("You do not have permission to modify customers.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+        #endregion
 
         private async Task LoadCustomersAsync()
         {
@@ -119,11 +112,13 @@ namespace Inv_M_Sys.Views.Shared
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error loading customers.");
+                Log.Error(ex, "Error loading customers.");  // Serilog error logging
                 MessageBox.Show($"Error loading customers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+
+        #region Top Menu Actions
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -138,6 +133,10 @@ namespace Inv_M_Sys.Views.Shared
 
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
 
+        #endregion
+
+
+        #region Search and Refresh
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string query = SearchTextBox.Text.ToLower();
@@ -153,6 +152,10 @@ namespace Inv_M_Sys.Views.Shared
 
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadCustomersAsync();
 
+        #endregion
+
+
+        #region Buttons actions
         private void New_Click(object sender, RoutedEventArgs e)
         {
             if (_isStorageStaff)
@@ -192,8 +195,8 @@ namespace Inv_M_Sys.Views.Shared
 
             if (CustomersListView.SelectedItem is Customer customer)
             {
-                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete '{customer.FirstName} {customer.LastName}'?",
-                                                          "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show($"Are you sure you want to delete '{customer.FirstName} {customer.LastName}'?",
+                                              "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result != MessageBoxResult.Yes) return;
 
                 try
@@ -213,7 +216,7 @@ namespace Inv_M_Sys.Views.Shared
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex, "Error loading customers.");
+                    Log.Error(ex, "Error deleting customer.");
                     MessageBox.Show($"Error deleting customer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -233,7 +236,7 @@ namespace Inv_M_Sys.Views.Shared
                 {
                     await conn.OpenAsync();
                     using (var cmd = new NpgsqlCommand(@"INSERT INTO Customers (CompanyName, FirstName, LastName, Email, PhoneNumber, Address, Notes) 
-                                                         VALUES (@CompanyName, @FirstName, @LastName, @Email, @PhoneNumber, @Address, @Notes)", conn))
+                                                 VALUES (@CompanyName, @FirstName, @LastName, @Email, @PhoneNumber, @Address, @Notes)", conn))
                     {
                         cmd.Parameters.AddWithValue("@CompanyName", CompanyTextBox.Text);
                         cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
@@ -254,7 +257,7 @@ namespace Inv_M_Sys.Views.Shared
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error loading customers.");
+                Log.Error(ex, "Error adding customer.");
                 MessageBox.Show($"Error adding customer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -275,9 +278,9 @@ namespace Inv_M_Sys.Views.Shared
                 {
                     await conn.OpenAsync();
                     using (var cmd = new NpgsqlCommand(@"UPDATE Customers 
-                                                         SET CompanyName = @CompanyName, FirstName = @FirstName, LastName = @LastName, 
-                                                             Email = @Email, PhoneNumber = @PhoneNumber, Address = @Address, Notes = @Notes 
-                                                         WHERE Id = @Id", conn))
+                                                 SET CompanyName = @CompanyName, FirstName = @FirstName, LastName = @LastName, 
+                                                     Email = @Email, PhoneNumber = @PhoneNumber, Address = @Address, Notes = @Notes 
+                                                 WHERE Id = @Id", conn))
                     {
                         cmd.Parameters.AddWithValue("@CompanyName", CompanyTextBox.Text);
                         cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
@@ -299,7 +302,7 @@ namespace Inv_M_Sys.Views.Shared
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error loading customers.");
+                Log.Error(ex, "Error updating customer.");
                 MessageBox.Show($"Error updating customer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -310,6 +313,10 @@ namespace Inv_M_Sys.Views.Shared
             ClearForm();
         }
 
+        #endregion
+
+
+        #region Form Control
         private void ClearForm()
         {
             CompanyTextBox.Text = "";
@@ -323,7 +330,10 @@ namespace Inv_M_Sys.Views.Shared
 
         private bool ValidateForm()
         {
-            if (string.IsNullOrWhiteSpace(CompanyTextBox.Text) || string.IsNullOrWhiteSpace(FirstNameTextBox.Text) || string.IsNullOrWhiteSpace(LastNameTextBox.Text) || string.IsNullOrWhiteSpace(EmailTextBox.Text))
+            if (string.IsNullOrWhiteSpace(CompanyTextBox.Text) ||
+                string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(LastNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(EmailTextBox.Text))
             {
                 MessageBox.Show("Fill Company Name, First Name, Last Name, Email.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
@@ -356,21 +366,32 @@ namespace Inv_M_Sys.Views.Shared
                 UpdateBtn.Visibility = Visibility.Visible;
             }
         }
+        #endregion
 
         private void LogError(Exception ex, string message)
         {
-            string logFilePath = "error_log.txt"; // You can change this path
-            string logEntry = $"{DateTime.Now}: {message}\n{ex}\n\n";
-
             try
             {
-                System.IO.File.AppendAllText(logFilePath, logEntry);
+                // Using the logger setup in LoggerSetup.cs
+                Log.Error(ex, message); // Logs error using Serilog (ensure that LoggerSetup.SetupLogger() has been called during startup)
             }
             catch (Exception logEx)
             {
-                MessageBox.Show($"Failed to write to log file: {logEx.Message}", "Logging Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                // If logging fails, fallback to default logging method
+                string logFilePath = "error_log.txt";
+                string logEntry = $"{DateTime.Now}: {message}\n{ex}\n\n";
+
+                try
+                {
+                    System.IO.File.AppendAllText(logFilePath, logEntry);
+                }
+                catch (Exception fileEx)
+                {
+                    MessageBox.Show($"Failed to write to log file: {fileEx.Message}", "Logging Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
 
+            // Show message box for user feedback
             MessageBox.Show($"{message}\n\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 

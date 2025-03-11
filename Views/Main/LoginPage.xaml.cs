@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
@@ -18,6 +19,8 @@ namespace Inv_M_Sys.Views.Main
         {
             InitializeComponent();
         }
+
+        #region Placeholder Logic
 
         // Username Placeholder Logic
         private void UsernameTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -55,7 +58,10 @@ namespace Inv_M_Sys.Views.Main
             PasswordPlaceholder.Visibility = PasswordBox.Password.Length > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        // Show/Hide Password Logic
+        #endregion
+
+        #region Show/Hide Password Logic
+
         private void ShowPasswordCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             PasswordTextBox.Text = PasswordBox.Password;
@@ -70,7 +76,10 @@ namespace Inv_M_Sys.Views.Main
             PasswordTextBox.Visibility = Visibility.Collapsed;
         }
 
-        // Clear Input Fields
+        #endregion
+
+        #region Clear Input Fields
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             UsernameTextBox.Text = "";
@@ -84,13 +93,19 @@ namespace Inv_M_Sys.Views.Main
             }
         }
 
-        // Exit Application
+        #endregion
+
+        #region Exit Application
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
-        // Login Button Click
+        #endregion
+
+        #region Login Button Click
+
         private void Login_Click(object sender, RoutedEventArgs e)
         {
             string username = UsernameTextBox.Text.Trim();
@@ -98,6 +113,7 @@ namespace Inv_M_Sys.Views.Main
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
+                Log.Warning("Login attempt failed: Username or password is empty.");
                 MessageBox.Show("Please enter both username and password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -105,24 +121,30 @@ namespace Inv_M_Sys.Views.Main
             // Check Owner first
             if (AuthenticateOwner(username, password))
             {
+                Log.Information("Owner login successful for user: {Username}", username);
                 Services.SessionManager.CreateOwnerSession(username);
                 OpenHomeWindow();
             }
             else if (AuthenticateUser(username, password))
             {
+                Log.Information("User login successful for user: {Username}", username);
                 Services.SessionManager.CreateUserSession(username);
                 OpenHomeWindow();
             }
             else
             {
+                Log.Warning("Invalid login attempt for username: {Username}", username);
                 MessageBox.Show("Invalid credentials. Please try again.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        #endregion
+
+        #region Open Home Window
+
         private void OpenHomeWindow()
         {
             Window parentWindow = Window.GetWindow(this);
-
             HomeWindow homeWindow = new HomeWindow();
 
             // Check if logged in as Owner
@@ -144,6 +166,10 @@ namespace Inv_M_Sys.Views.Main
             homeWindow.Show();
             parentWindow?.Close();
         }
+
+        #endregion
+
+        #region Authentication Methods
 
         // Authentication for Owner
         private bool AuthenticateOwner(string username, string password)
@@ -181,11 +207,16 @@ namespace Inv_M_Sys.Views.Main
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Database error during authentication.");
                 MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return false;
         }
+
+        #endregion
+
+        #region Password Verification
 
         // Hash Password for Verification
         private bool VerifyPassword(string inputPassword, string storedPassword)
@@ -207,5 +238,7 @@ namespace Inv_M_Sys.Views.Main
                 return builder.ToString();
             }
         }
+
+        #endregion
     }
 }

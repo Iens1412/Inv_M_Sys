@@ -397,7 +397,7 @@
             BorderBrush="Black"
             BorderThickness="2"
             CornerRadius="40"
-            Visibility="Collapsed">
+            Visibility="Visible">
 
             <!--  Grid to Hold Everything  -->
             <Grid>
@@ -631,7 +631,7 @@
                                         Visibility="{Binding Text, ElementName=NotesTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
                                         x:Name="NotesTextBox"
-                                        Height="60"
+                                        Height="Auto"
                                         Padding="5,0"
                                         AcceptsReturn="True"
                                         Background="Transparent"

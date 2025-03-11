@@ -61,7 +61,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Click="LogOut_CLick"
+                    Click="LogOut_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
