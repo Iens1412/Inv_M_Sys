@@ -185,9 +185,9 @@
                         <Button
                             Width="Auto"
                             Margin="10"
-                            Click="TestDatabaseConnection_Click"
                             HorizontalAlignment="Center"
                             Background="Red"
+                            Click="TestDatabaseConnection_Click"
                             Content="Test Connection"
                             Foreground="White"
                             Style="{StaticResource RoundedButtonStyle}" />
@@ -223,9 +223,9 @@
                         <Button
                             Width="Auto"
                             Margin="10"
-                            Click="UpdateOwnerCredentials_Click"
                             HorizontalAlignment="Center"
                             Background="Green"
+                            Click="UpdateOwnerCredentials_Click"
                             Content="Update Owner Password"
                             Foreground="White"
                             Style="{StaticResource RoundedButtonStyle}" />
@@ -235,6 +235,7 @@
                             Margin="10"
                             HorizontalAlignment="Center"
                             Background="DeepSkyBlue"
+                            Click="ClearBtn_Click"
                             Content="Clear Fields"
                             Foreground="White"
                             Style="{StaticResource RoundedButtonStyle}" />
@@ -244,6 +245,7 @@
                             Margin="10"
                             HorizontalAlignment="Center"
                             Background="Red"
+                            Click="Reset_Owner_Credentials"
                             Content="Reset Owner Credentials"
                             Foreground="White"
                             Style="{StaticResource RoundedButtonStyle}" />
