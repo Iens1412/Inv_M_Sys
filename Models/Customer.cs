@@ -13,7 +13,6 @@ namespace Inv_M_Sys.Models
         public string Address { get; set; }
         public string Notes { get; set; }
 
-        // Constructor (Optional)
         public Customer() { }
 
         public Customer(int id, string companyName, string firstName, string lastName, string email, string phoneNumber, string address, string notes)
@@ -26,6 +25,12 @@ namespace Inv_M_Sys.Models
             PhoneNumber = phoneNumber;
             Address = address;
             Notes = notes;
+        }
+
+
+        public string FullName
+        {
+            get { return $"{FirstName} {LastName}"; }
         }
 
         // Override ToString() for debugging

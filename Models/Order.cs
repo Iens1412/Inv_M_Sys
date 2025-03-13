@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Inv_M_Sys.Models
+﻿namespace Inv_M_Sys.Models
 {
-    public class Order
+    public class OrderItem
     {
-        public int OrderID { get; set; }
-        public DateTime OrderDate { get; set; }
-        public string CustomerName { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public Product Product { get; set; }
+        public int Quantity { get; set; }
+        public decimal TotalPrice { get; set; }
+
+        public OrderItem(Product product, int quantity)
+        {
+            Product = product;
+            Quantity = quantity;
+            TotalPrice = product.Price * quantity;
+        }
     }
 }

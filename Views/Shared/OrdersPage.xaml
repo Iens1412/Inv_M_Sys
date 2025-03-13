@@ -27,90 +27,23 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Background" Value="#5F84FF" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Padding" Value="10,5" />
-        </Style>
 
-        <!--  Styled ComboBox (Category Dropdown)  -->
-        <Style x:Key="CustomComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="BorderBrush" Value="Violet" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="Padding" Value="5" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Background" Value="White" />
-        </Style>
-        <!--  Category box style  -->
-        <Style x:Key="CatComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Border
-                            Padding="5"
-                            Background="White"
-                            BorderBrush="Violet"
-                            BorderThickness="2"
-                            CornerRadius="10">
-                            <Grid>
-                                <ToggleButton
-                                    x:Name="ToggleButton"
-                                    HorizontalAlignment="Stretch"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    ClickMode="Press">
-                                    <ContentPresenter
-                                        Margin="10,0,10,0"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding SelectionBoxItem}" />
-                                    <ToggleButton.Template>
-                                        <ControlTemplate TargetType="ToggleButton">
-                                            <Grid>
-                                                <Border
-                                                    Background="Transparent"
-                                                    BorderBrush="Transparent"
-                                                    BorderThickness="0"
-                                                    CornerRadius="10" />
-                                                <ContentPresenter />
-                                                <Path
-                                                    x:Name="Arrow"
-                                                    Width="10"
-                                                    Height="10"
-                                                    Margin="10"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Center"
-                                                    Data="M 0 0 L 4 4 L 8 0"
-                                                    Fill="Violet" />
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </ToggleButton.Template>
-                                </ToggleButton>
-
-                                <Popup
-                                    x:Name="Popup"
-                                    AllowsTransparency="True"
-                                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Placement="Bottom"
-                                    StaysOpen="False">
-                                    <Border
-                                        Padding="5"
-                                        Background="White"
-                                        BorderBrush="Violet"
-                                        BorderThickness="2"
-                                        CornerRadius="10">
-                                        <ScrollViewer MaxHeight="150">
-                                            <ItemsPresenter />
-                                        </ScrollViewer>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <!--  Hover effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#4A72CC" />
+                    <!--  Darker background on hover  -->
+                    <Setter Property="BorderBrush" Value="#3F5FB5" />
+                    <!--  Darker border on hover  -->
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!--  Placeholder Text Visibility Converter  -->
@@ -157,6 +90,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -168,6 +102,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -180,7 +115,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="--"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -200,7 +136,8 @@
                     Width="50"
                     Height="30"
                     Background="#57AEFF"
-                    BorderBrush="Transparent">
+                    BorderBrush="Transparent"
+                    Click="Note_Click">
                     <Canvas Width="20" Height="20">
                         <Path
                             Canvas.Top="-2"
@@ -218,6 +155,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -245,7 +183,8 @@
                         x:Name="CustomersListView"
                         Height="auto"
                         Background="Transparent"
-                        BorderThickness="0">
+                        BorderThickness="0"
+                        SelectionChanged="CustomersListView_SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
@@ -253,9 +192,13 @@
                                     DisplayMemberBinding="{Binding CustomerID}"
                                     Header="ID" />
                                 <GridViewColumn
-                                    Width="auto"
+                                    Width="150"
                                     DisplayMemberBinding="{Binding FullName}"
                                     Header="Name" />
+                                <GridViewColumn
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding CompanyName}"
+                                    Header="Company" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -289,22 +232,13 @@
                         <!--  Product List (Expands to fill space)  -->
                     </Grid.RowDefinitions>
 
-                    <TextBlock
-                        Grid.Row="0"
-                        Margin="0,0,0,5"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Text="Select Product" />
-
                     <!--  Product Category Dropdown  -->
                     <ComboBox
                         x:Name="CategoryComboBox"
                         Grid.Row="0"
                         Height="35"
                         Margin="0,0,0,15"
-                        Style="{StaticResource CatComboBoxStyle}">
-                        <ComboBoxItem Content="All Categories" IsSelected="True" />
-                    </ComboBox>
+                        SelectionChanged="CategoryComboBox_SelectionChanged" />
 
                     <!--  Product List  -->
                     <ListView
@@ -313,16 +247,17 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Background="Transparent"
-                        BorderThickness="0">
+                        BorderThickness="0"
+                        SelectionChanged="ProductsListView_SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
                                     Width="auto"
-                                    DisplayMemberBinding="{Binding ProductID}"
+                                    DisplayMemberBinding="{Binding Id}"
                                     Header="ID" />
                                 <GridViewColumn
-                                    Width="auto"
-                                    DisplayMemberBinding="{Binding ProductName}"
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding Name}"
                                     Header="Name" />
                                 <GridViewColumn
                                     Width="auto"
@@ -366,7 +301,8 @@
                             Background="Transparent"
                             BorderThickness="0"
                             FontSize="14"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Border>
 
@@ -375,6 +311,8 @@
                     Width="150"
                     Height="35"
                     Margin="10"
+                    Command="{Binding AddToBasketCommand}"
+                    CommandParameter="{Binding SelectedProduct}"
                     Content="Add to Basket"
                     Style="{StaticResource RoundedButtonStyle}" />
             </StackPanel>
@@ -410,6 +348,7 @@
                         Height="40"
                         Margin="10"
                         Background="Green"
+                        Click="PlaceOrderButton_Click"
                         Content="Place Order"
                         Foreground="White"
                         Style="{StaticResource RoundedButtonStyle}" />
@@ -417,6 +356,7 @@
                         Width="150"
                         Height="40"
                         Background="Red"
+                        Click="CancelOrderButton_Click"
                         Content="Cancel"
                         Foreground="White"
                         Style="{StaticResource RoundedButtonStyle}" />
@@ -437,12 +377,13 @@
                     Height="auto"
                     HorizontalAlignment="Stretch"
                     Background="Transparent"
-                    BorderThickness="0">
+                    BorderThickness="0"
+                    ItemsSource="{Binding OrderBasket}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn
-                                Width="auto"
-                                DisplayMemberBinding="{Binding ProductName}"
+                                Width="150"
+                                DisplayMemberBinding="{Binding Product.Name}"
                                 Header="Product" />
                             <GridViewColumn
                                 Width="auto"
@@ -450,7 +391,7 @@
                                 Header="Quantity" />
                             <GridViewColumn
                                 Width="auto"
-                                DisplayMemberBinding="{Binding Price}"
+                                DisplayMemberBinding="{Binding Product.Price}"
                                 Header="Price" />
                             <GridViewColumn
                                 Width="auto"
@@ -460,11 +401,14 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
+                                            <!--  Button to remove item from basket  -->
                                             <Button
                                                 Width="30"
                                                 Height="30"
                                                 Background="Red"
                                                 BorderThickness="0"
+                                                Command="{Binding DataContext.RemoveFromBasketCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                CommandParameter="{Binding}"
                                                 Content="❌"
                                                 FontSize="14"
                                                 FontWeight="Bold"
