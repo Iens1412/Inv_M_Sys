@@ -22,6 +22,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System;
 using System.Security.Cryptography;
 using System.IO;
+using Serilog;
 
 namespace Inv_M_Sys.Views.Admin
 {
@@ -355,8 +356,8 @@ namespace Inv_M_Sys.Views.Admin
 
         private void LogError(Exception ex)
         {
-            string logFilePath = "error_log.txt";
-            File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex.Message}\n{ex.StackTrace}\n\n");
+            // Log the error using Serilog setup from the LoggerSetup class
+            Log.Logger.Error(ex, "An error occurred at {Time}", DateTime.Now);
         }
 
         private async Task AddUserAsync()

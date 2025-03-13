@@ -171,6 +171,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -182,6 +183,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -194,7 +196,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="--"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -214,7 +217,8 @@
                     Width="50"
                     Height="30"
                     Background="#57AEFF"
-                    BorderBrush="Transparent">
+                    BorderBrush="Transparent"
+                    Click="Note_Click">
                     <Canvas Width="20" Height="20">
                         <Path
                             Canvas.Top="-2"
@@ -232,6 +236,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -250,6 +255,7 @@
                 <Button
                     Width="180"
                     Height="32"
+                    Click="New_Btn"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -257,6 +263,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Edit_Btn"
                     Content="Edit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -264,6 +271,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="Delete_btn"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -280,6 +288,32 @@
                 <ColumnDefinition Width="19*" />
                 <ColumnDefinition Width="15*" />
             </Grid.ColumnDefinitions>
+
+            <!--  ComboBox for Search  -->
+            <ComboBox
+                x:Name="SearchComboBox"
+                Grid.Column="0"
+                Width="150"
+                MinHeight="30"
+                MaxHeight="35"
+                Margin="-55,0,0,0"
+                Padding="10,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="White"
+                BorderBrush="#D1D1D1"
+                BorderThickness="1"
+                FontFamily="Segoe UI"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Foreground="Black"
+                IsEditable="False"
+                SelectedIndex="0">
+                <!--  IsEditable set to False to prevent typing  -->
+                <ComboBoxItem Content="Name" />
+                <ComboBoxItem Content="Category" />
+                <ComboBoxItem Content="Supplier" />
+            </ComboBox>
 
             <!--  search bar  -->
             <Grid Grid.Column="1">
@@ -322,6 +356,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
+                    Click="Search_btn"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -330,6 +365,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
+                    Click="Refresh_btn"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -351,39 +387,48 @@
                 <StackPanel>
                     <!--  Products ListView  -->
                     <ListView
-                        x:Name="SalesListView"
+                        x:Name="ProductListView"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
+                        SelectionChanged="ProductListView_SelectionChanged"
                         Visibility="Visible">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="40"
-                                    DisplayMemberBinding="{Binding SaleID}"
-                                    Header=" ID" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Id}"
+                                    Header="ID" />
                                 <GridViewColumn
-                                    Width="140"
-                                    DisplayMemberBinding="{Binding Product}"
+                                    Width="200"
+                                    DisplayMemberBinding="{Binding Name}"
                                     Header="Name" />
                                 <GridViewColumn
-                                    Width="50"
-                                    DisplayMemberBinding="{Binding Amount}"
-                                    Header="Qnt" />
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding CategoryName}"
+                                    Header="Category" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
+                                    Width="80"
+                                    DisplayMemberBinding="{Binding Quantity}"
+                                    Header="Quantity" />
+                                <GridViewColumn
+                                    Width="80"
+                                    DisplayMemberBinding="{Binding MinQuantity}"
+                                    Header="MinQnt" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Price}"
                                     Header="Price" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Description" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Supplier}"
+                                    Header="Supplier" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Category" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Description}"
+                                    Header="Description" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -392,6 +437,7 @@
         </Grid>
 
         <Border
+            x:Name="Info_Container"
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
@@ -487,9 +533,7 @@
                                 Height="35"
                                 BorderBrush="Violet"
                                 BorderThickness="1"
-                                FontSize="14"
-                                ItemsSource="{Binding Categories}"
-                                SelectedIndex="0" />
+                                FontSize="14"/>
                         </StackPanel>
 
                         <!--  Quantity  -->
@@ -645,17 +689,21 @@
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
                     <Button
+                        x:Name="Submit_Btn"
                         Width="150"
                         Height="40"
+                        Click="Submit_btn"
                         Content="Submit"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
                         Visibility="Visible" />
 
                     <Button
+                        x:Name="Update_Btn"
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
+                        Click="Update_btn"
                         Content="Update"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
@@ -665,13 +713,13 @@
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
+                        Click="Back_btn"
                         Content="Back"
                         FontFamily="Times New Roman"
                         Style="{StaticResource BackButtonStyle}" />
                 </StackPanel>
             </Grid>
         </Border>
-
 
     </Grid>
 </Page>

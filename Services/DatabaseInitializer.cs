@@ -54,12 +54,13 @@ public static class DatabaseInitializer
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Products (
                 Id SERIAL PRIMARY KEY,
                 ProductName TEXT NOT NULL,
-                Category TEXT NOT NULL,
+                CategoryId INT NOT NULL,  -- Foreign Key
                 Quantity INTEGER NOT NULL,
                 Price NUMERIC NOT NULL,
                 MinQuantity INTEGER NOT NULL,
                 Supplier TEXT NOT NULL,
-                Description TEXT
+                Description TEXT,
+                FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
             );";
             cmd.ExecuteNonQuery();
 
