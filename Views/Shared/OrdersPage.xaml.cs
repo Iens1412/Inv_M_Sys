@@ -163,16 +163,17 @@ namespace Inv_M_Sys.Views.Shared
         #region Order
         private async void PlaceOrderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedCustomer == null)
+            var viewModel = DataContext as OrdersViewModel;
+
+            if (viewModel == null || viewModel.OrderBasket.Count == 0)
             {
-                MessageBox.Show("Please select a customer.");
+                MessageBox.Show("Your basket is empty.");
                 return;
             }
 
-            // Use the OrderBasket from the ViewModel (assuming you have DataContext set to OrdersViewModel)
-            if (OrderBasket.Count == 0)
+            if (SelectedCustomer == null)
             {
-                MessageBox.Show("Your basket is empty.");
+                MessageBox.Show("Please select a customer.");
                 return;
             }
 
@@ -193,19 +194,21 @@ namespace Inv_M_Sys.Views.Shared
                     {
                         try
                         {
-                            // Create Order record
-                            var orderCmd = new NpgsqlCommand("INSERT INTO Orders (CustomerID, DeliveryDate) VALUES (@CustomerID, @DeliveryDate) RETURNING OrderID", conn);
-                            orderCmd.Parameters.AddWithValue("@CustomerID", SelectedCustomer.Id);
+                            // Create Order record (Insert into Orders table)
+                            var orderCmd = new NpgsqlCommand("INSERT INTO Orders (CustomerId, DeliveryDate, TotalPrice) VALUES (@CustomerId, @DeliveryDate, @TotalPrice) RETURNING Id", conn);
+                            orderCmd.Parameters.AddWithValue("@CustomerId", SelectedCustomer.Id);
                             orderCmd.Parameters.AddWithValue("@DeliveryDate", deliveryDate.Value);
+                            orderCmd.Parameters.AddWithValue("@TotalPrice", viewModel.OrderBasket.Sum(item => item.TotalPrice));
                             var orderId = (int)await orderCmd.ExecuteScalarAsync();
 
-                            // Add OrderItems
-                            foreach (var item in OrderBasket) // Loop through the OrderBasket from ViewModel
+                            // Add OrderItems (Insert into OrderItems table)
+                            foreach (var item in viewModel.OrderBasket)
                             {
-                                var orderItemCmd = new NpgsqlCommand("INSERT INTO OrderItems (OrderID, ProductID, Quantity, TotalPrice) VALUES (@OrderID, @ProductID, @Quantity, @TotalPrice)", conn);
-                                orderItemCmd.Parameters.AddWithValue("@OrderID", orderId);
-                                orderItemCmd.Parameters.AddWithValue("@ProductID", item.Product.Id);
+                                var orderItemCmd = new NpgsqlCommand("INSERT INTO OrderItems (OrderId, ProductId, Quantity, Price, TotalPrice) VALUES (@OrderId, @ProductId, @Quantity, @Price, @TotalPrice)", conn);
+                                orderItemCmd.Parameters.AddWithValue("@OrderId", orderId);
+                                orderItemCmd.Parameters.AddWithValue("@ProductId", item.Product.Id);
                                 orderItemCmd.Parameters.AddWithValue("@Quantity", item.Quantity);
+                                orderItemCmd.Parameters.AddWithValue("@Price", item.Product.Price);
                                 orderItemCmd.Parameters.AddWithValue("@TotalPrice", item.TotalPrice);
                                 await orderItemCmd.ExecuteNonQueryAsync();
                             }

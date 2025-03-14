@@ -43,10 +43,20 @@ public static class DatabaseInitializer
             // Orders Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Orders (
                 Id SERIAL PRIMARY KEY,
-                Products TEXT NOT NULL,
-                Quantity INTEGER NOT NULL,
-                Price NUMERIC NOT NULL,
+                CustomerId INTEGER REFERENCES Customers(Id) ON DELETE CASCADE,  -- Foreign key to Customers
+                DeliveryDate DATE NOT NULL,
                 TotalPrice NUMERIC NOT NULL
+            );";
+            cmd.ExecuteNonQuery();
+
+            // Create OrderItems table to store product-level information for each order
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS OrderItems (
+                Id SERIAL PRIMARY KEY,
+                OrderId INTEGER REFERENCES Orders(Id) ON DELETE CASCADE,  -- Foreign key to Orders
+                ProductId INTEGER REFERENCES Products(Id) ON DELETE CASCADE,  -- Foreign key to Products
+                Quantity INTEGER NOT NULL,
+                Price NUMERIC NOT NULL,  -- Price at the time of order
+                TotalPrice NUMERIC NOT NULL -- Price * Quantity
             );";
             cmd.ExecuteNonQuery();
 

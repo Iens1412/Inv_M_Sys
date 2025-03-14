@@ -189,7 +189,7 @@
                             <GridView>
                                 <GridViewColumn
                                     Width="auto"
-                                    DisplayMemberBinding="{Binding CustomerID}"
+                                    DisplayMemberBinding="{Binding Id}"
                                     Header="ID" />
                                 <GridViewColumn
                                     Width="150"
@@ -238,7 +238,7 @@
                         Grid.Row="0"
                         Height="35"
                         Margin="0,0,0,15"
-                        SelectionChanged="CategoryComboBox_SelectionChanged" />
+                        SelectionChanged="CategoryComboBox_SelectionChanged" SelectedIndex="0" />
 
                     <!--  Product List  -->
                     <ListView
