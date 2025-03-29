@@ -99,19 +99,13 @@ namespace Inv_M_Sys.Views.Main
 
         private void Users_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Admin.UsersPage(_homeWindow));
 
-        private void Note_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.NotificationsPage(_homeWindow));
-
         private void Customers_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.CustomersPage(_homeWindow));
-
-        private void Restock_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.RestockPage(_homeWindow));
 
         private void Reports_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.ReportsPage(_homeWindow));
 
         private void Products_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.ProductsPage(_homeWindow));
 
         private void Category_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.CategoriesPage(_homeWindow));
-
-        private void Logs_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Admin.LogsPage(_homeWindow));
 
         private void Owner_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Admin.DatabaseSettingsPage(_homeWindow));
 

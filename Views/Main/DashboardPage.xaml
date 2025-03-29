@@ -41,19 +41,6 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--  Notifications Button  -->
-            <Button
-                Grid.Column="0"
-                Width="50"
-                Height="30"
-                Background="#57AEFF"
-                BorderBrush="Transparent"
-                Click="Note_Click">
-                <Canvas Width="20" Height="20">
-                    <Path Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" Fill="Yellow" />
-                </Canvas>
-            </Button>
-
             <!--  Log Out Button  -->
             <Grid Grid.Column="2">
                 <Button
@@ -138,7 +125,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Orders_Click">
+                                    Click="Orders_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -250,7 +238,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Customers_Click">
+                                    Click="Customers_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -396,161 +385,7 @@
                             </Grid.RowDefinitions>
 
                             <!--  Button Restock  -->
-                            <Grid Grid.Row="1" Grid.Column="1">
-
-                                <Button
-                                    Width="150"
-                                    Height="120"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Background="#E8E8E8"
-                                    BorderBrush="#E8E8E8"
-                                    BorderThickness="1"
-                                    Click="Restock_Click">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border
-                                                Background="{TemplateBinding Background}"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                BorderThickness="{TemplateBinding BorderThickness}"
-                                                CornerRadius="10">
-                                                <Grid>
-                                                    <!--  Text  -->
-                                                    <StackPanel Margin="10" VerticalAlignment="Top">
-                                                        <TextBlock
-                                                            FontFamily="Times New Roman"
-                                                            FontSize="22"
-                                                            FontWeight="Bold"
-                                                            Foreground="Black"
-                                                            Text="Restock"
-                                                            TextAlignment="Center" />
-                                                    </StackPanel>
-
-                                                    <!--  Image  -->
-                                                    <Path
-                                                        Width="2"
-                                                        Height="37"
-                                                        Margin="44,63,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Fill="Red"
-                                                        Stretch="Fill"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2">
-                                                        <Path.Data>
-                                                            <PathGeometry Figures="M43.888889,63.426791 L43.888889,97.760125" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                    <Path
-                                                        Width="64"
-                                                        Height="2"
-                                                        Margin="44,97,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Fill="Red"
-                                                        Stretch="Fill"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2">
-                                                        <Path.Data>
-                                                            <PathGeometry Figures="M44.5,98 L107.22222,98" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                    <Path
-                                                        Width="2"
-                                                        Height="38"
-                                                        Margin="106,62,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Fill="Red"
-                                                        Stretch="Fill"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2">
-                                                        <Path.Data>
-                                                            <PathGeometry Figures="M108,98 L108,63" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                    <Path
-                                                        Width="25"
-                                                        Height="17"
-                                                        Margin="106,47.8,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Fill="Red"
-                                                        Stretch="Fill"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2">
-                                                        <Path.Data>
-                                                            <PathGeometry Figures="M107.5,63 L131.80556,49.093458" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                    <Path
-                                                        Width="26"
-                                                        Height="15"
-                                                        Margin="20.8,49.9,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Fill="Red"
-                                                        RenderTransformOrigin="0.5,0.5"
-                                                        Stretch="Fill"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2">
-                                                        <Path.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform />
-                                                                <SkewTransform />
-                                                                <RotateTransform Angle="-119.238" />
-                                                                <TranslateTransform />
-                                                            </TransformGroup>
-                                                        </Path.RenderTransform>
-                                                        <Path.Data>
-                                                            <PathGeometry Figures="M107.5,63 L131.80556,49.093458" />
-                                                        </Path.Data>
-                                                    </Path>
-
-                                                    <Rectangle
-                                                        Grid.Row="2"
-                                                        Width="20"
-                                                        Height="10"
-                                                        Margin="50,85,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2" />
-                                                    <Rectangle
-                                                        Grid.Row="2"
-                                                        Width="20"
-                                                        Height="10"
-                                                        Margin="50,70,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2" />
-                                                    <Rectangle
-                                                        Grid.Row="2"
-                                                        Width="20"
-                                                        Height="10"
-                                                        Margin="80,70,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2" />
-                                                    <Rectangle
-                                                        Grid.Row="2"
-                                                        Width="20"
-                                                        Height="10"
-                                                        Margin="80,85,0,0"
-                                                        HorizontalAlignment="Left"
-                                                        VerticalAlignment="Top"
-                                                        Stroke="Red"
-                                                        StrokeThickness="2" />
-
-                                                </Grid>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Button.Template>
-
-                                </Button>
-                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" />
 
                             <!--  Button Reports  -->
                             <Grid Grid.Row="2" Grid.Column="1">
@@ -563,7 +398,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Reports_Click">
+                                    Click="Reports_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -751,7 +587,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Schedule_Click">
+                                    Click="Schedule_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -947,7 +784,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Products_Click">
+                                    Click="Products_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1080,7 +918,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Category_Click">
+                                    Click="Category_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1150,24 +989,8 @@
                                 </Button>
                             </Grid>
 
-                        </Grid>
-
-                        <!--  Admin and owner only buttons  -->
-                        <Grid x:Name="MangeButtons" Visibility="Visible">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <!--  Button Log  -->
-                            <Grid Grid.Row="2" Grid.Column="2">
-
+                            <!--  Current Order Button  -->
+                            <Grid Grid.Row="1" Grid.Column="1">
                                 <Button
                                     Width="150"
                                     Height="120"
@@ -1176,7 +999,7 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Logs_Click">
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1192,7 +1015,7 @@
                                                             FontSize="22"
                                                             FontWeight="Bold"
                                                             Foreground="Black"
-                                                            Text="Logs"
+                                                            Text="Awaiting"
                                                             TextAlignment="Center" />
                                                     </StackPanel>
 
@@ -1204,43 +1027,19 @@
                                                             Margin="0,44,0,0"
                                                             HorizontalAlignment="Center"
                                                             VerticalAlignment="Top"
-                                                            RenderTransformOrigin="0.5,0.5"
-                                                            Stroke="Red"
-                                                            StrokeThickness="3">
-                                                            <Rectangle.RenderTransform>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform />
-                                                                    <SkewTransform />
-                                                                    <RotateTransform Angle="14.308" />
-                                                                    <TranslateTransform />
-                                                                </TransformGroup>
-                                                            </Rectangle.RenderTransform>
-                                                        </Rectangle>
-                                                    </Grid>
-
-                                                    <Grid Margin="30,10,0,0">
-                                                        <Rectangle
-                                                            Width="48"
-                                                            Height="59"
-                                                            Margin="-30,35,0,0"
-                                                            HorizontalAlignment="Center"
-                                                            VerticalAlignment="Top"
-                                                            Fill="#FFE8E8E8"
                                                             Stroke="Red"
                                                             StrokeThickness="3" />
                                                         <Label
                                                             Width="48"
                                                             Height="30"
-                                                            Margin="20,34,0,0"
-                                                            HorizontalAlignment="Left"
-                                                            VerticalAlignment="Top"
-                                                            HorizontalContentAlignment="Center"
-                                                            Content="Logs" />
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Content="Orders" />
                                                         <Path
                                                             Width="29"
                                                             Height="1"
-                                                            Margin="30,62,0,0"
-                                                            HorizontalAlignment="Left"
+                                                            Margin="0,74,0,0"
+                                                            HorizontalAlignment="Center"
                                                             VerticalAlignment="Top"
                                                             Fill="Black"
                                                             Stretch="Fill"
@@ -1253,8 +1052,8 @@
                                                         <Path
                                                             Width="29"
                                                             Height="1"
-                                                            Margin="30,69,0,0"
-                                                            HorizontalAlignment="Left"
+                                                            Margin="0,79,0,0"
+                                                            HorizontalAlignment="Center"
                                                             VerticalAlignment="Top"
                                                             Fill="Black"
                                                             Stretch="Fill"
@@ -1267,8 +1066,8 @@
                                                         <Path
                                                             Width="29"
                                                             Height="1"
-                                                            Margin="30,76,0,0"
-                                                            HorizontalAlignment="Left"
+                                                            Margin="0,84,0,0"
+                                                            HorizontalAlignment="Center"
                                                             VerticalAlignment="Top"
                                                             Fill="Black"
                                                             Stretch="Fill"
@@ -1281,8 +1080,8 @@
                                                         <Path
                                                             Width="29"
                                                             Height="1"
-                                                            Margin="30,88,0,0"
-                                                            HorizontalAlignment="Left"
+                                                            Margin="0,95,0,0"
+                                                            HorizontalAlignment="Center"
                                                             VerticalAlignment="Top"
                                                             Fill="Black"
                                                             Stretch="Fill"
@@ -1293,7 +1092,6 @@
                                                             </Path.Data>
                                                         </Path>
                                                     </Grid>
-
                                                 </Grid>
                                             </Border>
                                         </ControlTemplate>
@@ -1301,6 +1099,22 @@
 
                                 </Button>
                             </Grid>
+
+                        </Grid>
+
+                        <!--  Admin and owner only buttons  -->
+                        <Grid x:Name="MangeButtons" Visibility="Visible">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
 
                             <!--  Button Users  -->
                             <Grid Grid.Row="2" Grid.Column="0">
@@ -1313,7 +1127,8 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
-                                    Click="Users_Click">
+                                    Click="Users_Click"
+                                    Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border
@@ -1532,7 +1347,8 @@
                             Background="#E8E8E8"
                             BorderBrush="#E8E8E8"
                             BorderThickness="1"
-                            Click="Owner_Click">
+                            Click="Owner_Click"
+                            Cursor="Hand">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border

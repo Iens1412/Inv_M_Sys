@@ -37,9 +37,6 @@ namespace Inv_M_Sys.Views.Admin
         // Handle Minimize Button
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
-        // Navigate to Notifications Page
-        private void Note_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new Views.Shared.NotificationsPage(_homeWindow));
-
         // Navigate to Dashboard Page
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
 

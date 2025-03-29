@@ -206,29 +206,12 @@
                     Foreground="Red" />
             </Grid>
 
-            <!--  Note And Home Buttons  -->
+            <!--  Home Buttons  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <!--  Notifications Button  -->
-                <Button
-                    Grid.Column="1"
-                    Width="50"
-                    Height="30"
-                    Background="#57AEFF"
-                    BorderBrush="Transparent"
-                    Click="Note_Click">
-                    <Canvas Width="20" Height="20">
-                        <Path
-                            Canvas.Top="-2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"
-                            Fill="Yellow" />
-                    </Canvas>
-                </Button>
 
                 <!--  Home Button  -->
                 <Button
@@ -403,8 +386,17 @@
             </Border>
         </Grid>
 
-        <!--Loding indicator-->
-        <TextBlock x:Name="LoadingIndicator" Grid.Column="1" Grid.Row="1" Text="Loading..." VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed" Foreground="Gray" FontSize="14" />
+        <!--  Loding indicator  -->
+        <TextBlock
+            x:Name="LoadingIndicator"
+            Grid.Row="1"
+            Grid.Column="1"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            FontSize="14"
+            Foreground="Gray"
+            Text="Loading..."
+            Visibility="Collapsed" />
         <!--  container to add or update User  -->
         <Border
             x:Name="Conatiner_User"

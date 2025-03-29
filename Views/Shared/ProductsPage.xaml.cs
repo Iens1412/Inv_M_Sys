@@ -62,14 +62,6 @@ namespace Inv_M_Sys.Views.Shared
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
         /// <summary>
-        /// Navigates to the NotificationsPage.
-        /// This page displays notifications for the user.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event (the notifications button).</param>
-        /// <param name="e">The event arguments.</param>
-        private void Note_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new Views.Shared.NotificationsPage(_homeWindow));
-
-        /// <summary>
         /// Navigates to the DashboardPage.
         /// This page serves as the home page for the application, showing key information.
         /// </summary>
