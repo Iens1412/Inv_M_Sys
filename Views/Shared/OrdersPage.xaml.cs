@@ -114,7 +114,7 @@ namespace Inv_M_Sys.Views.Shared
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     await conn.OpenAsync();
-                    string query = "SELECT Id, ProductName, Price FROM Products WHERE CategoryId = @CategoryId"; // Query to filter products by category
+                    string query = "SELECT Id, ProductName, Price, Quantity FROM Products WHERE CategoryId = @CategoryId"; // Query to filter products by category
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@CategoryId", categoryId);
@@ -127,7 +127,8 @@ namespace Inv_M_Sys.Views.Shared
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    Price = reader.GetDecimal(2)
+                                    Price = reader.GetDecimal(2),
+                                    Quantity = reader.GetInt32(3)
                                 });
                             }
 
@@ -192,32 +193,53 @@ namespace Inv_M_Sys.Views.Shared
                     {
                         try
                         {
-                            // Create Order record (Insert into Orders table)
-                            var orderCmd = new NpgsqlCommand("INSERT INTO Orders (CustomerId, DeliveryDate, TotalPrice) VALUES (@CustomerId, @DeliveryDate, @TotalPrice) RETURNING Id", conn);
+                            // Create Order record
+                            var orderCmd = new NpgsqlCommand(
+                                "INSERT INTO Orders (CustomerId, DeliveryDate, TotalPrice, Status) " +
+                                "VALUES (@CustomerId, @DeliveryDate, @TotalPrice, @Status) RETURNING Id", conn);
+
                             orderCmd.Parameters.AddWithValue("@CustomerId", SelectedCustomer.Id);
                             orderCmd.Parameters.AddWithValue("@DeliveryDate", deliveryDate.Value);
                             orderCmd.Parameters.AddWithValue("@TotalPrice", viewModel.OrderBasket.Sum(item => item.TotalPrice));
+                            orderCmd.Parameters.AddWithValue("@Status", OrderStatus.Pending.ToString());
                             var orderId = (int)await orderCmd.ExecuteScalarAsync();
 
-                            // Add OrderItems (Insert into OrderItems table)
+                            // Add OrderItems and update product quantity
                             foreach (var item in viewModel.OrderBasket)
                             {
-                                var orderItemCmd = new NpgsqlCommand("INSERT INTO OrderItems (OrderId, ProductId, Quantity, Price, TotalPrice) VALUES (@OrderId, @ProductId, @Quantity, @Price, @TotalPrice)", conn);
+                                // Insert OrderItem
+                                var orderItemCmd = new NpgsqlCommand(
+                                    "INSERT INTO OrderItems (OrderId, ProductId, Quantity, Price, TotalPrice) " +
+                                    "VALUES (@OrderId, @ProductId, @Quantity, @Price, @TotalPrice)", conn);
+
                                 orderItemCmd.Parameters.AddWithValue("@OrderId", orderId);
                                 orderItemCmd.Parameters.AddWithValue("@ProductId", item.Product.Id);
                                 orderItemCmd.Parameters.AddWithValue("@Quantity", item.Quantity);
                                 orderItemCmd.Parameters.AddWithValue("@Price", item.Product.Price);
                                 orderItemCmd.Parameters.AddWithValue("@TotalPrice", item.TotalPrice);
                                 await orderItemCmd.ExecuteNonQueryAsync();
+
+                                // ✅ Update product quantity
+                                var updateProductCmd = new NpgsqlCommand(
+                                    "UPDATE Products SET Quantity = Quantity - @OrderedQuantity WHERE Id = @ProductId", conn);
+                                updateProductCmd.Parameters.AddWithValue("@OrderedQuantity", item.Quantity);
+                                updateProductCmd.Parameters.AddWithValue("@ProductId", item.Product.Id);
+                                await updateProductCmd.ExecuteNonQueryAsync();
                             }
 
-                            transaction.Commit();
+                            // Commit transaction
+                            await transaction.CommitAsync();
+
                             MessageBox.Show("Order placed successfully.");
                             ClearOrderForm();
+                            if (CategoryComboBox.SelectedItem is Category selectedCategory)
+                            {
+                                await LoadProductsAsync(selectedCategory.CatID);
+                            }
                         }
                         catch (Exception ex)
                         {
-                            transaction.Rollback();
+                            await transaction.RollbackAsync();
                             Log.Error(ex, "Error placing order.");
                             MessageBox.Show($"Error placing order: {ex.Message}");
                         }
@@ -263,15 +285,23 @@ namespace Inv_M_Sys.Views.Shared
                         {
                             categories.Add(new Category
                             {
-                                CatID = reader.GetInt32(0), // Correct field name
+                                CatID = reader.GetInt32(0),
                                 CategoryName = reader.GetString(1)
                             });
                         }
 
-                        // Ensure this is populated correctly
                         CategoryComboBox.ItemsSource = categories;
-                        CategoryComboBox.DisplayMemberPath = "CategoryName"; // Display the category name
-                        CategoryComboBox.SelectedValuePath = "CatID"; // Bind the category ID to the selected value
+                        CategoryComboBox.DisplayMemberPath = "CategoryName";
+                        CategoryComboBox.SelectedValuePath = "CatID";
+
+                        // ✅ Set default selection
+                        if (categories.Any())
+                        {
+                            CategoryComboBox.SelectedIndex = 0;
+
+                            // Optional: Immediately load products for default category
+                            await LoadProductsAsync(categories[0].CatID);
+                        }
                     }
                 }
             }

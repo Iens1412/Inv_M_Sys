@@ -31,21 +31,13 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
-            // Notifications Table
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Notifications (
-                Id SERIAL PRIMARY KEY,
-                Title TEXT NOT NULL,
-                Content TEXT NOT NULL,
-                Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );";
-            cmd.ExecuteNonQuery();
-
             // Orders Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Orders (
                 Id SERIAL PRIMARY KEY,
-                CustomerId INTEGER REFERENCES Customers(Id) ON DELETE CASCADE,  -- Foreign key to Customers
+                CustomerId INTEGER REFERENCES Customers(Id) ON DELETE CASCADE,
                 DeliveryDate DATE NOT NULL,
-                TotalPrice NUMERIC NOT NULL
+                TotalPrice NUMERIC NOT NULL,
+                Status TEXT NOT NULL DEFAULT 'Pending'
             );";
             cmd.ExecuteNonQuery();
 
@@ -74,6 +66,17 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
+            // table for the Schedule
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS Schedule (
+                Id SERIAL PRIMARY KEY,
+                EmployeeName TEXT NOT NULL,
+                StartTime TIME NOT NULL,
+                EndTime TIME NOT NULL,
+                TotalHours DOUBLE PRECISION NOT NULL
+            );";
+            cmd.ExecuteNonQuery();
+
             // Reports Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Reports (
                 Id SERIAL PRIMARY KEY,
@@ -84,18 +87,6 @@ public static class DatabaseInitializer
                 EndDate DATE,
                 Status TEXT,
                 Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );";
-            cmd.ExecuteNonQuery();
-
-            // Restock Table
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Restock (
-                Id SERIAL PRIMARY KEY,
-                ProductName TEXT NOT NULL,
-                Quantity INTEGER NOT NULL,
-                DateOf DATE,
-                Supplier TEXT NOT NULL,
-                Status TEXT NOT NULL,
-                Notes TEXT
             );";
             cmd.ExecuteNonQuery();
 
@@ -110,27 +101,6 @@ public static class DatabaseInitializer
                 Password TEXT NOT NULL,
                 Address TEXT,
                 Role TEXT NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
-
-            // Logs Tables
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS SalesLogs (
-                Id SERIAL PRIMARY KEY,
-                Title TEXT NOT NULL,
-                Content TEXT NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS UserLogs (
-                Id SERIAL PRIMARY KEY,
-                Title TEXT NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS StockLogs (
-                Id SERIAL PRIMARY KEY,
-                Title TEXT NOT NULL,
-                Content TEXT NOT NULL
             );";
             cmd.ExecuteNonQuery();
 

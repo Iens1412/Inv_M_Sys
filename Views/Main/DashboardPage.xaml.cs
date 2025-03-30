@@ -101,6 +101,8 @@ namespace Inv_M_Sys.Views.Main
 
         private void Customers_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.CustomersPage(_homeWindow));
 
+        private void Awaiting_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.AwaitingPage(_homeWindow));
+
         private void Reports_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.ReportsPage(_homeWindow));
 
         private void Products_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.ProductsPage(_homeWindow));
@@ -109,13 +111,7 @@ namespace Inv_M_Sys.Views.Main
 
         private void Owner_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Admin.DatabaseSettingsPage(_homeWindow));
 
-        private void Schedule_Click(object sender, RoutedEventArgs e)
-        {
-            // Add any necessary code here when the schedule button is clicked
-            // For now, it could just log or show a placeholder message
-            Log.Information("Schedule button clicked.");
-            MessageBox.Show("Schedule feature not implemented yet.");
-        }
+        private void Schedule_Click(object sender, RoutedEventArgs e) => NavigateToPage(new Views.Shared.SchedulePage(_homeWindow));
 
         // Utility button handlers
         private void Close_Click(object sender, RoutedEventArgs e)

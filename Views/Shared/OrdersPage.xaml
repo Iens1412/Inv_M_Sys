@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:other="clr-namespace:Inv_M_Sys.Converter"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     Title="OrdersPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -45,6 +46,103 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="CustomComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="MinHeight" Value="35" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border
+                        x:Name="Border"
+                        Background="White"
+                        BorderBrush="Violet"
+                        BorderThickness="2"
+                        CornerRadius="4">
+                                <Grid>
+                                    <ContentPresenter
+                                x:Name="ContentSite"
+                                Margin="10,0,30,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+
+                                    <Path
+                                x:Name="Arrow"
+                                Margin="0,0,10,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Data="M 0 0 L 4 4 L 8 0 Z"
+                                Fill="Violet" />
+
+                                    <!-- Transparent full-area button without hover -->
+                                    <ToggleButton
+                                x:Name="DropDownToggle"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="Transparent">
+                                                    <ContentPresenter />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+                                </Grid>
+                            </Border>
+
+                            <Popup
+                        x:Name="Popup"
+                        AllowsTransparency="True"
+                        Focusable="False"
+                        IsOpen="{TemplateBinding IsDropDownOpen}"
+                        Placement="Bottom"
+                        PopupAnimation="Slide">
+                                <Grid
+                            x:Name="DropDown"
+                            MinWidth="{TemplateBinding ActualWidth}"
+                            MaxHeight="200"
+                            SnapsToDevicePixels="True">
+                                    <Border
+                                x:Name="DropDownBorder"
+                                Background="White"
+                                BorderBrush="Violet"
+                                BorderThickness="2" />
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+
+                        <!-- Only Border hover effect -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#FF9A00D8" />
+                            </Trigger>
+
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#FF9A00D8" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#FFF0F0F0" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#FFD0D0D0" />
+                                <Setter Property="Foreground" Value="#FF888888" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
 
         <!--  Placeholder Text Visibility Converter  -->
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
@@ -210,24 +308,36 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <!--  Select Product Text  -->
                         <RowDefinition Height="*" />
                         <!--  Product List (Expands to fill space)  -->
                     </Grid.RowDefinitions>
 
+                    <!--  Label For Category  -->
+                    <Label
+                        Grid.Row="0"
+                        Content="Category"
+                        FontFamily="Times New Roman"
+                        FontSize="14"
+                        FontStretch="Normal"
+                        FontStyle="Normal"
+                        FontWeight="Bold" />
                     <!--  Product Category Dropdown  -->
                     <ComboBox
                         x:Name="CategoryComboBox"
-                        Grid.Row="0"
+                        Grid.Row="1"
                         Height="35"
                         Margin="0,0,0,15"
                         SelectedIndex="0"
-                        SelectionChanged="CategoryComboBox_SelectionChanged" />
+                        SelectionChanged="CategoryComboBox_SelectionChanged"
+                        Style="{StaticResource CustomComboBoxStyle}" />
+
 
                     <!--  Product List  -->
                     <ListView
                         x:Name="ProductsListView"
-                        Grid.Row="2"
+                        Grid.Row="3"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Background="Transparent"
@@ -244,9 +354,13 @@
                                     DisplayMemberBinding="{Binding Name}"
                                     Header="Name" />
                                 <GridViewColumn
-                                    Width="auto"
+                                    Width="80"
                                     DisplayMemberBinding="{Binding Price}"
                                     Header="Price" />
+                                <GridViewColumn
+                                    Width="auto"
+                                    DisplayMemberBinding="{Binding Quantity}"
+                                    Header="Current In Stock" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -323,10 +437,11 @@
                     x:Name="DeliveryDatePicker"
                     BorderBrush="Violet"
                     BorderThickness="1"
+                    DisplayDateStart="{x:Static sys:DateTime.Today}"
                     FontSize="14" />
 
                 <!--  Buttons Stacked Vertically  -->
-                <StackPanel Margin="10,10,0,0" HorizontalAlignment="Left">
+                <StackPanel Margin="10,100,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button
                         Width="150"
                         Height="40"
@@ -358,7 +473,7 @@
                 CornerRadius="15">
                 <ListView
                     x:Name="OrderBasketListView"
-                    Height="auto"
+                    Height="200"
                     HorizontalAlignment="Stretch"
                     Background="Transparent"
                     BorderThickness="0"

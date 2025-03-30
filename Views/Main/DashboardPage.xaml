@@ -30,7 +30,7 @@
             </Grid.Background>
         </Grid>
 
-        <!--  Notifications and Log out Buttons  -->
+        <!--  Log out Buttons  -->
         <Grid
             Grid.Row="0"
             Grid.Column="1"
@@ -999,6 +999,7 @@
                                     Background="#E8E8E8"
                                     BorderBrush="#E8E8E8"
                                     BorderThickness="1"
+                                    Click="Awaiting_Click"
                                     Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
@@ -1330,74 +1331,85 @@
                                 </Button>
                             </Grid>
                         </Grid>
-                    </Grid>
 
+                        <!--  grid for the owner only button  -->
+                        <Grid x:Name="OwnerButton" Visibility="Visible">
 
-                    <!--  grid for the owner only button  -->
-                    <Grid
-                        x:Name="OwnerButton"
-                        Grid.Row="1"
-                        Visibility="Visible">
-                        <!--  owner info and database info button  -->
-                        <Button
-                            Width="150"
-                            Height="120"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="#E8E8E8"
-                            BorderBrush="#E8E8E8"
-                            BorderThickness="1"
-                            Click="Owner_Click"
-                            Cursor="Hand">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="10">
-                                        <Grid>
-                                            <!--  Text  -->
-                                            <StackPanel Margin="10" VerticalAlignment="Top">
-                                                <TextBlock
-                                                    FontFamily="Times New Roman"
-                                                    FontSize="20"
-                                                    FontWeight="Bold"
-                                                    Foreground="Black"
-                                                    Text="Database Management"
-                                                    TextAlignment="Center" />
-                                            </StackPanel>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
 
-                                            <!--  Icon  -->
-                                            <Grid>
-                                                <Rectangle
-                                                    Width="60"
-                                                    Height="60"
-                                                    Margin="0,44,0,0"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Top"
-                                                    Stroke="Red"
-                                                    StrokeThickness="3" />
-                                                <Path
-                                                    Width="40"
-                                                    Height="1"
-                                                    Margin="0,74,0,0"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Top"
-                                                    Fill="Black"
-                                                    Stretch="Fill"
-                                                    Stroke="Black"
-                                                    StrokeThickness="2">
-                                                    <Path.Data>
-                                                        <PathGeometry Figures="M58.666667,74 L86.666667,74" />
-                                                    </Path.Data>
-                                                </Path>
-                                            </Grid>
-                                        </Grid>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <!--  owner info and database info button  -->
+                            <Grid Grid.Row="2" Grid.Column="2">
+                                <Button
+                                    Width="150"
+                                    Height="120"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="#E8E8E8"
+                                    BorderBrush="#E8E8E8"
+                                    BorderThickness="1"
+                                    Click="Owner_Click"
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="10">
+                                                <Grid>
+                                                    <!--  Text  -->
+                                                    <StackPanel Margin="10" VerticalAlignment="Top">
+                                                        <TextBlock
+                                                            FontFamily="Times New Roman"
+                                                            FontSize="20"
+                                                            FontWeight="Bold"
+                                                            Foreground="Black"
+                                                            Text="Database Management"
+                                                            TextAlignment="Center" />
+                                                    </StackPanel>
+
+                                                    <!--  Icon  -->
+                                                    <Grid>
+                                                        <Rectangle
+                                                            Width="60"
+                                                            Height="60"
+                                                            Margin="0,44,0,0"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Top"
+                                                            Stroke="Red"
+                                                            StrokeThickness="3" />
+                                                        <Path
+                                                            Width="40"
+                                                            Height="1"
+                                                            Margin="0,74,0,0"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Top"
+                                                            Fill="Black"
+                                                            Stretch="Fill"
+                                                            Stroke="Black"
+                                                            StrokeThickness="2">
+                                                            <Path.Data>
+                                                                <PathGeometry Figures="M58.666667,74 L86.666667,74" />
+                                                            </Path.Data>
+                                                        </Path>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </ScrollViewer>

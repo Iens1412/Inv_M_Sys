@@ -366,6 +366,7 @@ namespace Inv_M_Sys.Views.Shared
                 }
 
                 ProductListView.ItemsSource = ProductsList;
+                CheckStockLevels();
             }
             catch (Exception ex)
             {
@@ -551,6 +552,29 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+
+        /// <summary>
+        /// Checks product stock levels and informs the user about low or out-of-stock items.
+        /// This method is called when the page is opened.
+        /// </summary>
+        private void CheckStockLevels()
+        {
+            if (ProductsList.Count == 0)
+                return;
+
+            var lowStockProducts = ProductsList
+                .Where(p => p.Quantity <= p.MinQuantity)
+                .Select(p => $"- {p.Name} (In Stock: {p.Quantity}, Minimum: {p.MinQuantity})")
+                .ToList();
+
+            if (lowStockProducts.Any())
+            {
+                string message = "⚠️ The following products are low in stock or out of stock:\n\n";
+                message += string.Join("\n", lowStockProducts);
+
+                MessageBox.Show(message, "Stock Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
         #endregion
     }
 }

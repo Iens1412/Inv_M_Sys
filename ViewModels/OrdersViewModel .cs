@@ -44,6 +44,26 @@ namespace Inv_M_Sys.ViewModels
         {
             if (SelectedProduct != null && Quantity > 0)
             {
+                // 1. Check total quantity already added for this product in basket
+                int alreadyInBasket = OrderBasket
+                    .Where(x => x.Product.Id == SelectedProduct.Id)
+                    .Sum(x => x.Quantity);
+
+                // 2. Calculate if new addition exceeds stock
+                int totalRequested = alreadyInBasket + Quantity;
+
+                if (totalRequested > SelectedProduct.Quantity)
+                {
+                    System.Windows.MessageBox.Show(
+                        $"Not enough stock for {SelectedProduct.Name}. Available: {SelectedProduct.Quantity}, Already in basket: {alreadyInBasket}, Requested: {Quantity}.",
+                        "Insufficient Stock",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Warning
+                    );
+                    return;
+                }
+
+                // ✅ Add to basket without touching stock
                 var orderItem = new OrderItem(SelectedProduct, Quantity)
                 {
                     TotalPrice = SelectedProduct.Price * Quantity
