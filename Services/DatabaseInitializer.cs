@@ -77,6 +77,21 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
+            // Schedule Table
+            cmd.CommandText = @"
+                 CREATE TABLE IF NOT EXISTS Schedule (
+                 Id SERIAL PRIMARY KEY,
+                 EmployeeId INTEGER NOT NULL REFERENCES Users(Id) ON DELETE CASCADE,
+                 DayName TEXT NOT NULL,
+                 StartTime TIME NOT NULL,
+                 EndTime TIME NOT NULL,
+                 RestStartTime TIME,
+                 RestEndTime TIME,
+                 TotalHours DOUBLE PRECISION NOT NULL,
+                 IsRestDay BOOLEAN NOT NULL DEFAULT FALSE
+            );";
+            cmd.ExecuteNonQuery();
+
             // Reports Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Reports (
                 Id SERIAL PRIMARY KEY,

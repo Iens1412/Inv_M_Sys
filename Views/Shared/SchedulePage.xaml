@@ -4,177 +4,165 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:other="clr-namespace:Inv_M_Sys.Converter"
+      xmlns:vm="clr-namespace:Inv_M_Sys.ViewModels"
       mc:Ignorable="d"
       Title="SchedulePage">
 
     <Page.Resources>
-        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+        <!-- Converter to display placeholder text -->
+        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter"/>
+        <!-- Boolean to Visibility Converter (built-in) -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <!-- Rounded Button Style -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="#5F84FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#4A72CC"/>
+                    <Setter Property="BorderBrush" Value="#3F5FB5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Input TextBox Style -->
+        <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="BorderBrush" Value="Violet"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
     </Page.Resources>
 
     <Grid Background="#E8E8E8">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="3*" />
-        </Grid.ColumnDefinitions>
+        <!-- Define Rows: Top Menu, Staff Selection, Weekly Schedule, Summary/Submit -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.1*" />
-            <RowDefinition Height="0.1*" />
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <!-- Top Menu -->
+            <RowDefinition Height="Auto"/>
+            <!-- Staff Selection -->
+            <RowDefinition Height="*"/>
+            <!-- Weekly Schedule -->
+            <RowDefinition Height="Auto"/>
+            <!-- Summary/Submit -->
         </Grid.RowDefinitions>
 
-        <!-- Top Title -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                   HorizontalAlignment="Center"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Text="Employee Schedule"
-                   Margin="10"/>
-
-        <!-- Search and Refresh -->
-        <Grid Grid.Row="1" Grid.Column="1">
+        <!-- Top Menu -->
+        <Grid Grid.Row="0" Background="#57AEFF" Height="60">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
-            <Grid Margin="10" VerticalAlignment="Center">
-                <TextBlock Text="Search by Employee"
-                           Foreground="Gray"
-                           Margin="10,0,0,0"
-                           VerticalAlignment="Center"
-                           IsHitTestVisible="False"
-                           Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
-                <TextBox x:Name="SearchTextBox"
-                         Padding="10,0"
-                         Background="White"
-                         BorderThickness="1"
-                         BorderBrush="Gray"
-                         FontSize="14" />
-            </Grid>
-
-            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Search" Width="100" Margin="5" Click="Search_Click"/>
-                <Button Content="Refresh" Width="100" Margin="5" Click="Refresh_Click"/>
+            <!-- Home Button -->
+            <Button Grid.Column="0" Width="50" Height="30" Margin="10" Background="#57AEFF" BorderBrush="Transparent"
+                    Click="Home_Click" Content="Home" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
+            <!-- Title -->
+            <TextBlock Grid.Column="1" Text="Employee Weekly Schedule" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="24" FontWeight="Bold" Foreground="White"/>
+            <!-- Right Buttons -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
+                <Button Width="100" Height="30" Margin="5" Background="#57AEFF" BorderBrush="Transparent"
+                        Click="Logout_Click" Content="Log Out" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
+                <Button Width="30" Height="30" Margin="5" Background="#57AEFF" BorderBrush="Transparent"
+                        Click="Minimize_Click" Content="–" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
+                <Button Width="30" Height="30" Margin="5" Background="#57AEFF" BorderBrush="Transparent"
+                        Click="Close_Click" Content="X" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
             </StackPanel>
         </Grid>
 
-        <!-- Schedule List -->
-        <ListView x:Name="ScheduleListView"
-                  Grid.Row="2"
-                  Grid.Column="1"
-                  Margin="10"
-                  SelectionChanged="ScheduleListView_SelectionChanged">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Employee" DisplayMemberBinding="{Binding EmployeeName}" Width="150"/>
-                    <GridViewColumn Header="Start Time" DisplayMemberBinding="{Binding StartTime}" Width="100"/>
-                    <GridViewColumn Header="End Time" DisplayMemberBinding="{Binding EndTime}" Width="100"/>
-                    <GridViewColumn Header="Total Hours" DisplayMemberBinding="{Binding TotalHours}" Width="100"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <!-- Side Buttons -->
-        <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Button Content="Add Schedule" Width="150" Margin="5" Click="New_Click"/>
-            <Button Content="Edit" Width="150" Margin="5" Click="Edit_Click"/>
-            <Button Content="Delete" Width="150" Margin="5" Click="Delete_Click"/>
-        </StackPanel>
-
-        <!-- Form Container -->
-        <Border x:Name="ScheduleFormContainer"
-                Grid.Row="1"
-                Grid.RowSpan="2"
-                Grid.Column="1"
-                Margin="20"
-                Background="#E8E8E8"
-                BorderBrush="Black"
-                BorderThickness="2"
-                CornerRadius="20"
-                Visibility="Visible">
-
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" Text="Schedule Information" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Margin="10"/>
-
-                <StackPanel Grid.Row="1" Margin="10">
-                    <!-- Employee Name -->
-                    <Grid Margin="5">
-                        <TextBlock Text="Employee Name"
-                                   Foreground="Gray"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Visibility="{Binding Text, ElementName=EmployeeNameTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
-                        <TextBox x:Name="EmployeeNameTextBox"
-                                 Padding="5,0"
-                                 Background="Transparent"
-                                 BorderThickness="0,0,0,1"
-                                 FontSize="14"
-                                 Foreground="Black"/>
-                    </Grid>
-
-                    <!-- Start Time -->
-                    <Grid Margin="5">
-                        <TextBlock Text="Start Time (HH:mm)"
-                                   Foreground="Gray"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Visibility="{Binding Text, ElementName=StartTimeTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
-                        <TextBox x:Name="StartTimeTextBox"
-                                 Padding="5,0"
-                                 Background="Transparent"
-                                 BorderThickness="0,0,0,1"
-                                 FontSize="14"
-                                 Foreground="Black"/>
-                    </Grid>
-
-                    <!-- End Time -->
-                    <Grid Margin="5">
-                        <TextBlock Text="End Time (HH:mm)"
-                                   Foreground="Gray"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Visibility="{Binding Text, ElementName=EndTimeTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
-                        <TextBox x:Name="EndTimeTextBox"
-                                 Padding="5,0"
-                                 Background="Transparent"
-                                 BorderThickness="0,0,0,1"
-                                 FontSize="14"
-                                 Foreground="Black"/>
-                    </Grid>
-
-                    <!-- Total Hours -->
-                    <Grid Margin="5">
-                        <TextBlock Text="Total Hours"
-                                   Foreground="Gray"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Visibility="{Binding Text, ElementName=TotalHoursTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
-                        <TextBox x:Name="TotalHoursTextBox"
-                                 Padding="5,0"
-                                 Background="Transparent"
-                                 BorderThickness="0,0,0,1"
-                                 FontSize="14"
-                                 Foreground="Black"
-                                 IsReadOnly="True"/>
-                    </Grid>
-                </StackPanel>
-
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="SubmitBtn" Content="Submit" Width="120" Margin="5" Click="Submit_Click"/>
-                    <Button x:Name="UpdateBtn" Content="Update" Width="120" Margin="5" Click="Update_Click" Visibility="Collapsed"/>
-                    <Button Content="Back" Width="120" Margin="5" Click="Back_Click"/>
-                </StackPanel>
-            </Grid>
+        <!-- Staff Selection Section -->
+        <Border Grid.Row="1" Margin="20" Padding="10" Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="10">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Bold" Text="Staff Type:" />
+                <ComboBox x:Name="StaffTypeComboBox" Width="150" Margin="0,0,20,0" SelectionChanged="StaffTypeComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Admin" />
+                    <ComboBoxItem Content="SellingStaff" />
+                    <ComboBoxItem Content="StockStaff" />
+                </ComboBox>
+                <TextBlock Margin="0,0,10,0" VerticalAlignment="Center" FontWeight="Bold" Text="Staff Name:" />
+                <ComboBox x:Name="StaffNameComboBox" Width="150" ItemsSource="{Binding StaffNames}" SelectionChanged="StaffNameComboBox_SelectionChanged"/>
+            </StackPanel>
         </Border>
+
+        <!-- Weekly Schedule Section -->
+        <ScrollViewer Grid.Row="2" Margin="20">
+            <ItemsControl ItemsSource="{Binding DailySchedules}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="5" Padding="10" Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="10">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Width="100" FontSize="16" FontWeight="Bold" Text="{Binding DayName}" />
+                                    <CheckBox Margin="10,0" VerticalAlignment="Center" Content="Rest Day" 
+                                      IsChecked="{Binding IsRestDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <!-- Work Hours -->
+                                <TextBlock Margin="0,5,0,0" Text="Work Hours:" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="From:" />
+                                    <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
+                                      SelectedItem="{Binding WorkStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox Width="50" Margin="0,0,15,0" ItemsSource="{Binding Minutes}" 
+                                      SelectedItem="{Binding WorkStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="To:" />
+                                    <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
+                                      SelectedItem="{Binding WorkEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox Width="50" ItemsSource="{Binding Minutes}" 
+                                      SelectedItem="{Binding WorkEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <!-- Rest Time Toggle -->
+                                <CheckBox Content="Apply Rest Time" IsChecked="{Binding HasRestTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
+                                <!-- Rest Hours (visible only if HasRestTime is true) -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Visibility="{Binding HasRestTime, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Rest Hours:" />
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="From:" />
+                                    <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
+                                      SelectedItem="{Binding RestStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox Width="50" Margin="0,0,15,0" ItemsSource="{Binding Minutes}" 
+                                      SelectedItem="{Binding RestStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="To:" />
+                                    <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
+                                      SelectedItem="{Binding RestEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ComboBox Width="50" ItemsSource="{Binding Minutes}" 
+                                      SelectedItem="{Binding RestEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <!-- Total Work Hours -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Total Hours:" />
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Text="{Binding TotalWorkHours}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Weekly Summary and Submit Section -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <TextBlock Text="Weekly Total Hours:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+            <TextBlock Text="{Binding TotalWeeklyHours}" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="0,0,20,0"/>
+            <Button x:Name="SubmitBtn" Content="Submit" Width="120" Height="30" Style="{StaticResource RoundedButtonStyle}" Click="SubmitBtn_Click"/>
+            <TextBlock Text="{Binding SaveStatus}" VerticalAlignment="Center" FontSize="14" Foreground="Green" Margin="20,0,0,0"/>
+        </StackPanel>
     </Grid>
 </Page>
