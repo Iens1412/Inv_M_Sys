@@ -121,7 +121,6 @@ public static class DatabaseHelper
                     object result = await cmd.ExecuteScalarAsync();
                     if (result != null)
                     {
-                        // Normalize the role string by removing spaces.
                         string roleStr = result.ToString().Replace(" ", "");
                         if (Enum.TryParse<UserRole>(roleStr, true, out UserRole parsedRole))
                         {
@@ -135,8 +134,30 @@ public static class DatabaseHelper
         {
             Log.Error(ex, "Error getting staff role by ID.");
         }
-        // Return a default role if not found
-        return UserRole.SellingStaff;
+        return UserRole.SellingStaff; // default role
+    }
+
+    public static async Task<string> GetStaffFullNameByIdAsync(int staffId)
+    {
+        try
+        {
+            using (var conn = GetConnection())
+            {
+                await conn.OpenAsync();
+                string query = "SELECT FirstName || ' ' || LastName FROM Users WHERE Id = @Id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", staffId);
+                    object result = await cmd.ExecuteScalarAsync();
+                    return result?.ToString() ?? string.Empty;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error getting full name by ID.");
+            return string.Empty;
+        }
     }
 
     #region schedule
