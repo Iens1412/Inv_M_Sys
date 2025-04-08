@@ -9,9 +9,9 @@
       Title="SchedulePage">
 
     <Page.Resources>
-        <!-- Converter to display placeholder text -->
+        <!-- Converter to display placeholder text (if needed) -->
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter"/>
-        <!-- Boolean to Visibility Converter (built-in) -->
+        <!-- BooleanToVisibilityConverter -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- Rounded Button Style -->
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
@@ -52,7 +52,7 @@
     </Page.Resources>
 
     <Grid Background="#E8E8E8">
-        <!-- Define Rows: Top Menu, Staff Selection, Weekly Schedule, Summary/Submit -->
+        <!-- Define layout rows: Top Menu, Staff Selection, Weekly Schedule, Summary/Submit -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <!-- Top Menu -->
@@ -64,7 +64,7 @@
             <!-- Summary/Submit -->
         </Grid.RowDefinitions>
 
-        <!-- Top Menu -->
+        <!-- Top Menu Section -->
         <Grid Grid.Row="0" Background="#57AEFF" Height="60">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -74,11 +74,11 @@
             <!-- Home Button -->
             <Button Grid.Column="0" Width="50" Height="30" Margin="10" Background="#57AEFF" BorderBrush="Transparent"
                     Click="Home_Click" Content="Home" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
-            <!-- Title -->
+            <!-- Page Title -->
             <TextBlock Grid.Column="1" Text="Employee Weekly Schedule" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="24" FontWeight="Bold" Foreground="White"/>
-            <!-- Right Buttons -->
+            <!-- Right Buttons: Log Out, Minimize, Close -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
                 <Button Width="100" Height="30" Margin="5" Background="#57AEFF" BorderBrush="Transparent"
                         Click="Logout_Click" Content="Log Out" FontFamily="Times New Roman" FontSize="16" FontWeight="Bold" Foreground="Red"/>
@@ -113,39 +113,41 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Width="100" FontSize="16" FontWeight="Bold" Text="{Binding DayName}" />
                                     <CheckBox Margin="10,0" VerticalAlignment="Center" Content="Rest Day" 
-                                      IsChecked="{Binding IsRestDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding IsRestDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                                 <!-- Work Hours -->
                                 <TextBlock Margin="0,5,0,0" Text="Work Hours:" />
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="From:" />
                                     <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
-                                      SelectedItem="{Binding WorkStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding WorkStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <ComboBox Width="50" Margin="0,0,15,0" ItemsSource="{Binding Minutes}" 
-                                      SelectedItem="{Binding WorkStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding WorkStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="To:" />
                                     <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
-                                      SelectedItem="{Binding WorkEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding WorkEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <ComboBox Width="50" ItemsSource="{Binding Minutes}" 
-                                      SelectedItem="{Binding WorkEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding WorkEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                                 <!-- Rest Time Toggle -->
-                                <CheckBox Content="Apply Rest Time" IsChecked="{Binding HasRestTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
+                                <CheckBox Content="Apply Rest Time" 
+                                          IsChecked="{Binding HasRestTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                          Margin="0,5,0,0" />
                                 <!-- Rest Hours (visible only if HasRestTime is true) -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Visibility="{Binding HasRestTime, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Rest Hours:" />
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="From:" />
                                     <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
-                                      SelectedItem="{Binding RestStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding RestStartHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <ComboBox Width="50" Margin="0,0,15,0" ItemsSource="{Binding Minutes}" 
-                                      SelectedItem="{Binding RestStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding RestStartMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="To:" />
                                     <ComboBox Width="50" Margin="0,0,5,0" ItemsSource="{Binding Hours}" 
-                                      SelectedItem="{Binding RestEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding RestEndHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <ComboBox Width="50" ItemsSource="{Binding Minutes}" 
-                                      SelectedItem="{Binding RestEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              SelectedItem="{Binding RestEndMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
-                                <!-- Total Work Hours -->
+                                <!-- Total Work Hours for the day -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Total Hours:" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Bold" Text="{Binding TotalWorkHours}" />

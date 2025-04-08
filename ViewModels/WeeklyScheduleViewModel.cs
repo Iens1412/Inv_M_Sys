@@ -1,8 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Inv_M_Sys.Models;
+using Inv_M_Sys.Services;
 using Npgsql;
 using Serilog;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inv_M_Sys.ViewModels
 {
@@ -19,10 +22,21 @@ namespace Inv_M_Sys.ViewModels
             set => SetProperty(ref _staffNames, value);
         }
 
-        // Current user's role (e.g., "Owner", "Admin", etc.)
-        public string CurrentUserRole { get; set; } = "Owner"; // Adjust based on logged-in user
+        // The role of the current logged-in user.
+        public UserRole CurrentUserRole { get; set; }
 
-        // Selected staff Id; when set, triggers loading of the schedule.
+        // The currently logged staff's ID.
+        public int CurrentLoggedStaffId { get; set; }
+
+        // The role of the selected staff (loaded from the database).
+        private UserRole _selectedStaffRole;
+        public UserRole SelectedStaffRole
+        {
+            get => _selectedStaffRole;
+            set => SetProperty(ref _selectedStaffRole, value);
+        }
+
+        // The ID of the staff whose schedule is being viewed/edited.
         private int _selectedStaffId;
         public int SelectedStaffId
         {
@@ -33,22 +47,65 @@ namespace Inv_M_Sys.ViewModels
                 {
                     if (_selectedStaffId == 0)
                     {
-                        // Clear the schedule if no valid staff is selected
                         DailySchedules.Clear();
                         OnPropertyChanged(nameof(TotalWeeklyHours));
                     }
                     else
                     {
                         LoadStaffScheduleAsync();
+                        // Update the selected staff's role.
+                        Task.Run(async () =>
+                        {
+                            SelectedStaffRole = await DatabaseHelper.GetStaffRoleByIdAsync(_selectedStaffId);
+                            OnPropertyChanged(nameof(CanViewSchedule));
+                            OnPropertyChanged(nameof(IsScheduleEditable));
+                        });
                     }
                 }
+            }
+        }
+
+        // Determines whether the selected schedule can be viewed.
+        public bool CanViewSchedule
+        {
+            get
+            {
+                // Owners can view everything.
+                if (CurrentUserRole == UserRole.Owner)
+                    return true;
+                // Admins can view any schedule if the schedule belongs to an admin;
+                // for other roles, they may view only their own schedule.
+                if (CurrentUserRole == UserRole.Admin)
+                {
+                    if (SelectedStaffRole == UserRole.Admin)
+                        return true;
+                    return SelectedStaffId == CurrentLoggedStaffId;
+                }
+                // Selling or Stock staff can view only their own schedule.
+                return SelectedStaffId == CurrentLoggedStaffId;
+            }
+        }
+
+        // Determines whether the schedule can be edited.
+        public bool IsScheduleEditable
+        {
+            get
+            {
+                // Owners can edit everything.
+                if (CurrentUserRole == UserRole.Owner)
+                    return true;
+                // Admins can edit only their own schedule.
+                if (CurrentUserRole == UserRole.Admin)
+                    return SelectedStaffId == CurrentLoggedStaffId;
+                // Selling and Stock staff cannot edit schedules.
+                return false;
             }
         }
 
         // Total weekly work hours computed from daily schedules.
         public double TotalWeeklyHours => DailySchedules.Sum(d => d.TotalWorkHours);
 
-        // Status message to show save confirmation.
+        // Save status message to display in the UI.
         private string _saveStatus;
         public string SaveStatus
         {
@@ -56,16 +113,29 @@ namespace Inv_M_Sys.ViewModels
             set => SetProperty(ref _saveStatus, value);
         }
 
-        // Constructor: initialize an empty schedule.
         public WeeklyScheduleViewModel()
         {
             DailySchedules = new ObservableCollection<DailyScheduleViewModel>();
+
+            // Set the current user's role and ID from SessionManager.
+            if (!string.IsNullOrEmpty(SessionManager.CurrentUserRole) &&
+                Enum.TryParse(SessionManager.CurrentUserRole, true, out UserRole loggedRole))
+            {
+                CurrentUserRole = loggedRole;
+            }
+            else
+            {
+                // Fallback default role if not set
+                CurrentUserRole = UserRole.SellingStaff;
+            }
+
+            CurrentLoggedStaffId = SessionManager.CurrentUserId.HasValue ? SessionManager.CurrentUserId.Value : 0;
         }
 
         /// <summary>
-        /// Loads staff names from the Users table based on the selected staff type.
+        /// Loads staff names from the database based on the given staff type.
         /// </summary>
-        /// <param name="staffType">The staff type (e.g., "SellingStaff", "StockStaff", or "Admin").</param>
+        /// <param name="staffType">The staff type (for example "SellingStaff" or "StockStaff").</param>
         public async Task LoadStaffNamesByType(string staffType)
         {
             try
@@ -73,6 +143,7 @@ namespace Inv_M_Sys.ViewModels
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     await conn.OpenAsync();
+                    // Query concatenates first and last name to form the full name.
                     string query = "SELECT FirstName || ' ' || LastName AS FullName FROM Users WHERE Role = @StaffType";
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
@@ -88,15 +159,15 @@ namespace Inv_M_Sys.ViewModels
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, "Error loading staff names in view model.");
             }
         }
 
         /// <summary>
-        /// Loads the weekly schedule for the selected staff.
-        /// If no schedule exists for this staff, load the default schedule.
+        /// Loads the weekly schedule for the selected staff from the database.
+        /// If no schedule exists for the staff, load a default schedule.
         /// </summary>
         private async void LoadStaffScheduleAsync()
         {
@@ -112,9 +183,8 @@ namespace Inv_M_Sys.ViewModels
             }
             else
             {
-                // No schedule exists for this staff—load default schedule.
-                var defaultSchedule = GetDefaultSchedule();
-                foreach (var day in defaultSchedule)
+                // If no schedule exists, load a default schedule.
+                foreach (var day in GetDefaultSchedule())
                 {
                     DailySchedules.Add(day);
                     day.PropertyChanged += (s, e) => OnPropertyChanged(nameof(TotalWeeklyHours));
@@ -124,7 +194,7 @@ namespace Inv_M_Sys.ViewModels
         }
 
         /// <summary>
-        /// Returns a new default weekly schedule.
+        /// Provides a default weekly schedule.
         /// </summary>
         private ObservableCollection<DailyScheduleViewModel> GetDefaultSchedule()
         {
@@ -141,7 +211,8 @@ namespace Inv_M_Sys.ViewModels
         }
 
         /// <summary>
-        /// Saves the current weekly schedule for the selected staff to the database.
+        /// Saves the current weekly schedule to the database for the selected staff.
+        /// Displays a temporary status message upon successful save.
         /// </summary>
         public async Task SaveScheduleAsync()
         {
@@ -151,12 +222,12 @@ namespace Inv_M_Sys.ViewModels
                 {
                     await DatabaseHelper.SaveDailyScheduleAsync(day, SelectedStaffId);
                 }
-                SaveStatus = "Changes saved";
+                SaveStatus = "Saving Changes";
                 await Task.Delay(2000);
                 SaveStatus = string.Empty;
                 OnPropertyChanged(nameof(TotalWeeklyHours));
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 SaveStatus = "Error saving changes";
                 Log.Error(ex, "Error saving weekly schedule");

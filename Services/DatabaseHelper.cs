@@ -9,6 +9,7 @@ using System.IO;
 using Inv_M_Sys.Services;
 using Inv_M_Sys.ViewModels;
 using Serilog;
+using Inv_M_Sys.Models;
 
 
 public static class DatabaseHelper
@@ -106,6 +107,39 @@ public static class DatabaseHelper
         }
     }
 
+    public static async Task<UserRole> GetStaffRoleByIdAsync(int staffId)
+    {
+        try
+        {
+            using (var conn = GetConnection())
+            {
+                await conn.OpenAsync();
+                string query = "SELECT Role FROM Users WHERE Id = @StaffId";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@StaffId", staffId);
+                    object result = await cmd.ExecuteScalarAsync();
+                    if (result != null)
+                    {
+                        // Normalize the role string by removing spaces.
+                        string roleStr = result.ToString().Replace(" ", "");
+                        if (Enum.TryParse<UserRole>(roleStr, true, out UserRole parsedRole))
+                        {
+                            return parsedRole;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error getting staff role by ID.");
+        }
+        // Return a default role if not found
+        return UserRole.SellingStaff;
+    }
+
+    #region schedule
     public static async Task<int> GetStaffIdByNameAsync(string fullName)
     {
         int id = 0;
@@ -260,6 +294,8 @@ public static class DatabaseHelper
             throw;
         }
     }
+
+    #endregion
 
     // This method will hash the password using SHA256
     public static string HashPassword(string password)

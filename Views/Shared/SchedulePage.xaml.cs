@@ -46,7 +46,7 @@ namespace Inv_M_Sys.Views.Shared
                 string staffType = selectedItem.Content.ToString();
                 // Only owners can plan for Admin staff.
                 var currentRole = ((WeeklyScheduleViewModel)DataContext).CurrentUserRole;
-                if (staffType == "Admin" && currentRole != "Owner")
+                if (staffType == "Admin" && currentRole.ToString() != "Owner")
                 {
                     MessageBox.Show("Only owners can plan for Admin staff.");
                     StaffTypeComboBox.SelectedIndex = -1;
@@ -69,7 +69,6 @@ namespace Inv_M_Sys.Views.Shared
             }
             else
             {
-                // Clear schedule if no staff is selected
                 var vm = DataContext as WeeklyScheduleViewModel;
                 if (vm != null)
                 {
