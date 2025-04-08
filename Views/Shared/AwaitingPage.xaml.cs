@@ -24,7 +24,7 @@ namespace Inv_M_Sys.Views.Shared
         {
             InitializeComponent();
             _homeWindow = homeWindow;
-            _ = LoadOrdersAsync();
+            FilterComboBox.SelectedIndex = 0;
         }
 
         #region Top Menu
@@ -71,28 +71,41 @@ namespace Inv_M_Sys.Views.Shared
 
                 try
                 {
-                    using (var conn = DatabaseHelper.GetConnection())
-                    {
-                        await conn.OpenAsync();
-                        using (var cmd = new NpgsqlCommand("DELETE FROM Orders WHERE Id = @Id", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@Id", SelectedOrder.Id);
-                            await cmd.ExecuteNonQueryAsync();
-                        }
-                    }
+                    await SoftDeleteOrderAsync(SelectedOrder.Id);
+
+                    Log.Information("Order #{OrderID} soft-deleted by user: {User}.", SelectedOrder.Id, SessionManager.CurrentUser?.Username ?? "Unknown");
 
                     MessageBox.Show("Order deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadOrdersAsync();
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Error deleting order.");
+                    Log.Error(ex, "Error soft-deleting order.");
                     MessageBox.Show($"Error deleting order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
                 MessageBox.Show("Please select an order to delete.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private async Task SoftDeleteOrderAsync(int orderId)
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            {
+                await conn.OpenAsync();
+                using (var cmd = new NpgsqlCommand(@"
+            UPDATE Orders 
+            SET IsDeleted = TRUE, 
+                DeletedAt = CURRENT_TIMESTAMP, 
+                DeletedBy = @User 
+            WHERE Id = @OrderID", conn))
+                {
+                    cmd.Parameters.AddWithValue("@OrderID", orderId);
+                    cmd.Parameters.AddWithValue("@User", SessionManager.CurrentUser?.Username ?? "Unknown");
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
         #endregion
@@ -162,6 +175,11 @@ namespace Inv_M_Sys.Views.Shared
         }
 
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadOrdersAsync();
+
+        private async void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            await LoadOrdersAsync();
+        }
         #endregion
 
         #region Helpers
@@ -174,7 +192,22 @@ namespace Inv_M_Sys.Views.Shared
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     await conn.OpenAsync();
-                    string query = "SELECT o.Id, c.FirstName || ' ' || c.LastName AS CustomerName, o.DeliveryDate, o.TotalPrice, o.Status FROM Orders o JOIN Customers c ON o.CustomerId = c.Id";
+
+                    // Determine the filter
+                    string filter = (FilterComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                    string query = @"
+                SELECT o.Id, c.FirstName || ' ' || c.LastName AS CustomerName,
+                       o.DeliveryDate, o.TotalPrice, o.Status
+                FROM Orders o
+                JOIN Customers c ON o.CustomerId = c.Id
+            ";
+
+                    if (filter == "Active Orders")
+                        query += " WHERE o.IsDeleted = FALSE";
+                    else if (filter == "Deleted Orders")
+                        query += " WHERE o.IsDeleted = TRUE";
+                    // else show all (no WHERE clause)
+
                     using (var cmd = new NpgsqlCommand(query, conn))
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {

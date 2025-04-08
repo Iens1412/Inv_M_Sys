@@ -7,17 +7,21 @@ using System;
 using System.Timers;
 using Inv_M_Sys.Views.Forms;
 using Inv_M_Sys.Views.Main;
+using Inv_M_Sys.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Inv_M_Sys.Services
 {
     public static class SessionManager
     {
+        public static User CurrentUser { get; private set; }
         public static int? CurrentUserId { get; private set; }
         public static int? CurrentOwnerId { get; private set; }
         public static string CurrentUserRole { get; private set; }
         public static string CurrentSessionToken { get; private set; }
         public static DateTime? SessionExpiry { get; private set; }
         private static System.Timers.Timer sessionTimer;
+        public static string CurrentUsername => CurrentUser?.Username ?? "Unknown";
 
         private const int SESSION_DURATION_MINUTES = 360;
 
@@ -52,7 +56,7 @@ namespace Inv_M_Sys.Services
 
         public static void CreateUserSession(string username)
         {
-            string query = "SELECT Id, Role FROM Users WHERE Username = @username";
+            string query = "SELECT Id, FirstName, LastName, Email, PhoneNumber, Address, Role, Username, Password FROM Users WHERE Username = @username";
             CreateSession(query, username, isOwner: false);
         }
 
@@ -78,38 +82,65 @@ namespace Inv_M_Sys.Services
                             {
                                 string token = GenerateSessionToken();
                                 DateTime expiryDate = DateTime.Now.AddMinutes(SESSION_DURATION_MINUTES);
-                                int userId = reader.GetInt32(0);
-                                string role = isOwner ? "Owner" : reader.GetString(1); // Fetch role for users
-
-                                reader.Close(); // ✅ Close before executing next command
 
                                 if (isOwner)
                                 {
-                                    CurrentOwnerId = userId;
-                                    CurrentUserRole = "Owner";
+                                    int ownerId = reader.GetInt32(0);
+                                    string role = reader.GetString(1);
+
+                                    // ❗ Close the reader before running new command
+                                    reader.Close();
+
+                                    CurrentOwnerId = ownerId;
+                                    if (role == "SuperAdmin")
+                                        CurrentUserRole = "Owner";
                                     CurrentSessionToken = token;
                                     SessionExpiry = expiryDate;
-                                    SaveSessionToDB(conn, "OwnerSessions", CurrentOwnerId.Value, token, expiryDate);
+
+                                    SaveSessionToDB(conn, "OwnerSessions", ownerId, token, expiryDate);
                                 }
                                 else
                                 {
+                                    int userId = reader.GetInt32(0);
+                                    string firstName = reader.GetString(1);
+                                    string lastName = reader.GetString(2);
+                                    string email = reader.GetString(3);
+                                    string phone = reader.GetString(4);
+                                    string address = reader.IsDBNull(5) ? "" : reader.GetString(5);
+                                    string role = reader.GetString(6);
+                                    string usernameDb = reader.GetString(7);
+                                    string password = reader.GetString(8);
+
+                                    // ❗ Close the reader before running new command
+                                    reader.Close();
+
+                                    CurrentUser = new User
+                                    {
+                                        UserID = userId,
+                                        FirstName = firstName,
+                                        LastName = lastName,
+                                        Email = email,
+                                        Phone = phone,
+                                        Address = address,
+                                        Role = Enum.Parse<UserRole>(role),
+                                        Username = usernameDb,
+                                        Password = password
+                                    };
+
                                     CurrentUserId = userId;
                                     CurrentUserRole = role;
                                     CurrentSessionToken = token;
                                     SessionExpiry = expiryDate;
-                                    SaveSessionToDB(conn, "UserSessions", CurrentUserId.Value, token, expiryDate);
+
+                                    SaveSessionToDB(conn, "UserSessions", userId, token, expiryDate);
                                 }
 
-                                // ✅ Show MessageBox AFTER session is stored
                                 MessageBox.Show($"Logged in as: {username}\nRole: {CurrentUserRole}\nSession Expires: {expiryDate}",
                                     "Session Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
 
-                            if (sessionTimer == null)
-                            {
-                                StartSessionTimer(); // ✅ Restart session timer for a new session
+                                if (sessionTimer == null)
+                                    StartSessionTimer();
                             }
-
                         }
                     }
                 }
@@ -171,6 +202,8 @@ namespace Inv_M_Sys.Services
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     MessageBox.Show("Logged out successfully.", "Logout", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    CurrentUser = null;
 
                     // ✅ Close HomeWindow if it's open
                     Window homeWindow = Application.Current.Windows.OfType<HomeWindow>().FirstOrDefault();

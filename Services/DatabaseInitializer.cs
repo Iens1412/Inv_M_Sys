@@ -66,17 +66,6 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
-            // table for the Schedule
-            cmd.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Schedule (
-                Id SERIAL PRIMARY KEY,
-                EmployeeName TEXT NOT NULL,
-                StartTime TIME NOT NULL,
-                EndTime TIME NOT NULL,
-                TotalHours DOUBLE PRECISION NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
-
             // Schedule Table
             cmd.CommandText = @"
                  CREATE TABLE IF NOT EXISTS Schedule (

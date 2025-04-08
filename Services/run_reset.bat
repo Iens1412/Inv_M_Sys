@@ -8,7 +8,4 @@ if "%choice%"=="1" (
     python reset_owner.py
 )
 
-if "%choice%"=="2" (
-    python reset_server.py
-)
 pause

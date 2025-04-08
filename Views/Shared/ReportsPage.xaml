@@ -202,6 +202,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -213,6 +214,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -225,7 +227,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="--"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -233,7 +236,7 @@
                     RenderTransformOrigin="-1.084,0.562" />
             </Grid>
 
-            <!-- Home Buttons  -->
+            <!--  Home Buttons  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -247,6 +250,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -265,6 +269,7 @@
                 <Button
                     Width="180"
                     Height="32"
+                    Click="ExpBtn_Click"
                     Content="Export"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -272,6 +277,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="NewBtn_Click"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -279,6 +285,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Click="DelBtn_Click"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -416,6 +423,7 @@
 
             <!--  Generate Report Container  -->
             <Border
+                x:Name="GenerateContainer"
                 Grid.Row="0"
                 Margin="0,0,0,20"
                 Padding="20"
@@ -423,7 +431,7 @@
                 BorderBrush="Black"
                 BorderThickness="2"
                 CornerRadius="40"
-                Visibility="Visible">
+                Visibility="Collapsed">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -472,9 +480,6 @@
                                     BorderThickness="1"
                                     FontSize="14">
                                     <ComboBoxItem Content="Sales Report" />
-                                    <ComboBoxItem Content="Stock Report" />
-                                    <ComboBoxItem Content="Restock Report" />
-                                    <ComboBoxItem Content="User Activity Report" />
                                 </ComboBox>
                             </StackPanel>
 
@@ -541,15 +546,27 @@
                     </ScrollViewer>
 
                     <!--  Generate Report Button  -->
-                    <Button
-                        Grid.Row="2"
-                        Width="180"
-                        Height="40"
-                        Margin="0,20,0,20"
-                        HorizontalAlignment="Center"
-                        Content="Generate Report"
-                        FontFamily="Times New Roman"
-                        Style="{StaticResource NewOrEditButtonStyle}" />
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button
+                            Width="180"
+                            Height="40"
+                            Margin="0,20,0,20"
+                            HorizontalAlignment="Center"
+                            Click="Generate_Click"
+                            Content="Generate Report"
+                            FontFamily="Times New Roman"
+                            Style="{StaticResource NewOrEditButtonStyle}" />
+
+                        <Button
+                            Width="180"
+                            Height="40"
+                            Margin="0,20,0,20"
+                            HorizontalAlignment="Center"
+                            Click="GenBack_Click"
+                            Content="Back"
+                            FontFamily="Times New Roman"
+                            Style="{StaticResource NewOrEditButtonStyle}" />
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -621,16 +638,19 @@
                         Orientation="Horizontal">
                         <Button
                             Background="Red"
+                            Click="ExportAsPDF_Click"
                             Content="Export as PDF"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Green"
+                            Click="ExportAsExcel_Click"
                             Content="Export as Excel"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Orange"
+                            Click="ExportAsCSV_Click"
                             Content="Export as CSV"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
@@ -640,6 +660,7 @@
                     <Button
                         Grid.Row="3"
                         Background="Gray"
+                        Click="ExpBack_Click"
                         Content="Back"
                         Style="{StaticResource RoundedExportButtonStyle}" />
                 </Grid>

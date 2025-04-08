@@ -255,6 +255,23 @@
             </StackPanel>
         </Grid>
 
+        <!--Combobox for the oreder that deletet or not-->
+        <ComboBox
+            x:Name="FilterComboBox"
+            HorizontalAlignment="Left"
+            Width="100"
+            Height="10"
+            Grid.Row="1"
+            Grid.Column="0"
+            MinHeight="30"
+            Margin="20,0,0,0"
+            SelectedIndex="0"
+            SelectionChanged="FilterComboBox_SelectionChanged">
+            <ComboBoxItem Content="Active Orders" />
+            <ComboBoxItem Content="Deleted Orders" />
+            <ComboBoxItem Content="All Orders" />
+        </ComboBox>
+
         <!--  Search and Refresh  -->
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
