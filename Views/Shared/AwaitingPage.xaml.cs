@@ -28,25 +28,31 @@ namespace Inv_M_Sys.Views.Shared
         }
 
         #region Top Menu
+        // Logs out the current user and ends their session.
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
+        // Safely shuts down the application after expiring the session.
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             SessionManager.ExpireSessionInDB();
             Application.Current.Shutdown();
         }
 
+        // Minimizes the current application window.
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
+        // Navigates back to the home dashboard window.
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
         #endregion
 
         #region ListView Selection & Open
+        // Updates the selected order when a new item is selected in the ListView.
         private void OrdersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedOrder = (Order)OrdersListView.SelectedItem;
         }
 
+        // Loads and displays detailed information of the selected order if available.
         private async void Open_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedOrder != null)
@@ -62,6 +68,8 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Delete
+
+        // Handles the soft deletion (logical deletion) of the selected order after confirmation.
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedOrder != null)
@@ -90,17 +98,18 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Executes the soft delete in the database by updating IsDeleted, DeletedAt, and DeletedBy fields.
         private async Task SoftDeleteOrderAsync(int orderId)
         {
             using (var conn = DatabaseHelper.GetConnection())
             {
                 await conn.OpenAsync();
                 using (var cmd = new NpgsqlCommand(@"
-            UPDATE Orders 
-            SET IsDeleted = TRUE, 
-                DeletedAt = CURRENT_TIMESTAMP, 
-                DeletedBy = @User 
-            WHERE Id = @OrderID", conn))
+                    UPDATE Orders 
+                    SET IsDeleted = TRUE, 
+                    DeletedAt = CURRENT_TIMESTAMP, 
+                    DeletedBy = @User 
+                    WHERE Id = @OrderID", conn))
                 {
                     cmd.Parameters.AddWithValue("@OrderID", orderId);
                     cmd.Parameters.AddWithValue("@User", SessionManager.CurrentUser?.Username ?? "Unknown");
@@ -111,6 +120,7 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Update Status
+        // Updates the status of the selected order based on the dropdown selection.
         private async void UpdateStatus_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedOrder == null)
@@ -149,6 +159,7 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Search & Refresh
+        // Searches the orders list based on selected search criteria and query input.
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             var query = RoundedTextBox.Text.ToLower();
@@ -174,8 +185,10 @@ namespace Inv_M_Sys.Views.Shared
             OrdersListView.ItemsSource = new ObservableCollection<Order>(filtered);
         }
 
+        // Reloads all orders from the database and updates the ListView.
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadOrdersAsync();
 
+        // Reloads filtered orders when the filter ComboBox (Active/Deleted/All) changes.
         private async void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             await LoadOrdersAsync();
@@ -183,6 +196,7 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Helpers
+        // Loads orders from the database based on the selected filter (Active, Deleted, or All).
         private async Task LoadOrdersAsync()
         {
             OrdersList.Clear();
@@ -234,6 +248,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Loads the items of a specific order from the database and displays them in the UI.
         private async Task LoadOrderItemsAsync(int orderId)
         {
             var items = new List<OrderItem>();
@@ -277,16 +292,19 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Makes the order information container visible to the user.
         private void ShowOrderInfo()
         {
             OrderInfoContainer.Visibility = Visibility.Visible;
         }
 
+        // Hides the order information container and resets its visibility.
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             OrderInfoContainer.Visibility = Visibility.Collapsed;
         }
 
+        // Updates the order object when a new status is selected from the ComboBox.
         private void StatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (SelectedOrder != null && StatusComboBox.SelectedItem is ComboBoxItem selectedItem)

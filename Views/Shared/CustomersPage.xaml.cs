@@ -34,6 +34,7 @@ namespace Inv_M_Sys.Views.Shared
         }
 
         #region User Checked
+        // Checks the current logged-in user’s role and adjusts access permissions accordingly.
         private void CheckUser()
         {
             string currentUserRole = SessionManager.CurrentUserRole;
@@ -63,6 +64,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Applies UI restrictions if the user is a StockStaff (no access to modify customers).
         private void ApplyRoleRestrictions()
         {
             if (_isStorageStaff)
@@ -79,6 +81,7 @@ namespace Inv_M_Sys.Views.Shared
         }
         #endregion
 
+        // Loads all customers from the database and populates the ObservableCollection.
         private async Task LoadCustomersAsync()
         {
             CustomersList.Clear();
@@ -119,22 +122,27 @@ namespace Inv_M_Sys.Views.Shared
 
 
         #region Top Menu Actions
+        // Logs the user out and ends the session.
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
+        // Closes the application and expires the current session.
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             SessionManager.ExpireSessionInDB();
             Application.Current.Shutdown();
         }
 
+        // Minimizes the application window.
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
+        // Navigates back to the Dashboard/Home page.
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
 
         #endregion
 
 
         #region Search and Refresh
+        // Searches customers based on selected field and query text.
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string query = SearchTextBox.Text.ToLower();
@@ -148,12 +156,14 @@ namespace Inv_M_Sys.Views.Shared
                     c.PhoneNumber.ToLower().Contains(query)));
         }
 
+        // Reloads customer data from the database and refreshes the list.
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadCustomersAsync();
 
         #endregion
 
 
         #region Buttons actions
+        // Opens the form to add a new customer. Restricted for StockStaff.
         private void New_Click(object sender, RoutedEventArgs e)
         {
             if (_isStorageStaff)
@@ -165,6 +175,7 @@ namespace Inv_M_Sys.Views.Shared
             ShowCustomerForm(isNew: true);
         }
 
+        // Opens the form to edit the selected customer. Restricted for StockStaff.
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             if (_isStorageStaff)
@@ -183,6 +194,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Deletes the selected customer after confirmation. Restricted for StockStaff.
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (_isStorageStaff)
@@ -224,6 +236,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Submits a new customer entry to the database after validation.
         private async void Submit_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
@@ -260,6 +273,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Updates the selected customer's information in the database after validation.
         private async void Update_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedCustomer == null)
@@ -305,6 +319,7 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        // Cancels the current form view and clears all input fields.
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Customer_Container.Visibility = Visibility.Collapsed;
@@ -315,6 +330,7 @@ namespace Inv_M_Sys.Views.Shared
 
 
         #region Form Control
+        // Clears all input fields in the customer form.
         private void ClearForm()
         {
             CompanyTextBox.Text = "";
@@ -326,6 +342,7 @@ namespace Inv_M_Sys.Views.Shared
             NotesTextBox.Text = "";
         }
 
+        // Validates required customer fields before saving or updating.
         private bool ValidateForm()
         {
             if (string.IsNullOrWhiteSpace(CompanyTextBox.Text) ||
@@ -339,6 +356,7 @@ namespace Inv_M_Sys.Views.Shared
             return true;
         }
 
+        // Displays the customer form and binds data depending on whether it's for a new or existing customer.
         private void ShowCustomerForm(bool isNew, Customer customer = null)
         {
             SelectedCustomer = customer;
@@ -366,6 +384,7 @@ namespace Inv_M_Sys.Views.Shared
         }
         #endregion
 
+        // Handles error logging using Serilog with fallback to local file logging if needed.
         private void LogError(Exception ex, string message)
         {
             try

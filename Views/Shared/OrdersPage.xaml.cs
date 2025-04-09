@@ -43,6 +43,9 @@ namespace Inv_M_Sys.Views.Shared
             _ = LoadCategoriesIntoComboBoxAsync();
         }
 
+        /// <summary>
+        /// Handles top menu actions like logout, close, minimize, and navigation.
+        /// </summary>
         #region Top Menu
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
@@ -57,7 +60,11 @@ namespace Inv_M_Sys.Views.Shared
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
         #endregion
 
+        /// <summary>
+        /// Loads customers from the database into the ListView.
+        /// </summary>
         #region Customer
+
         private async Task LoadCustomersAsync()
         {
             try
@@ -105,6 +112,9 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Products
+        /// <summary>
+        /// Loads products from the database filtered by selected category.
+        /// </summary>
         private async Task LoadProductsAsync(int categoryId)
         {
             ProductsList.Clear(); // Clear any previously loaded products
@@ -160,6 +170,9 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region Order
+        /// <summary>
+        /// Validates input and places the order by inserting data into Orders and OrderItems tables.
+        /// </summary>
         private async void PlaceOrderButton_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as OrdersViewModel;
@@ -248,10 +261,14 @@ namespace Inv_M_Sys.Views.Shared
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Error");
                 MessageBox.Show($"Error placing order: {ex.Message}");
             }
         }
-
+        
+        /// <summary>
+        /// Clears the order form UI fields and basket after placing or canceling an order.
+        /// </summary>
         private void ClearOrderForm()
         {
             OrderBasket.Clear();
@@ -261,6 +278,9 @@ namespace Inv_M_Sys.Views.Shared
             QuantityTextBox.Clear();
         }
 
+        /// <summary>
+        /// Cancels the order by clearing the form and basket.
+        /// </summary>
         private void CancelOrderButton_Click(object sender, RoutedEventArgs e)
         {
             // Clear all form data and reset the basket
@@ -269,6 +289,9 @@ namespace Inv_M_Sys.Views.Shared
         #endregion
 
         #region CategoryBox
+        /// <summary>
+        /// Loads all categories into the category ComboBox and auto-loads products for the first category.
+        /// </summary>
         private async Task LoadCategoriesIntoComboBoxAsync()
         {
             try
@@ -312,6 +335,9 @@ namespace Inv_M_Sys.Views.Shared
             }
         }
 
+        /// <summary>
+        /// Updates the product list when a new category is selected from the ComboBox.
+        /// </summary>
         private async void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CategoryComboBox.SelectedItem is Category selectedCategory)

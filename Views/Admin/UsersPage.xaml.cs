@@ -11,17 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System;
 using System.Security.Cryptography;
-using System.IO;
 using Serilog;
 
 namespace Inv_M_Sys.Views.Admin
@@ -44,6 +36,7 @@ namespace Inv_M_Sys.Views.Admin
             _ = LoadUsersAsync();
         }
 
+        //Checking roles 
         private void LoadRoles()
         {
             RoleComboBox.Items.Clear();
@@ -66,6 +59,7 @@ namespace Inv_M_Sys.Views.Admin
             RoleComboBox.SelectedIndex = 0; // Set default selection
         }
 
+        //Make sure everything is right and filled all needed info
         private bool ValidateUserInputs()
         {
             if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
@@ -101,16 +95,17 @@ namespace Inv_M_Sys.Views.Admin
             return true;
         }
 
+        //Toggle between password or text showing if no pass is entered
         private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
-
         private void ConfirmPasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             ConfirmPasswordPlaceholder.Visibility = string.IsNullOrEmpty(ConfirmPasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        //Check if pass word field is choosed or not
         private void PasswordTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -125,7 +120,6 @@ namespace Inv_M_Sys.Views.Admin
                 }
             }
         }
-
         private void PasswordTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -141,6 +135,7 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
+        //Control buttons to open container or allowing editing by preading the info or deleting user
         private void New_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
@@ -224,6 +219,7 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
+        //top minue control for navigation and loing out
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -236,6 +232,8 @@ namespace Inv_M_Sys.Views.Admin
 
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
 
+
+        //functions to search specifc item or refresh the page
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string query = RoundedTextBox.Text.ToLower();
@@ -250,6 +248,7 @@ namespace Inv_M_Sys.Views.Admin
 
         private void Refresh_Click(object sender, RoutedEventArgs e) => _ = LoadUsersAsync();
 
+        //control adding or updating data to the database
         private async void Submit_Click(object sender, RoutedEventArgs e)
         {
             await AddUserAsync(); // Call the async method
@@ -482,6 +481,5 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
     }
-
 }
 

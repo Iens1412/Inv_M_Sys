@@ -40,6 +40,9 @@ namespace Inv_M_Sys.ViewModels
             RemoveFromBasketCommand = new RelayCommand<OrderItem>(RemoveFromBasket, CanRemoveFromBasket);
         }
 
+        /// <summary>
+        /// Adds the selected product and quantity to the order basket if valid.
+        /// </summary>
         private void AddToBasket(object parameter)
         {
             if (SelectedProduct != null && Quantity > 0)
@@ -73,6 +76,9 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the selected item from the basket.
+        /// </summary>
         private void RemoveFromBasket(OrderItem orderItem)
         {
             if (orderItem != null)
@@ -81,6 +87,9 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        /// <summary>
+        /// Determines if a product can be added to the basket.
+        /// </summary>
         private bool CanAddToBasket(object parameter)
         {
             bool canExecute = SelectedProduct != null && Quantity > 0;
@@ -88,6 +97,9 @@ namespace Inv_M_Sys.ViewModels
             return canExecute;
         }
 
+        /// <summary>
+        /// Determines if a basket item can be removed.
+        /// </summary>
         private bool CanRemoveFromBasket(OrderItem orderItem)
         {
             return orderItem != null;

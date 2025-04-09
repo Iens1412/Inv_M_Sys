@@ -31,13 +31,15 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
-            // Orders Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Orders (
                 Id SERIAL PRIMARY KEY,
                 CustomerId INTEGER REFERENCES Customers(Id) ON DELETE CASCADE,
                 DeliveryDate DATE NOT NULL,
                 TotalPrice NUMERIC NOT NULL,
-                Status TEXT NOT NULL DEFAULT 'Pending'
+                Status TEXT NOT NULL DEFAULT 'Pending',
+                IsDeleted BOOLEAN NOT NULL DEFAULT FALSE,
+                DeletedAt TIMESTAMP WITHOUT TIME ZONE,
+                DeletedBy VARCHAR(100)
             );";
             cmd.ExecuteNonQuery();
 

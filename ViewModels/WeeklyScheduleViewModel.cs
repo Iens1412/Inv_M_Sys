@@ -56,6 +56,9 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        /// <summary>
+        /// Indicates if the currently logged-in user is allowed to view the selected staff's schedule.
+        /// </summary>
         public bool CanViewSchedule
         {
             get
@@ -106,6 +109,10 @@ namespace Inv_M_Sys.ViewModels
             DailySchedules = new ObservableCollection<DailyScheduleViewModel>();
         }
 
+        /// <summary>
+        /// Loads weekly schedule for selected staff member.
+        /// If not found, loads default schedule.
+        /// </summary>
         public async Task LoadStaffNamesByType(string staffType)
         {
             try
@@ -165,6 +172,9 @@ namespace Inv_M_Sys.ViewModels
             };
         }
 
+        /// <summary>
+        /// Saves the current weekly schedule for the selected staff.
+        /// </summary>
         public async Task SaveScheduleAsync()
         {
             try
