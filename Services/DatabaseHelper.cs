@@ -10,6 +10,7 @@ using Inv_M_Sys.Services;
 using Inv_M_Sys.ViewModels;
 using Serilog;
 using Inv_M_Sys.Models;
+using System.Diagnostics;
 
 
 public static class DatabaseHelper
@@ -28,55 +29,106 @@ public static class DatabaseHelper
             using (var conn = GetConnection())
             {
                 conn.Open();
-                Console.WriteLine("✅ Database connection successful!");
-                MessageBox.Show("✅ Database connection successful!", "Database Connected", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Connected to DB: {conn.Database}", "Database Info", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                if (conn.State == ConnectionState.Open)
+                if (!DoesTableExist(conn, "owner"))
                 {
-                    if (!IsDatabaseInitialized()) // Only initialize if not already initialized
-                    {
-                        try
-                        {
-                            MessageBox.Show("🔹 First-time setup: Initializing database...");
-                            DatabaseInitializer.InitializeDatabase(conn);
-                            MessageBox.Show("✅ Database Initialized Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"❌ Database Initialization Failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("✅ Database already initialized. Skipping setup.");
-                    }
+                    MessageBox.Show("🔹 First-time setup: Initializing database...");
+                    DatabaseInitializer.InitializeDatabase(conn);
+                    MessageBox.Show("✅ Database Initialized Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    Console.WriteLine("✅ Database already initialized.");
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("❌ Database connection failed: " + ex.Message);
-            MessageBox.Show("❌ Database connection failed: " + ex.Message, "Database Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("❌ Database connection failed: " + ex.Message, "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
-    public static bool IsDatabaseInitialized()
+    private static bool DoesTableExist(NpgsqlConnection conn, string tableName)
     {
         try
         {
-            using (var conn = GetConnection())
+            string query = @"SELECT COUNT(*) 
+                         FROM information_schema.tables 
+                         WHERE table_schema = 'public' 
+                         AND table_name = @tableName";
+
+            using (var cmd = new NpgsqlCommand(query, conn))
             {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'", conn))
-                {
-                    int tableCount = Convert.ToInt32(cmd.ExecuteScalar());
-                    return tableCount > 0; // If tables exist, the database is initialized
-                }
+                cmd.Parameters.AddWithValue("@tableName", tableName.ToLower()); // PostgreSQL stores unquoted names in lowercase
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
+                return count > 0;
             }
         }
-        catch (Exception)
+        catch
         {
-            return false; // If connection fails, assume DB is not initialized
+            return false;
+        }
+    }
+
+    public static void StartDockerIfNotRunning()
+    {
+        try
+        {
+            var checkProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "docker",
+                    Arguments = "ps -q -f name=inventory_db",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            checkProcess.Start();
+            string output = checkProcess.StandardOutput.ReadToEnd();
+            checkProcess.WaitForExit();
+
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                MessageBox.Show("🔄 Starting Docker container...");
+
+                var startProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "docker-compose",
+                        Arguments = "up -d",
+                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                startProcess.Start();
+                string log = startProcess.StandardOutput.ReadToEnd();
+                string err = startProcess.StandardError.ReadToEnd();
+                startProcess.WaitForExit();
+
+                if (startProcess.ExitCode == 0)
+                {
+                    MessageBox.Show("✅ Docker container started.");
+                }
+                else
+                {
+                    MessageBox.Show($"❌ Failed to start Docker:\n{err}", "Docker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                Console.WriteLine("✅ Docker container is already running.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"❌ Error checking or starting Docker: {ex.Message}", "Docker Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

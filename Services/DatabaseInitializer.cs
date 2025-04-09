@@ -31,6 +31,46 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
+            // Products Table
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Products (
+                Id SERIAL PRIMARY KEY,
+                ProductName TEXT NOT NULL,
+                CategoryId INT NOT NULL,  -- Foreign Key
+                Quantity INTEGER NOT NULL,
+                Price NUMERIC NOT NULL,
+                MinQuantity INTEGER NOT NULL,
+                Supplier TEXT NOT NULL,
+                Description TEXT,
+                FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
+            );";
+            cmd.ExecuteNonQuery();
+
+            // Users Table
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Users (
+                Id SERIAL PRIMARY KEY,
+                FirstName TEXT NOT NULL,
+                LastName TEXT NOT NULL,
+                Email TEXT NOT NULL,
+                PhoneNumber TEXT NOT NULL,
+                Username TEXT NOT NULL UNIQUE,
+                Password TEXT NOT NULL,
+                Address TEXT,
+                Role TEXT NOT NULL
+            );";
+            cmd.ExecuteNonQuery();
+
+            // ✅ Create Owner Table
+            cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS Owner (
+                Id SERIAL PRIMARY KEY,
+                Username TEXT NOT NULL UNIQUE,
+                Password TEXT NOT NULL,
+                Role TEXT NOT NULL
+            );";
+            cmd.ExecuteNonQuery();
+
+
+            //Orders Tabke
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Orders (
                 Id SERIAL PRIMARY KEY,
                 CustomerId INTEGER REFERENCES Customers(Id) ON DELETE CASCADE,
@@ -51,20 +91,6 @@ public static class DatabaseInitializer
                 Quantity INTEGER NOT NULL,
                 Price NUMERIC NOT NULL,  -- Price at the time of order
                 TotalPrice NUMERIC NOT NULL -- Price * Quantity
-            );";
-            cmd.ExecuteNonQuery();
-
-            // Products Table
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Products (
-                Id SERIAL PRIMARY KEY,
-                ProductName TEXT NOT NULL,
-                CategoryId INT NOT NULL,  -- Foreign Key
-                Quantity INTEGER NOT NULL,
-                Price NUMERIC NOT NULL,
-                MinQuantity INTEGER NOT NULL,
-                Supplier TEXT NOT NULL,
-                Description TEXT,
-                FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
             );";
             cmd.ExecuteNonQuery();
 
@@ -107,30 +133,7 @@ public static class DatabaseInitializer
                 Status TEXT NOT NULL
             );";
 
-            cmd.ExecuteNonQuery();
-            // Users Table
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Users (
-                Id SERIAL PRIMARY KEY,
-                FirstName TEXT NOT NULL,
-                LastName TEXT NOT NULL,
-                Email TEXT NOT NULL,
-                PhoneNumber TEXT NOT NULL,
-                Username TEXT NOT NULL UNIQUE,
-                Password TEXT NOT NULL,
-                Address TEXT,
-                Role TEXT NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
-
-            // ✅ Create Owner Table
-            cmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS Owner (
-                Id SERIAL PRIMARY KEY,
-                Username TEXT NOT NULL UNIQUE,
-                Password TEXT NOT NULL,
-                Role TEXT NOT NULL
-            );";
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();        
 
             // 🔹 **Check if an Owner Exists**
             cmd.CommandText = "SELECT COUNT(*) FROM Owner";
