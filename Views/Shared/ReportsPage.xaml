@@ -361,43 +361,41 @@
 
         <!--  List for the info  -->
         <Grid Grid.Row="2" Grid.Column="1">
-            <!--  Outer Container  -->
-            <Border
-                Margin="10"
-                Padding="10"
-                Background="#FFFFFF"
-                BorderBrush="#CCCCCC"
-                BorderThickness="1"
-                CornerRadius="15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
 
+            <!-- Saved Reports -->
+            <Border Grid.Column="0" Margin="10" Padding="10" Background="White" CornerRadius="10">
                 <StackPanel>
-                    <!--  Reports ListView  -->
-                    <ListView
-                        x:Name="SalesListView"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        AlternationCount="2"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Visibility="Visible">
+                    <TextBlock Text="Saved Reports" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+                    <ListView x:Name="ReportsListView" SelectionChanged="ReportsListView_SelectionChanged">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn
-                                    Width="40"
-                                    DisplayMemberBinding="{Binding SaleID}"
-                                    Header="ID" />
-                                <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Product}"
-                                    Header="Title" />
-                                <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Amount}"
-                                    Header="Description" />
-                                <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Date" />
+                                <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Id}" />
+                                <GridViewColumn Header="Title" Width="150" DisplayMemberBinding="{Binding ReportTitle}" />
+                                <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding ReportType}" />
+                                <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding Status}" />
+                                <GridViewColumn Header="Created" Width="150" DisplayMemberBinding="{Binding Date}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+            <!-- Report Details -->
+            <Border Grid.Column="1" Margin="10" Padding="10" Background="White" CornerRadius="10">
+                <StackPanel>
+                    <TextBlock Text="Report Details" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+                    <ListView x:Name="SalesListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AlternationCount="2" Background="Transparent" BorderThickness="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="50" Header="Order ID" DisplayMemberBinding="{Binding Id}" />
+                                <GridViewColumn Width="150" Header="Customer" DisplayMemberBinding="{Binding CustomerName}" />
+                                <GridViewColumn Width="130" Header="Date" DisplayMemberBinding="{Binding DeliveryDate}" />
+                                <GridViewColumn Width="100" Header="Total" DisplayMemberBinding="{Binding TotalPrice}" />
+                                <GridViewColumn Width="100" Header="Status" DisplayMemberBinding="{Binding Status}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -537,7 +535,7 @@
                                     FontSize="14">
                                     <ComboBoxItem Content="All" />
                                     <ComboBoxItem Content="Pending" />
-                                    <ComboBoxItem Content="Completed" />
+                                    <ComboBoxItem Content="Delivered" />
                                     <ComboBoxItem Content="Cancelled" />
                                 </ComboBox>
                             </StackPanel>

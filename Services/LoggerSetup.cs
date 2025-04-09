@@ -8,7 +8,7 @@ namespace Inv_M_Sys.Services
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File("app_log.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 10485760, retainedFileCountLimit: 7)
+                .WriteTo.File("Logs/app_log.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 10485760, retainedFileCountLimit: 7)
                 .MinimumLevel.Information()
                 .CreateLogger();
         }

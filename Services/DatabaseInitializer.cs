@@ -94,6 +94,18 @@ public static class DatabaseInitializer
             );";
             cmd.ExecuteNonQuery();
 
+            // ReportDetails table (NEW!)
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS ReportDetails (
+                Id SERIAL PRIMARY KEY,
+                ReportId INTEGER NOT NULL REFERENCES Reports(Id) ON DELETE CASCADE,
+                OrderId INTEGER NOT NULL,
+                CustomerName TEXT NOT NULL,
+                DeliveryDate DATE NOT NULL,
+                TotalPrice NUMERIC NOT NULL,
+                Status TEXT NOT NULL
+            );";
+
+            cmd.ExecuteNonQuery();
             // Users Table
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS Users (
                 Id SERIAL PRIMARY KEY,
