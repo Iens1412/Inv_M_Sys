@@ -13,42 +13,65 @@ namespace Inv_M_Sys.Commands
         private readonly Func<T, bool> _canExecute;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand{T}"/> class.
+        /// Initializes a new instance of the RelayCommand class.
         /// </summary>
         /// <param name="execute">The action to execute.</param>
-        /// <param name="canExecute">The condition that determines whether the command can execute.</param>
+        /// <param name="canExecute">The function that determines whether the command can execute.</param>
         public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        /// <summary>
-        /// Determines whether the command can execute with the provided parameter.
-        /// </summary>
-        /// <param name="parameter">The command parameter.</param>
-        /// <returns>true if the command can execute; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool CanExecute(object parameter)
         {
             if (parameter is T castParam || parameter == null)
                 return _canExecute == null || _canExecute((T)parameter);
-
             return false;
         }
 
-        /// <summary>
-        /// Executes the command action with the provided parameter.
-        /// </summary>
-        /// <param name="parameter">The command parameter.</param>
+        /// <inheritdoc />
         public void Execute(object parameter)
         {
-            if (parameter is T || parameter == null)
+            if (parameter is T castParam || parameter == null)
                 _execute((T)parameter);
         }
 
+        /// <inheritdoc />
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+    }
+
+    /// <summary>
+    /// A non-generic implementation of ICommand for parameterless actions.
+    /// </summary>
+    public class RelayCommand : ICommand
+    {
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
+
         /// <summary>
-        /// Occurs when changes affect whether the command should execute.
+        /// Initializes a new instance of the RelayCommand class.
         /// </summary>
+        /// <param name="execute">The action to execute.</param>
+        /// <param name="canExecute">The function that determines whether the command can execute.</param>
+        public RelayCommand(Action execute, Func<bool> canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        /// <inheritdoc />
+        public bool CanExecute(object parameter) => _canExecute?.Invoke() ?? true;
+
+        /// <inheritdoc />
+        public void Execute(object parameter) => _execute();
+
+        /// <inheritdoc />
         public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;

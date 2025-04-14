@@ -238,7 +238,7 @@
                 <Button
                     Width="180"
                     Height="32"
-                    Click="Open_Click"
+                    Command="{Binding OpenCommand}"
                     Content="Open"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -246,7 +246,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
-                    Click="Delete_Click"
+                    Command="{Binding DeleteCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -255,22 +255,19 @@
             </StackPanel>
         </Grid>
 
-        <!--Combobox for the oreder that deletet or not-->
+        <!--  Combobox for the oreder that deletet or not  -->
         <ComboBox
             x:Name="FilterComboBox"
-            HorizontalAlignment="Left"
-            Width="100"
-            Height="10"
             Grid.Row="1"
             Grid.Column="0"
+            Width="100"
+            Height="10"
             MinHeight="30"
             Margin="20,0,0,0"
+            HorizontalAlignment="Left"
+            ItemsSource="{Binding FilterOptions}"
             SelectedIndex="0"
-            SelectionChanged="FilterComboBox_SelectionChanged">
-            <ComboBoxItem Content="Active Orders" />
-            <ComboBoxItem Content="Deleted Orders" />
-            <ComboBoxItem Content="All Orders" />
-        </ComboBox>
+            SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" />
 
         <!--  Search and Refresh  -->
         <Grid Grid.Row="1" Grid.Column="1">
@@ -300,13 +297,9 @@
                 FontWeight="SemiBold"
                 Foreground="Black"
                 IsEditable="False"
-                SelectedIndex="0">
-                <!--  IsEditable set to False to prevent typing  -->
-                <ComboBoxItem Content="Order ID" />
-                <ComboBoxItem Content="Customer" />
-                <ComboBoxItem Content="Delivery Date" />
-                <ComboBoxItem Content="Status" />
-            </ComboBox>
+                ItemsSource="{Binding SearchCriteriaOptions}"
+                SelectedIndex="0"
+                SelectedItem="{Binding SelectedSearchCriteria, Mode=TwoWay}" />
 
             <!--  search bar  -->
             <Grid Grid.Column="1">
@@ -338,7 +331,8 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Border>
             </Grid>
@@ -349,7 +343,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
-                    Click="Search_Click"
+                    Command="{Binding SearchCommand}"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -358,7 +352,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
-                    Click="Refresh_Click"
+                    Command="{Binding RefreshCommand}"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -386,7 +380,8 @@
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
-                        SelectionChanged="OrdersListView_SelectionChanged"
+                        ItemsSource="{Binding OrdersList}"
+                        SelectedItem="{Binding SelectedOrder}"
                         Visibility="Visible">
                         <ListView.View>
                             <GridView>
@@ -417,20 +412,20 @@
             </Border>
         </Grid>
 
-        <!--  Container To Show and edit Info  -->
+        <!-- Continer for the order info -->
         <Border
-            x:Name="OrderInfoContainer"
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Grid.Column="1"
-            Margin="20"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="#E8E8E8"
-            BorderBrush="Black"
-            BorderThickness="2"
-            CornerRadius="40"
-            Visibility="Collapsed">
+    x:Name="OrderInfoContainer"
+    Grid.Row="1"
+    Grid.RowSpan="2"
+    Grid.Column="1"
+    Margin="20"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    Background="#E8E8E8"
+    BorderBrush="Black"
+    BorderThickness="2"
+    CornerRadius="40"
+    Visibility="Collapsed">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -439,17 +434,17 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!--  Title  -->
+                <!-- Title -->
                 <TextBlock
-                    Grid.Row="0"
-                    Margin="0,10"
-                    HorizontalAlignment="Center"
-                    FontFamily="Times New Roman"
-                    FontSize="24"
-                    FontWeight="Bold"
-                    Text="Order Information" />
+            Grid.Row="0"
+            Margin="0,10"
+            HorizontalAlignment="Center"
+            FontFamily="Times New Roman"
+            FontSize="24"
+            FontWeight="Bold"
+            Text="Order Information" />
 
-                <!--  Scrollable Form  -->
+                <!-- Scrollable Form -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
@@ -463,134 +458,81 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!--  Order ID  -->
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Order ID" />
+                        <!-- Order ID -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Order ID" />
                             <TextBox
-                                x:Name="OrderIdTextBox"
-                                Background="Transparent"
-                                BorderBrush="Violet"
-                                BorderThickness="0,0,0,2"
-                                FontSize="14"
-                                IsReadOnly="True" />
+                        Background="Transparent"
+                        BorderBrush="Violet"
+                        BorderThickness="0,0,0,2"
+                        FontSize="14"
+                        IsReadOnly="True"
+                        Text="{Binding SelectedOrder.Id}" />
                         </StackPanel>
 
-                        <!--  Customer Name  -->
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Customer" />
+                        <!-- Customer Name -->
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Customer" />
                             <TextBox
-                                x:Name="CustomerNameTextBox"
-                                Background="Transparent"
-                                BorderBrush="Violet"
-                                BorderThickness="0,0,0,2"
-                                FontSize="14"
-                                IsReadOnly="True" />
+                        Background="Transparent"
+                        BorderBrush="Violet"
+                        BorderThickness="0,0,0,2"
+                        FontSize="14"
+                        IsReadOnly="True"
+                        Text="{Binding SelectedOrder.CustomerName}" />
                         </StackPanel>
 
-                        <!--  Delivery Date  -->
-                        <StackPanel
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Delivery Date" />
+                        <!-- Delivery Date -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Delivery Date" />
                             <TextBox
-                                x:Name="DeliveryDateTextBox"
-                                Background="Transparent"
-                                BorderBrush="Violet"
-                                BorderThickness="0,0,0,2"
-                                FontSize="14"
-                                IsReadOnly="True" />
+                        Background="Transparent"
+                        BorderBrush="Violet"
+                        BorderThickness="0,0,0,2"
+                        FontSize="14"
+                        IsReadOnly="True"
+                        Text="{Binding SelectedOrder.DeliveryDate, StringFormat='yyyy-MM-dd'}" />
                         </StackPanel>
 
-                        <!--  Total Price  -->
-                        <StackPanel
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Total Price" />
+                        <!-- Total Price -->
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Total Price" />
                             <TextBox
-                                x:Name="TotalPriceTextBox"
-                                Background="Transparent"
-                                BorderBrush="Violet"
-                                BorderThickness="0,0,0,2"
-                                FontSize="14"
-                                IsReadOnly="True" />
+                        Background="Transparent"
+                        BorderBrush="Violet"
+                        BorderThickness="0,0,0,2"
+                        FontSize="14"
+                        IsReadOnly="True"
+                        Text="{Binding SelectedOrder.TotalPrice, StringFormat=F2}" />
                         </StackPanel>
 
-                        <!--  Status ComboBox  -->
-                        <StackPanel
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Status" />
+                        <!-- Status -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Status" />
                             <ComboBox
-                                x:Name="StatusComboBox"
-                                Height="30"
-                                BorderBrush="Violet"
-                                BorderThickness="1"
-                                FontSize="14"
-                                SelectionChanged="StatusComboBox_SelectionChanged">
-                                <ComboBoxItem Content="Pending" />
-                                <ComboBoxItem Content="Delivered" />
-                                <ComboBoxItem Content="Cancelled" />
-                            </ComboBox>
+                        BorderBrush="Violet"
+                        BorderThickness="1"
+                        FontSize="14"
+                        ItemsSource="{Binding StatusOptions}"
+                        SelectedItem="{Binding SelectedOrder.Status, Mode=TwoWay}" />
                         </StackPanel>
 
-                        <!--  Order Items List  -->
-                        <StackPanel
-                            Grid.Row="3"
-                            Grid.ColumnSpan="2"
-                            Margin="10">
-                            <TextBlock
-                                Margin="0,0,0,5"
-                                FontWeight="Bold"
-                                Text="Order Items" />
+                        <!-- Order Items -->
+                        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="10">
+                            <TextBlock Margin="0,0,0,5" FontWeight="Bold" Text="Order Items" />
                             <ListView
-                                x:Name="OrderItemsListView"
-                                Height="150"
-                                AlternationCount="2"
-                                Background="White"
-                                BorderBrush="Violet"
-                                BorderThickness="1">
+                        Height="150"
+                        AlternationCount="2"
+                        Background="White"
+                        BorderBrush="Violet"
+                        BorderThickness="1"
+                        ItemsSource="{Binding OrderItems}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn
-                                            Width="200"
-                                            DisplayMemberBinding="{Binding Product.Name}"
-                                            Header="Product" />
-                                        <GridViewColumn
-                                            Width="80"
-                                            DisplayMemberBinding="{Binding Quantity}"
-                                            Header="Quantity" />
-                                        <GridViewColumn
-                                            Width="80"
-                                            DisplayMemberBinding="{Binding Product.Price}"
-                                            Header="Price" />
-                                        <GridViewColumn
-                                            Width="100"
-                                            DisplayMemberBinding="{Binding TotalPrice}"
-                                            Header="Total" />
+                                        <GridViewColumn Width="200" DisplayMemberBinding="{Binding Product.Name}" Header="Product" />
+                                        <GridViewColumn Width="80" DisplayMemberBinding="{Binding Quantity}" Header="Quantity" />
+                                        <GridViewColumn Width="80" DisplayMemberBinding="{Binding Product.Price}" Header="Price" />
+                                        <GridViewColumn Width="100" DisplayMemberBinding="{Binding TotalPrice}" Header="Total" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -598,28 +540,23 @@
                     </Grid>
                 </ScrollViewer>
 
-                <StackPanel
-                    Grid.Row="2"
-                    Margin="10"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-
+                <!-- Action Buttons -->
+                <StackPanel Grid.Row="2" Margin="10" HorizontalAlignment="Center" Orientation="Horizontal">
                     <Button
-                        Width="150"
-                        Height="40"
-                        Click="UpdateStatus_Click"
-                        Content="Update"
-                        FontFamily="Times New Roman"
-                        Style="{StaticResource NewOrEditButtonStyle}" />
-
+                Width="150"
+                Height="40"
+                Command="{Binding UpdateStatusCommand}"
+                Content="Update"
+                FontFamily="Times New Roman"
+                Style="{StaticResource NewOrEditButtonStyle}" />
                     <Button
-                        Width="150"
-                        Height="40"
-                        Margin="10,0,0,0"
-                        Click="Back_Click"
-                        Content="Back"
-                        FontFamily="Times New Roman"
-                        Style="{StaticResource BackButtonStyle}" />
+                Width="150"
+                Height="40"
+                Margin="10,0,0,0"
+                Click="Back_Click"
+                Content="Back"
+                FontFamily="Times New Roman"
+                Style="{StaticResource BackButtonStyle}" />
                 </StackPanel>
             </Grid>
         </Border>

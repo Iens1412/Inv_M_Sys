@@ -47,6 +47,7 @@
             </Style.Triggers>
         </Style>
 
+        <!--  Combobox style  -->
         <Style x:Key="CustomComboBoxStyle" TargetType="ComboBox">
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -57,36 +58,36 @@
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
                             <Border
-                        x:Name="Border"
-                        Background="White"
-                        BorderBrush="Violet"
-                        BorderThickness="2"
-                        CornerRadius="4">
+                                x:Name="Border"
+                                Background="White"
+                                BorderBrush="Violet"
+                                BorderThickness="2"
+                                CornerRadius="4">
                                 <Grid>
                                     <ContentPresenter
-                                x:Name="ContentSite"
-                                Margin="10,0,30,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding SelectionBoxItem}"
-                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+                                        x:Name="ContentSite"
+                                        Margin="10,0,30,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Content="{TemplateBinding SelectionBoxItem}"
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
 
                                     <Path
-                                x:Name="Arrow"
-                                Margin="0,0,10,0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Data="M 0 0 L 4 4 L 8 0 Z"
-                                Fill="Violet" />
+                                        x:Name="Arrow"
+                                        Margin="0,0,10,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Data="M 0 0 L 4 4 L 8 0 Z"
+                                        Fill="Violet" />
 
-                                    <!-- Transparent full-area button without hover -->
+                                    <!--  Transparent full-area button without hover  -->
                                     <ToggleButton
-                                x:Name="DropDownToggle"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Focusable="False"
-                                IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                        x:Name="DropDownToggle"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Focusable="False"
+                                        IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                         <ToggleButton.Template>
                                             <ControlTemplate TargetType="ToggleButton">
                                                 <Border Background="Transparent">
@@ -99,22 +100,22 @@
                             </Border>
 
                             <Popup
-                        x:Name="Popup"
-                        AllowsTransparency="True"
-                        Focusable="False"
-                        IsOpen="{TemplateBinding IsDropDownOpen}"
-                        Placement="Bottom"
-                        PopupAnimation="Slide">
+                                x:Name="Popup"
+                                AllowsTransparency="True"
+                                Focusable="False"
+                                IsOpen="{TemplateBinding IsDropDownOpen}"
+                                Placement="Bottom"
+                                PopupAnimation="Slide">
                                 <Grid
-                            x:Name="DropDown"
-                            MinWidth="{TemplateBinding ActualWidth}"
-                            MaxHeight="200"
-                            SnapsToDevicePixels="True">
+                                    x:Name="DropDown"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    MaxHeight="200"
+                                    SnapsToDevicePixels="True">
                                     <Border
-                                x:Name="DropDownBorder"
-                                Background="White"
-                                BorderBrush="Violet"
-                                BorderThickness="2" />
+                                        x:Name="DropDownBorder"
+                                        Background="White"
+                                        BorderBrush="Violet"
+                                        BorderThickness="2" />
                                     <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -122,7 +123,7 @@
                             </Popup>
                         </Grid>
 
-                        <!-- Only Border hover effect -->
+                        <!--  Only Border hover effect  -->
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Border" Property="BorderBrush" Value="#FF9A00D8" />
@@ -142,7 +143,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
 
         <!--  Placeholder Text Visibility Converter  -->
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
@@ -265,6 +265,7 @@
                         Height="auto"
                         Background="Transparent"
                         BorderThickness="0"
+                        SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
                         SelectionChanged="CustomersListView_SelectionChanged">
                         <ListView.View>
                             <GridView>
@@ -438,10 +439,14 @@
                     BorderBrush="Violet"
                     BorderThickness="1"
                     DisplayDateStart="{x:Static sys:DateTime.Today}"
-                    FontSize="14" />
+                    FontSize="14"
+                    SelectedDate="{Binding DeliveryDate, Mode=TwoWay}" />
 
                 <!--  Buttons Stacked Vertically  -->
-                <StackPanel Margin="10,100,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                <StackPanel
+                    Margin="10,100,0,0"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal">
                     <Button
                         Width="150"
                         Height="40"
@@ -454,9 +459,9 @@
                     <Button
                         Width="150"
                         Height="40"
-                        Background="Red"
-                        Click="CancelOrderButton_Click"
-                        Content="Cancel"
+                        Background="Orange"
+                        Command="{Binding ClearBasketCommand}"
+                        Content="Clear Basket"
                         Foreground="White"
                         Style="{StaticResource RoundedButtonStyle}" />
                 </StackPanel>

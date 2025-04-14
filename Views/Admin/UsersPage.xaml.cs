@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System;
 using System.Security.Cryptography;
 using Serilog;
+using Inv_M_Sys.Services.Pages_Services;
 
 namespace Inv_M_Sys.Views.Admin
 {
@@ -36,7 +37,7 @@ namespace Inv_M_Sys.Views.Admin
             _ = LoadUsersAsync();
         }
 
-        //Checking roles 
+        //Checking roles and load it to the combobox
         private void LoadRoles()
         {
             RoleComboBox.Items.Clear();
@@ -60,33 +61,71 @@ namespace Inv_M_Sys.Views.Admin
         }
 
         //Make sure everything is right and filled all needed info
-        private bool ValidateUserInputs()
+        private bool ValidateNewUserInputs()
         {
-            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
-                string.IsNullOrWhiteSpace(LastNameTextBox.Text) ||
-                string.IsNullOrWhiteSpace(EmailTextBox.Text) ||
-                string.IsNullOrWhiteSpace(PhoneTextBox.Text) ||
-                string.IsNullOrWhiteSpace(UsernameTextBox.Text) ||
-                string.IsNullOrWhiteSpace(AddressTextBox.Text))
+            var user = new User
             {
-                MessageBox.Show("All fields must be filled.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                FirstName = FirstNameTextBox.Text,
+                LastName = LastNameTextBox.Text,
+                Email = EmailTextBox.Text,
+                Phone = PhoneTextBox.Text,
+                Address = AddressTextBox.Text,
+                Username = UsernameTextBox.Text,
+                HashedPassword = PasswordTextBox.Text // Only temporary for validation
+            };
+
+            var errors = UserValidator.Validate(user, validatePassword: true, confirmPassword: ConfirmPasswordTextBox.Text);
+
+            if (errors.Count > 0)
+            {
+                MessageBox.Show(string.Join("\n", errors), "Validation Errors", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
-            if (!ValidatePasswords())
+            return true;
+        }
+
+        //Make sure everything is right and filled all needed info for editing
+        private bool ValidateEditUserInputs()
+        {
+            var user = new User
+            {
+                FirstName = FirstNameTextBox.Text,
+                LastName = LastNameTextBox.Text,
+                Email = EmailTextBox.Text,
+                Phone = PhoneTextBox.Text,
+                Address = AddressTextBox.Text,
+                Username = UsernameTextBox.Text,
+                HashedPassword = PasswordTextBox.Text // For comparing new password
+            };
+
+            bool hasPassword = !string.IsNullOrWhiteSpace(PasswordTextBox.Text) || !string.IsNullOrWhiteSpace(ConfirmPasswordTextBox.Text);
+
+            var errors = UserValidator.Validate(user, validatePassword: hasPassword, confirmPassword: ConfirmPasswordTextBox.Text);
+
+            if (errors.Count > 0)
+            {
+                MessageBox.Show(string.Join("\n", errors), "Validation Errors", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
+            }
 
             return true;
         }
-        private bool ValidatePasswords()
+
+        //Make sure everything is right and filled all needed info for password
+        private bool ValidatePasswords(bool required = false)
         {
-            if (string.IsNullOrWhiteSpace(PasswordTextBox.Text) || string.IsNullOrWhiteSpace(ConfirmPasswordTextBox.Text))
+            bool passEmpty = string.IsNullOrWhiteSpace(PasswordTextBox.Text);
+            bool confirmEmpty = string.IsNullOrWhiteSpace(ConfirmPasswordTextBox.Text);
+
+            if (required && (passEmpty || confirmEmpty))
             {
                 MessageBox.Show("Password fields cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
-            if (PasswordTextBox.Text != ConfirmPasswordTextBox.Text)
+            // Only check match if both are filled
+            if (!passEmpty && !confirmEmpty && PasswordTextBox.Text != ConfirmPasswordTextBox.Text)
             {
                 MessageBox.Show("Passwords do not match.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
@@ -95,45 +134,52 @@ namespace Inv_M_Sys.Views.Admin
             return true;
         }
 
-        //Toggle between password or text showing if no pass is entered
+        //Control passwrod fields
         private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            PasswordPlaceholder.Visibility = string.IsNullOrEmpty(PasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+            UpdatePlaceholderVisibility(PasswordTextBox, PasswordPlaceholder);
         }
+
         private void ConfirmPasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            ConfirmPasswordPlaceholder.Visibility = string.IsNullOrEmpty(ConfirmPasswordTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+            UpdatePlaceholderVisibility(ConfirmPasswordTextBox, ConfirmPasswordPlaceholder);
         }
+
+        private void UpdatePlaceholderVisibility(TextBox textBox, TextBlock placeholder)
+        {
+            placeholder.Visibility = string.IsNullOrWhiteSpace(textBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void HandleFocus(TextBox textBox, TextBlock placeholder)
+        {
+            placeholder.Visibility = Visibility.Collapsed;
+        }
+
+        private void HandleLostFocus(TextBox textBox, TextBlock placeholder)
+        {
+            if (string.IsNullOrWhiteSpace(textBox.Text))
+                placeholder.Visibility = Visibility.Visible;
+        }
+
+        //control password fileds end here
 
         //Check if pass word field is choosed or not
         private void PasswordTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox textBox)
-            {
-                if (textBox.Name == "PasswordTextBox")
-                {
-                    PasswordPlaceholder.Visibility = Visibility.Collapsed;
-                }
-                else if (textBox.Name == "ConfirmPasswordTextBox")
-                {
-                    ConfirmPasswordPlaceholder.Visibility = Visibility.Collapsed;
-                }
-            }
+            if (sender == PasswordTextBox)
+                HandleFocus(PasswordTextBox, PasswordPlaceholder);
+            else if (sender == ConfirmPasswordTextBox)
+                HandleFocus(ConfirmPasswordTextBox, ConfirmPasswordPlaceholder);
         }
+
         private void PasswordTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox textBox)
-            {
-                if (textBox.Name == "PasswordTextBox" && string.IsNullOrEmpty(textBox.Text))
-                {
-                    PasswordPlaceholder.Visibility = Visibility.Visible;
-                }
-                else if (textBox.Name == "ConfirmPasswordTextBox" && string.IsNullOrEmpty(textBox.Text))
-                {
-                    ConfirmPasswordPlaceholder.Visibility = Visibility.Visible;
-                }
-            }
+            if (sender == PasswordTextBox)
+                HandleLostFocus(PasswordTextBox, PasswordPlaceholder);
+            else if (sender == ConfirmPasswordTextBox)
+                HandleLostFocus(ConfirmPasswordTextBox, ConfirmPasswordPlaceholder);
         }
+        //end check password
 
         //Control buttons to open container or allowing editing by preading the info or deleting user
         private void New_Click(object sender, RoutedEventArgs e)
@@ -181,11 +227,10 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
-        private void Delete_Click(object sender, RoutedEventArgs e)
+        private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (SalesListView.SelectedItem is User user)
             {
-                // ✅ Prevent Admins from Deleting Other Admins
                 if (SessionManager.CurrentUserRole == "Admin" && user.Role == UserRole.Admin)
                 {
                     MessageBox.Show("You cannot delete another admin.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -194,16 +239,7 @@ namespace Inv_M_Sys.Views.Admin
 
                 try
                 {
-                    using (var conn = DatabaseHelper.GetConnection())
-                    {
-                        conn.Open();
-                        using (var cmd = new NpgsqlCommand("DELETE FROM Users WHERE id = @UserID", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@UserID", user.UserID);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
+                    await UserService.DeleteAsync(user.UserID);
                     UsersList.Remove(user);
                     MessageBox.Show("User deleted successfully.");
                 }
@@ -218,6 +254,7 @@ namespace Inv_M_Sys.Views.Admin
                 MessageBox.Show("Please select a user to delete.");
             }
         }
+        //end control buttons
 
         //top minue control for navigation and loing out
         private void Logout_Click(object sender, RoutedEventArgs e) => SessionManager.Logout();
@@ -231,7 +268,7 @@ namespace Inv_M_Sys.Views.Admin
         private void Minimize_Click(object sender, RoutedEventArgs e) => Window.GetWindow(this).WindowState = WindowState.Minimized;
 
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
-
+        //end top menu
 
         //functions to search specifc item or refresh the page
         private void Search_Click(object sender, RoutedEventArgs e)
@@ -240,6 +277,7 @@ namespace Inv_M_Sys.Views.Admin
             SalesListView.ItemsSource = string.IsNullOrEmpty(query)
                 ? UsersList
                 : new ObservableCollection<User>(UsersList.Where(u =>
+                    u.UserID.ToString().Contains(query) ||
                     u.FirstName.ToLower().Contains(query) ||
                     u.LastName.ToLower().Contains(query) ||
                     u.Email.ToLower().Contains(query) ||
@@ -247,6 +285,7 @@ namespace Inv_M_Sys.Views.Admin
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e) => _ = LoadUsersAsync();
+        //end search and refresh
 
         //control adding or updating data to the database
         private async void Submit_Click(object sender, RoutedEventArgs e)
@@ -258,43 +297,22 @@ namespace Inv_M_Sys.Views.Admin
         {
             await UpdateUserAsync();
         }
+        //end control adding or updating
 
+        //close the Container and clear the form
         private void Back_Click(object sender, RoutedEventArgs e) => ClearForm();
 
+        //async to load the users to the userlist
         private async Task LoadUsersAsync()
         {
-            if (isLoading) return; // Prevent multiple calls
+            if (isLoading) return;
             isLoading = true;
             LoadingIndicator.Visibility = Visibility.Visible;
 
-            UsersList.Clear();
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM Users", conn))
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            User user = new User
-                            {
-                                UserID = reader.GetInt32(0),
-                                FirstName = reader.GetString(1),
-                                LastName = reader.GetString(2),
-                                Email = reader.GetString(3),
-                                Phone = reader.GetString(4),
-                                Username = reader.GetString(5),
-                                Password = reader.GetString(6),
-                                Address = reader.GetString(7),
-                                Role = Enum.TryParse<UserRole>(reader.GetString(8), out var role) ? role : UserRole.SellingStaff
-                            };
-
-                            UsersList.Add(user);
-                        }
-                    }
-                }
+                var users = await UserService.GetAllAsync();
+                UsersList = new ObservableCollection<User>(users);
                 SalesListView.ItemsSource = UsersList;
             }
             catch (Exception ex)
@@ -309,6 +327,7 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
+        //clearing the container and closing it
         private void ClearForm()
         {
             FirstNameTextBox.Text = "";
@@ -322,8 +341,12 @@ namespace Inv_M_Sys.Views.Admin
             RoleComboBox.SelectedIndex = 0;
 
             Conatiner_User.Visibility = Visibility.Collapsed;
+
+            UpdatePlaceholderVisibility(PasswordTextBox, PasswordPlaceholder);
+            UpdatePlaceholderVisibility(ConfirmPasswordTextBox, ConfirmPasswordPlaceholder);
         }
 
+        //secure the password
         private string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())
@@ -338,30 +361,53 @@ namespace Inv_M_Sys.Views.Admin
             }
         }
 
-        private async Task<bool> UsernameExistsAsync(string username)
+        //check if username is used by someone else
+        private async Task<bool> UsernameExistsAsync(string username, int? userIdToExclude = null)
         {
-            using (var conn = DatabaseHelper.GetConnection())
+            try
             {
-                await conn.OpenAsync();
-                using (var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM Users WHERE Username = @Username", conn))
+                using (var conn = DatabaseHelper.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
-                    return (long)(await cmd.ExecuteScalarAsync()) > 0;
+                    await conn.OpenAsync();
+                    string query = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
+
+                    if (userIdToExclude.HasValue)
+                    {
+                        query += " AND Id != @UserId";
+                    }
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Username", username);
+                        if (userIdToExclude.HasValue)
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", userIdToExclude.Value);
+                        }
+
+                        int count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                        return count > 0;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return false;
             }
         }
 
+        //mkae the logging 
         private void LogError(Exception ex)
         {
             // Log the error using Serilog setup from the LoggerSetup class
             Log.Logger.Error(ex, "An error occurred at {Time}", DateTime.Now);
         }
 
+        //adding new user to the database (used direct databse code for the examn only)
         private async Task AddUserAsync()
         {
             try
             {
-                // Disable buttons to prevent multiple clicks
                 Submitbtn.IsEnabled = false;
                 Updatebtn.IsEnabled = false;
 
@@ -374,35 +420,29 @@ namespace Inv_M_Sys.Views.Admin
                 }
 
                 if (!ValidatePasswords()) return;
-                if (!ValidateUserInputs()) return;
+                if (!ValidateNewUserInputs()) return;
 
-                if (await UsernameExistsAsync(UsernameTextBox.Text))
+                if (await UserService.UsernameExistsAsync(UsernameTextBox.Text))
                 {
                     MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                using (var conn = DatabaseHelper.GetConnection())
+                var newUser = new User
                 {
-                    await conn.OpenAsync(); // 🔹 Async Open
-                    using (var cmd = new NpgsqlCommand(@"
-                INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Address, Role, Username, Password) 
-                VALUES (@FirstName, @LastName, @Email, @Phone, @Address, @Role, @Username, @Password)", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Role", selectedRoleEnum.ToString());
-                        cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                        cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
+                    FirstName = FirstNameTextBox.Text,
+                    LastName = LastNameTextBox.Text,
+                    Email = EmailTextBox.Text,
+                    Phone = PhoneTextBox.Text,
+                    Address = AddressTextBox.Text,
+                    Role = selectedRoleEnum,
+                    Username = UsernameTextBox.Text,
+                    HashedPassword = HashPassword(PasswordTextBox.Text)
+                };
 
-                        await cmd.ExecuteNonQueryAsync(); // 🔹 Async Execution
-                    }
-                }
+                await UserService.AddAsync(newUser);
 
-                await LoadUsersAsync(); // Refresh user list
+                await LoadUsersAsync();
                 MessageBox.Show("User added successfully.");
                 ClearForm();
             }
@@ -413,73 +453,65 @@ namespace Inv_M_Sys.Views.Admin
             }
             finally
             {
-                // Re-enable buttons after execution
                 Submitbtn.IsEnabled = true;
                 Updatebtn.IsEnabled = true;
             }
         }
 
+        //updating exsisting user info in the databse. 
         private async Task UpdateUserAsync()
         {
-            if (SelectedUser != null)
+            if (SelectedUser == null) return;
+
+            try
             {
-                try
-                {
-                    // Disable buttons to prevent multiple clicks
-                    Submitbtn.IsEnabled = false;
-                    Updatebtn.IsEnabled = false;
+                Submitbtn.IsEnabled = false;
+                Updatebtn.IsEnabled = false;
 
+                if (!ValidateEditUserInputs()) return;
+
+                if (!string.IsNullOrWhiteSpace(PasswordTextBox.Text))
+                {
                     if (!ValidatePasswords()) return;
-                    if (!ValidateUserInputs()) return;
-
-                    // 🔹 Check if username exists (async)
-                    if (await UsernameExistsAsync(UsernameTextBox.Text))
-                    {
-                        MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    using (var conn = DatabaseHelper.GetConnection())
-                    {
-                        await conn.OpenAsync(); // 🔹 Open connection asynchronously
-
-                        using (var cmd = new NpgsqlCommand(@"
-                    UPDATE Users SET 
-                    FirstName = @FirstName, LastName = @LastName, Email = @Email, 
-                    PhoneNumber = @Phone, Address = @Address, Role = @Role, Username = @Username, Password = @Password 
-                    WHERE id = @UserID", conn))
-                        {
-                            cmd.Parameters.AddWithValue("@FirstName", FirstNameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@LastName", LastNameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Email", EmailTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Phone", PhoneTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Address", AddressTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Role", (RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString());
-                            cmd.Parameters.AddWithValue("@Username", UsernameTextBox.Text);
-                            cmd.Parameters.AddWithValue("@Password", HashPassword(PasswordTextBox.Text));
-                            cmd.Parameters.AddWithValue("@UserID", SelectedUser.UserID);
-
-                            await cmd.ExecuteNonQueryAsync(); // 🔹 Execute the query asynchronously
-                        }
-                    }
-
-                    await LoadUsersAsync(); // 🔹 Refresh user list asynchronously
-                    MessageBox.Show("User updated successfully.");
-                    ClearForm();
                 }
-                catch (Exception ex)
+
+                if (await UserService.UsernameExistsAsync(UsernameTextBox.Text, SelectedUser.UserID))
                 {
-                    LogError(ex);
-                    MessageBox.Show($"Error updating user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("This username is already taken.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                finally
+
+                var updatedUser = new User
                 {
-                    // Re-enable buttons after execution
-                    Submitbtn.IsEnabled = true;
-                    Updatebtn.IsEnabled = true;
-                }
+                    UserID = SelectedUser.UserID,
+                    FirstName = FirstNameTextBox.Text,
+                    LastName = LastNameTextBox.Text,
+                    Email = EmailTextBox.Text,
+                    Phone = PhoneTextBox.Text,
+                    Address = AddressTextBox.Text,
+                    Role = Enum.TryParse<UserRole>((RoleComboBox.SelectedItem as ComboBoxItem)?.Content.ToString(), out var role) ? role : UserRole.SellingStaff,
+                    Username = UsernameTextBox.Text,
+                    HashedPassword = string.IsNullOrWhiteSpace(PasswordTextBox.Text) ? SelectedUser.HashedPassword : HashPassword(PasswordTextBox.Text)
+                };
+
+                await UserService.UpdateAsync(updatedUser);
+                await LoadUsersAsync();
+                MessageBox.Show("✅ User updated successfully.");
+                ClearForm();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                MessageBox.Show($"❌ Error updating user: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Submitbtn.IsEnabled = true;
+                Updatebtn.IsEnabled = true;
             }
         }
+
+
     }
 }
 

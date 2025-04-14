@@ -74,26 +74,10 @@ namespace Inv_M_Sys.Views.Shared
         /// </summary>
         private async Task LoadCategoriesAsync()
         {
-            CategoriesList.Clear();
-
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM Categories", conn))
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            CategoriesList.Add(new Category
-                            {
-                                CatID = reader.GetInt32(0),
-                                CategoryName = reader.GetString(1)
-                            });
-                        }
-                    }
-                }
+                var categories = await CategoryService.GetAllAsync();
+                CategoriesList = new ObservableCollection<Category>(categories.OrderBy(c => c.CatID));
                 CategorysListView.ItemsSource = CategoriesList;
             }
             catch (Exception ex)
@@ -116,28 +100,18 @@ namespace Inv_M_Sys.Views.Shared
                 return;
             }
 
-            try
+            if (await CategoryService.ExistsAsync(categoryName))
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    using (var cmd = new NpgsqlCommand("INSERT INTO Categories (Name) VALUES (@CategoryName)", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@CategoryName", categoryName);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
+                MessageBox.Show("Category already exists.", "Duplicate", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-                MessageBox.Show("Category added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                CategoryTextBox.Clear();
-                await LoadCategoriesAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error adding category.");
-                MessageBox.Show($"Error adding category: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            await CategoryService.AddAsync(categoryName);
+            MessageBox.Show("Category added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            CategoryTextBox.Clear();
+            await LoadCategoriesAsync();
         }
+
 
         /// <summary>
         /// Update an existing category in the database.
@@ -157,28 +131,10 @@ namespace Inv_M_Sys.Views.Shared
                 return;
             }
 
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    using (var cmd = new NpgsqlCommand("UPDATE Categories SET Name = @CategoryName WHERE Id = @CatID", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@CategoryName", newCategoryName);
-                        cmd.Parameters.AddWithValue("@CatID", SelectedCategory.CatID);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-
-                MessageBox.Show("Category updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                CategoryTextBox.Clear();
-                await LoadCategoriesAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error updating category.");
-                MessageBox.Show($"Error updating category: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            await CategoryService.UpdateAsync(SelectedCategory.CatID, newCategoryName);
+            MessageBox.Show("Category updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            CategoryTextBox.Clear();
+            await LoadCategoriesAsync();
         }
 
         /// <summary>
@@ -196,27 +152,10 @@ namespace Inv_M_Sys.Views.Shared
                                           "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes) return;
 
-            try
-            {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    using (var cmd = new NpgsqlCommand("DELETE FROM Categories WHERE Id = @CatID", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@CatID", SelectedCategory.CatID);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-
-                MessageBox.Show("Category deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                CategoryTextBox.Clear();
-                await LoadCategoriesAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error deleting category.");
-                MessageBox.Show($"Error deleting category: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            await CategoryService.DeleteAsync(SelectedCategory.CatID);
+            MessageBox.Show("Category deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            CategoryTextBox.Clear();
+            await LoadCategoriesAsync();
         }
 
         #endregion
@@ -247,10 +186,12 @@ namespace Inv_M_Sys.Views.Shared
         /// </summary>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            var query = RoundedTextBox.Text.ToLower();
+
+            var query = RoundedTextBox.Text.ToLower().Trim();
             CategorysListView.ItemsSource = string.IsNullOrEmpty(query)
                 ? CategoriesList
                 : new ObservableCollection<Category>(CategoriesList.Where(c =>
+                    c.CatID.ToString().ToLower().Contains(query) ||
                     c.CategoryName.ToLower().Contains(query)));
         }
 
@@ -301,6 +242,7 @@ namespace Inv_M_Sys.Views.Shared
 
         #endregion
 
+        //search textbox changed
         private void RoundedTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Handle visibility of search placeholder based on the text in the search box
@@ -311,6 +253,17 @@ namespace Inv_M_Sys.Views.Shared
         {
             // Handle visibility of category name placeholder based on the text in the category textbox
             CategoryPlaceholderText.Visibility = string.IsNullOrEmpty(CategoryTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        //check if category exsist
+        private bool IsValidCategoryName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.Show("Category name cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
         }
     }
 }

@@ -12,6 +12,20 @@ namespace Inv_M_Sys.ViewModels
         private Product _selectedProduct;
         private int _quantity;
 
+        private Customer _selectedCustomer;
+        public Customer SelectedCustomer
+        {
+            get => _selectedCustomer;
+            set => SetProperty(ref _selectedCustomer, value);
+        }
+
+        private DateTime? _deliveryDate;
+        public DateTime? DeliveryDate
+        {
+            get => _deliveryDate;
+            set => SetProperty(ref _deliveryDate, value);
+        }
+
         public ObservableCollection<OrderItem> OrderBasket
         {
             get => _orderBasket;
@@ -32,12 +46,20 @@ namespace Inv_M_Sys.ViewModels
 
         public ICommand AddToBasketCommand { get; }
         public ICommand RemoveFromBasketCommand { get; }
+        public ICommand ClearBasketCommand { get; }
 
         public OrdersViewModel()
         {
-            _orderBasket = new ObservableCollection<OrderItem>();
+            OrderBasket = new ObservableCollection<OrderItem>();
             AddToBasketCommand = new RelayCommand<object>(AddToBasket, CanAddToBasket);
-            RemoveFromBasketCommand = new RelayCommand<OrderItem>(RemoveFromBasket, CanRemoveFromBasket);
+            RemoveFromBasketCommand = new RelayCommand<OrderItem>(RemoveFromBasket);
+            ClearBasketCommand = new RelayCommand(ClearBasket);
+        }
+
+        //clear basket
+        private void ClearBasket()
+        {
+            OrderBasket.Clear();
         }
 
         /// <summary>
@@ -47,12 +69,10 @@ namespace Inv_M_Sys.ViewModels
         {
             if (SelectedProduct != null && Quantity > 0)
             {
-                // 1. Check total quantity already added for this product in basket
                 int alreadyInBasket = OrderBasket
                     .Where(x => x.Product.Id == SelectedProduct.Id)
                     .Sum(x => x.Quantity);
 
-                // 2. Calculate if new addition exceeds stock
                 int totalRequested = alreadyInBasket + Quantity;
 
                 if (totalRequested > SelectedProduct.Quantity)
@@ -66,13 +86,27 @@ namespace Inv_M_Sys.ViewModels
                     return;
                 }
 
-                // ✅ Add to basket without touching stock
-                var orderItem = new OrderItem(SelectedProduct, Quantity)
-                {
-                    TotalPrice = SelectedProduct.Price * Quantity
-                };
+                var existingItem = OrderBasket.FirstOrDefault(x => x.Product.Id == SelectedProduct.Id);
 
-                OrderBasket.Add(orderItem);
+                if (existingItem != null)
+                {
+                    // ✅ Update existing item
+                    existingItem.Quantity += Quantity;
+                    existingItem.TotalPrice = existingItem.Quantity * SelectedProduct.Price;
+
+                    // Notify UI that item has changed
+                    OnPropertyChanged(nameof(OrderBasket));
+                }
+                else
+                {
+                    // ✅ Add new item
+                    var orderItem = new OrderItem(SelectedProduct, Quantity)
+                    {
+                        TotalPrice = SelectedProduct.Price * Quantity
+                    };
+
+                    OrderBasket.Add(orderItem);
+                }
             }
         }
 

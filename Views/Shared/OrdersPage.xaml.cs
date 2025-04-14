@@ -1,5 +1,6 @@
 ﻿using Inv_M_Sys.Models;
 using Inv_M_Sys.Services;
+using Inv_M_Sys.Services.Pages_Services;
 using Inv_M_Sys.ViewModels;
 using Inv_M_Sys.Views.Forms;
 using Inv_M_Sys.Views.Main;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -60,37 +62,16 @@ namespace Inv_M_Sys.Views.Shared
         private void Home_Click(object sender, RoutedEventArgs e) => _homeWindow.NavigateToPage(new DashboardPage(_homeWindow));
         #endregion
 
+        #region Customer
         /// <summary>
         /// Loads customers from the database into the ListView.
         /// </summary>
-        #region Customer
-
         private async Task LoadCustomersAsync()
         {
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    string query = "SELECT Id, FirstName, LastName, CompanyName FROM Customers"; // Adjust query if necessary
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        var customers = new List<Customer>();
-                        while (await reader.ReadAsync())
-                        {
-                            customers.Add(new Customer
-                            {
-                                Id = reader.GetInt32(0), // Now using 'Id' instead of 'CustomerID'
-                                FirstName = reader.GetString(1),
-                                LastName = reader.GetString(2),
-                                CompanyName = reader.GetString(3)
-                            });
-                        }
-
-                        CustomersListView.ItemsSource = new ObservableCollection<Customer>(customers);
-                    }
-                }
+                var customers = await CustomerService.GetAllAsync();
+                CustomersListView.ItemsSource = new ObservableCollection<Customer>(customers);
             }
             catch (Exception ex)
             {
@@ -117,41 +98,15 @@ namespace Inv_M_Sys.Views.Shared
         /// </summary>
         private async Task LoadProductsAsync(int categoryId)
         {
-            ProductsList.Clear(); // Clear any previously loaded products
-
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
-                {
-                    await conn.OpenAsync();
-                    string query = "SELECT Id, ProductName, Price, Quantity FROM Products WHERE CategoryId = @CategoryId"; // Query to filter products by category
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@CategoryId", categoryId);
-                        using (var reader = await cmd.ExecuteReaderAsync())
-                        {
-                            var products = new List<Product>();
-                            while (await reader.ReadAsync())
-                            {
-                                products.Add(new Product
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Price = reader.GetDecimal(2),
-                                    Quantity = reader.GetInt32(3)
-                                });
-                            }
-
-                            // Bind filtered products to the ListView
-                            ProductsList = new ObservableCollection<Product>(products);
-                            ProductsListView.ItemsSource = ProductsList;
-                        }
-                    }
-                }
+                var products = await ProductService.GetByCategoryIdAsync(categoryId);
+                ProductsList = new ObservableCollection<Product>(products);
+                ProductsListView.ItemsSource = ProductsList;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error loading products based on category.");
+                Log.Error(ex, "Error loading products.");
                 MessageBox.Show($"Error loading products: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -177,95 +132,51 @@ namespace Inv_M_Sys.Views.Shared
         {
             var viewModel = DataContext as OrdersViewModel;
 
-            if (viewModel == null || viewModel.OrderBasket.Count == 0)
+            if (viewModel?.OrderBasket.Count == 0)
             {
                 MessageBox.Show("Your basket is empty.");
                 return;
             }
 
-            if (SelectedCustomer == null)
+            if (viewModel.SelectedCustomer == null)
             {
                 MessageBox.Show("Please select a customer.");
                 return;
             }
 
-            var deliveryDate = DeliveryDatePicker.SelectedDate;
-
-            if (!deliveryDate.HasValue)
+            if (!viewModel.DeliveryDate.HasValue)
             {
                 MessageBox.Show("Please select a delivery date.");
                 return;
             }
 
+            var order = new Order
+            {
+                Id = viewModel.SelectedCustomer.Id,
+                DeliveryDate = viewModel.DeliveryDate.Value,
+                TotalPrice = viewModel.OrderBasket.Sum(x => x.TotalPrice),
+                Status = OrderStatus.Pending
+            };
+
             try
             {
-                using (var conn = DatabaseHelper.GetConnection())
+                var orderId = await OrderService.PlaceOrderAsync(order, viewModel.OrderBasket.ToList());
+                MessageBox.Show($"Order #{orderId} placed successfully.");
+                viewModel.ClearBasketCommand.Execute(null); // Clear
+                DeliveryDatePicker.SelectedDate = null;
+
+                if (CategoryComboBox.SelectedItem is Category selectedCategory)
                 {
-                    await conn.OpenAsync();
-                    using (var transaction = conn.BeginTransaction())
-                    {
-                        try
-                        {
-                            // Create Order record
-                            var orderCmd = new NpgsqlCommand(
-                                "INSERT INTO Orders (CustomerId, DeliveryDate, TotalPrice, Status) " +
-                                "VALUES (@CustomerId, @DeliveryDate, @TotalPrice, @Status) RETURNING Id", conn);
-
-                            orderCmd.Parameters.AddWithValue("@CustomerId", SelectedCustomer.Id);
-                            orderCmd.Parameters.AddWithValue("@DeliveryDate", deliveryDate.Value);
-                            orderCmd.Parameters.AddWithValue("@TotalPrice", viewModel.OrderBasket.Sum(item => item.TotalPrice));
-                            orderCmd.Parameters.AddWithValue("@Status", OrderStatus.Pending.ToString());
-                            var orderId = (int)await orderCmd.ExecuteScalarAsync();
-
-                            // Add OrderItems and update product quantity
-                            foreach (var item in viewModel.OrderBasket)
-                            {
-                                // Insert OrderItem
-                                var orderItemCmd = new NpgsqlCommand(
-                                    "INSERT INTO OrderItems (OrderId, ProductId, Quantity, Price, TotalPrice) " +
-                                    "VALUES (@OrderId, @ProductId, @Quantity, @Price, @TotalPrice)", conn);
-
-                                orderItemCmd.Parameters.AddWithValue("@OrderId", orderId);
-                                orderItemCmd.Parameters.AddWithValue("@ProductId", item.Product.Id);
-                                orderItemCmd.Parameters.AddWithValue("@Quantity", item.Quantity);
-                                orderItemCmd.Parameters.AddWithValue("@Price", item.Product.Price);
-                                orderItemCmd.Parameters.AddWithValue("@TotalPrice", item.TotalPrice);
-                                await orderItemCmd.ExecuteNonQueryAsync();
-
-                                // ✅ Update product quantity
-                                var updateProductCmd = new NpgsqlCommand(
-                                    "UPDATE Products SET Quantity = Quantity - @OrderedQuantity WHERE Id = @ProductId", conn);
-                                updateProductCmd.Parameters.AddWithValue("@OrderedQuantity", item.Quantity);
-                                updateProductCmd.Parameters.AddWithValue("@ProductId", item.Product.Id);
-                                await updateProductCmd.ExecuteNonQueryAsync();
-                            }
-
-                            // Commit transaction
-                            await transaction.CommitAsync();
-
-                            MessageBox.Show("Order placed successfully.");
-                            ClearOrderForm();
-                            if (CategoryComboBox.SelectedItem is Category selectedCategory)
-                            {
-                                await LoadProductsAsync(selectedCategory.CatID);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            await transaction.RollbackAsync();
-                            Log.Error(ex, "Error placing order.");
-                            MessageBox.Show($"Error placing order: {ex.Message}");
-                        }
-                    }
+                    await LoadProductsAsync(selectedCategory.CatID);
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error");
+                Log.Error(ex, "Error placing order.");
                 MessageBox.Show($"Error placing order: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// Clears the order form UI fields and basket after placing or canceling an order.
         /// </summary>
@@ -348,5 +259,6 @@ namespace Inv_M_Sys.Views.Shared
         }
 
         #endregion
+
     }
 }

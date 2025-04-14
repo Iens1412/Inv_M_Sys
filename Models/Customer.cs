@@ -1,42 +1,76 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Inv_M_Sys.Models
 {
-    public class Customer
+    public class Customer : INotifyPropertyChanged
     {
-        public int Id { get; set; } // Primary Key
-        public string CompanyName { get; set; }
-        public string FirstName { get; set; } // Required
-        public string LastName { get; set; } // Required
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Address { get; set; }
-        public string Notes { get; set; }
+        private int _id;
+        private string _companyName;
+        private string _firstName;
+        private string _lastName;
+        private string _email;
+        private string _phoneNumber;
+        private string _address;
+        private string _notes;
 
-        public Customer() { }
-
-        public Customer(int id, string companyName, string firstName, string lastName, string email, string phoneNumber, string address, string notes)
+        public int Id
         {
-            Id = id;
-            CompanyName = companyName;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            Address = address;
-            Notes = notes;
+            get => _id;
+            set { _id = value; OnPropertyChanged(nameof(Id)); }
         }
 
-
-        public string FullName
+        public string CompanyName
         {
-            get { return $"{FirstName} {LastName}"; }
+            get => _companyName;
+            set { _companyName = value; OnPropertyChanged(nameof(CompanyName)); }
         }
 
-        // Override ToString() for debugging
+        public string FirstName
+        {
+            get => _firstName;
+            set { _firstName = value; OnPropertyChanged(nameof(FirstName)); }
+        }
+
+        public string LastName
+        {
+            get => _lastName;
+            set { _lastName = value; OnPropertyChanged(nameof(LastName)); }
+        }
+
+        public string Email
+        {
+            get => _email;
+            set { _email = value; OnPropertyChanged(nameof(Email)); }
+        }
+
+        public string PhoneNumber
+        {
+            get => _phoneNumber;
+            set { _phoneNumber = value; OnPropertyChanged(nameof(PhoneNumber)); }
+        }
+
+        public string Address
+        {
+            get => _address;
+            set { _address = value; OnPropertyChanged(nameof(Address)); }
+        }
+
+        public string Notes
+        {
+            get => _notes;
+            set { _notes = value; OnPropertyChanged(nameof(Notes)); }
+        }
+
+        public string FullName => $"{FirstName} {LastName}";
+
         public override string ToString()
         {
             return $"{FirstName} {LastName} - {CompanyName}";
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

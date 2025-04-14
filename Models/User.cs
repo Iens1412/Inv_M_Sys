@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inv_M_Sys.Models
 {
@@ -29,6 +30,6 @@ namespace Inv_M_Sys.Models
         public string Username { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public string HashedPassword { get; set; }
     }
 }

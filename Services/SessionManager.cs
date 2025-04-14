@@ -124,7 +124,7 @@ namespace Inv_M_Sys.Services
                                         Address = address,
                                         Role = Enum.Parse<UserRole>(role),
                                         Username = usernameDb,
-                                        Password = password
+                                        HashedPassword = password
                                     };
 
                                     CurrentUserId = userId;
