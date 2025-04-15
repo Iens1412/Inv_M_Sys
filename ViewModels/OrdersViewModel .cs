@@ -92,7 +92,7 @@ namespace Inv_M_Sys.ViewModels
                 {
                     // ✅ Update existing item
                     existingItem.Quantity += Quantity;
-                    existingItem.TotalPrice = existingItem.Quantity * SelectedProduct.Price;
+                    existingItem.TotalPrice = existingItem.Quantity * (SelectedProduct.Price ?? 0);
 
                     // Notify UI that item has changed
                     OnPropertyChanged(nameof(OrderBasket));
@@ -102,7 +102,7 @@ namespace Inv_M_Sys.ViewModels
                     // ✅ Add new item
                     var orderItem = new OrderItem(SelectedProduct, Quantity)
                     {
-                        TotalPrice = SelectedProduct.Price * Quantity
+                        TotalPrice = (SelectedProduct.Price ?? 0) * Quantity,
                     };
 
                     OrderBasket.Add(orderItem);

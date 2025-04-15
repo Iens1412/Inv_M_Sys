@@ -6,14 +6,15 @@
     xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:other="clr-namespace:Inv_M_Sys.Converter"
-    xmlns:tr="clr-namespace:Inv_M_Sys.ViewModels"
+    xmlns:vm="clr-namespace:Inv_M_Sys.ViewModels"
     Title="ProductsPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Unloaded="Page_Unloaded"
     mc:Ignorable="d">
 
     <Page.DataContext>
-        <tr:AwaitingPageViewModel />
+        <vm:ProductsPageViewModel />
     </Page.DataContext>
 
     <Page.Resources>
@@ -143,7 +144,7 @@
         </Style>
 
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
-
+        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Background="#E8E8E8">
@@ -243,7 +244,7 @@
                 <Button
                     Width="180"
                     Height="32"
-                    Click="New_Btn"
+                    Command="{Binding NewProductFormCommand}"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -251,7 +252,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
-                    Click="Edit_Btn"
+                    Command="{Binding EditProductFormCommand}"
                     Content="Edit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -259,7 +260,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
-                    Click="Delete_btn"
+                    Command="{Binding DeleteProductCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -344,7 +345,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
-                    Click="Search_btn"
+                    Command="{Binding SearchCommand}"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -353,7 +354,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
-                    Click="Refresh_btn"
+                    Command="{Binding RefreshCommand}"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -381,7 +382,8 @@
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
-                        SelectionChanged="ProductListView_SelectionChanged"
+                        ItemsSource="{Binding ProductsList}"
+                        SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                         Visibility="Visible">
                         <ListView.View>
                             <GridView>
@@ -424,18 +426,21 @@
             </Border>
         </Grid>
 
+        <!--  Container for the add or update  -->
         <Border
             x:Name="Info_Container"
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
+            MaxWidth="700"
+            MaxHeight="600"
             Margin="20"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Background="#E8E8E8"
             BorderBrush="Black"
             BorderThickness="2"
-            CornerRadius="40"
+            CornerRadius="20"
             Visibility="Collapsed">
 
             <!--  Grid to Hold Everything  -->
@@ -482,6 +487,11 @@
                             Grid.Row="0"
                             Grid.ColumnSpan="2"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Product Name" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -494,19 +504,19 @@
                                         Foreground="Gray"
                                         IsHitTestVisible="False"
                                         Text="Product Name"
-                                        Visibility="{Binding Text, ElementName=ProductNameTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                                        Visibility="{Binding SelectedProduct.Name, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
-                                        x:Name="ProductNameTextBox"
                                         Padding="5,0"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding SelectedProduct.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
-                        <!--  Category (Dropdown)  -->
+                        <!--  Category  -->
                         <StackPanel
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
@@ -517,11 +527,14 @@
                                 FontWeight="Bold"
                                 Text="Category" />
                             <ComboBox
-                                x:Name="CategoryComboBox"
                                 Height="35"
                                 BorderBrush="Violet"
                                 BorderThickness="1"
-                                FontSize="14" />
+                                DisplayMemberPath="CategoryName"
+                                FontSize="14"
+                                ItemsSource="{Binding Categories}"
+                                SelectedValue="{Binding SelectedProduct.CategoryId, Mode=TwoWay}"
+                                SelectedValuePath="CatID" />
                         </StackPanel>
 
                         <!--  Quantity  -->
@@ -529,6 +542,11 @@
                             Grid.Row="2"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Quantity" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -548,7 +566,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding SelectedProduct.Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -558,6 +577,11 @@
                             Grid.Row="2"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Price" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -577,7 +601,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding SelectedProduct.Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -587,6 +612,11 @@
                             Grid.Row="3"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Min Quantity" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -606,7 +636,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding SelectedProduct.MinQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -616,6 +647,11 @@
                             Grid.Row="3"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Supplier" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -628,19 +664,19 @@
                                         Foreground="Gray"
                                         IsHitTestVisible="False"
                                         Text="Supplier"
-                                        Visibility="{Binding Text, ElementName=SupplierTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                                        Visibility="{Binding SelectedProduct.Supplier, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
-                                        x:Name="SupplierTextBox"
                                         Padding="5,0"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding SelectedProduct.Supplier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
-                        <!--  Description (Multiline)  -->
+                        <!--  Description  -->
                         <StackPanel
                             Grid.Row="4"
                             Grid.ColumnSpan="2"
@@ -655,7 +691,6 @@
                                 BorderBrush="Violet"
                                 BorderThickness="0,0,0,2">
                                 <TextBox
-                                    x:Name="DescriptionTextBox"
                                     Height="Auto"
                                     Padding="5,0"
                                     AcceptsReturn="True"
@@ -663,6 +698,7 @@
                                     BorderThickness="0"
                                     FontSize="14"
                                     Foreground="Black"
+                                    Text="{Binding SelectedProduct.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     TextWrapping="Wrap" />
                             </Border>
                         </StackPanel>
@@ -680,28 +716,28 @@
                         x:Name="Submit_Btn"
                         Width="150"
                         Height="40"
-                        Click="Submit_btn"
+                        Command="{Binding AddProductCommand}"
                         Content="Submit"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
-                        Visibility="Visible" />
+                        Visibility="{Binding IsNewMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <Button
                         x:Name="Update_Btn"
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
-                        Click="Update_btn"
+                        Command="{Binding UpdateProductCommand}"
                         Content="Update"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
-                        Visibility="Collapsed" />
+                        Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <Button
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
-                        Click="Back_btn"
+                        Command="{Binding BackCommand}"
                         Content="Back"
                         FontFamily="Times New Roman"
                         Style="{StaticResource BackButtonStyle}" />

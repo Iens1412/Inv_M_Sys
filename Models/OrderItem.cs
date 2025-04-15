@@ -11,7 +11,7 @@
         {
             Product = product;
             Quantity = quantity;
-            TotalPrice = product.Price * quantity;
+            TotalPrice = (product.Price ?? 0) * quantity;
         }
 
         public OrderItem(string productName, decimal price, int quantity)

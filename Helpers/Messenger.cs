@@ -37,5 +37,17 @@ namespace Inv_M_Sys.Helpers
                 }
             }
         }
+
+        /// <summary>
+        /// Unregisters a listener for a specific message type.
+        /// </summary>
+        public void Unregister<TMessage>(object recipient, Action<TMessage> action)
+        {
+            var messageType = typeof(TMessage);
+            if (_recipients.ContainsKey(messageType))
+            {
+                _recipients[messageType].Remove(action);
+            }
+        }
     }
 }
