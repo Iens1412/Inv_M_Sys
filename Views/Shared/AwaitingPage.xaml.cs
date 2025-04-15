@@ -22,6 +22,8 @@ namespace Inv_M_Sys.Views.Shared
             {
                 if (msg == "ShowOrderInfo")
                     OrderInfoContainer.Visibility = Visibility.Visible;
+                else if (msg == "HideOrderInfo")
+                    OrderInfoContainer.Visibility = Visibility.Collapsed;
             });
         }
 
@@ -41,5 +43,7 @@ namespace Inv_M_Sys.Views.Shared
         {
             OrderInfoContainer.Visibility = Visibility.Collapsed;
         }
+
+
     }
 }

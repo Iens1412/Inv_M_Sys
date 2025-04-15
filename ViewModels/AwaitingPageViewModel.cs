@@ -15,7 +15,16 @@ namespace Inv_M_Sys.ViewModels
 {
     public class AwaitingPageViewModel : BaseViewModel
     {
-        public ObservableCollection<Order> OrdersList { get; set; } = new();
+        private ObservableCollection<Order> _ordersList = new();
+        public ObservableCollection<Order> OrdersList
+        {
+            get => _ordersList;
+            set
+            {
+                _ordersList = value;
+                OnPropertyChanged(nameof(OrdersList));
+            }
+        }
         private ObservableCollection<Order> _fullOrderList = new();
 
         private Order _selectedOrder;
@@ -38,7 +47,11 @@ namespace Inv_M_Sys.ViewModels
         public ObservableCollection<OrderItem> OrderItems
         {
             get => _orderItems;
-            set => SetProperty(ref _orderItems, value);
+            set
+            {
+                _orderItems = value;
+                OnPropertyChanged(nameof(OrderItems));
+            }
         }
 
         public string SelectedCustomerName => SelectedOrder?.CustomerName ?? "";
@@ -78,9 +91,12 @@ namespace Inv_M_Sys.ViewModels
             set => SetProperty(ref _isBusy, value);
         }
 
+        public ICommand RestoreCommand { get; }
+
         public ObservableCollection<string> SearchCriteriaOptions { get; } = new(new[] { "Order ID", "Customer", "Delivery Date", "Status" });
         public ObservableCollection<string> FilterOptions { get; } = new(new[] { "All Orders", "Active Orders", "Deleted Orders" });
-        public ObservableCollection<string> StatusOptions { get; } = new(new[] { "Pending", "Shipped", "Delivered", "Cancelled" });
+        public ObservableCollection<OrderStatus> StatusOptions { get; } =
+            new(Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>());
 
         public ICommand RefreshCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -95,6 +111,7 @@ namespace Inv_M_Sys.ViewModels
             UpdateStatusCommand = new RelayCommand(async () => await UpdateOrderStatusAsync());
             SearchCommand = new RelayCommand(SearchOrders);
             OpenCommand = new RelayCommand(async () => await OpenSelectedOrderAsync());
+            RestoreCommand = new RelayCommand(async () => await RestoreDeletedOrderAsync());
 
             _ = LoadOrdersAsync();
         }
@@ -196,8 +213,11 @@ namespace Inv_M_Sys.ViewModels
             cmd.Parameters.AddWithValue("@Status", SelectedOrder.Status.ToString());
             cmd.Parameters.AddWithValue("@Id", SelectedOrder.Id);
             await cmd.ExecuteNonQueryAsync();
+            MessageBox.Show("Order status updated successfully.");
 
             await LoadOrdersAsync();
+
+            Messenger.Default.Send("HideOrderInfo");
         }
 
         public async Task LoadOrderItemsAsync()
@@ -244,6 +264,37 @@ namespace Inv_M_Sys.ViewModels
 
             // Visibility is still controlled from the View's code-behind
             Messenger.Default.Send("ShowOrderInfo");
+        }
+
+        //restore deleted orders
+        private async Task RestoreDeletedOrderAsync()
+        {
+            if (SelectedOrder == null)
+            {
+                MessageBox.Show("Please select an order to restore.");
+                return;
+            }
+
+            var result = MessageBox.Show($"Restore Order #{SelectedOrder.Id}?", "Confirm", MessageBoxButton.YesNo);
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                using var conn = DatabaseHelper.GetConnection();
+                await conn.OpenAsync();
+
+                using var cmd = new NpgsqlCommand("UPDATE Orders SET IsDeleted = FALSE, DeletedAt = NULL, DeletedBy = NULL WHERE Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", SelectedOrder.Id);
+                await cmd.ExecuteNonQueryAsync();
+
+                MessageBox.Show($"Order #{SelectedOrder.Id} restored.");
+                await LoadOrdersAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error restoring order.");
+                MessageBox.Show("Failed to restore order.");
+            }
         }
     }
 }
