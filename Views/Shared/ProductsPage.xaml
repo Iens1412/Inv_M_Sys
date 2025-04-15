@@ -6,10 +6,15 @@
     xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:other="clr-namespace:Inv_M_Sys.Converter"
+    xmlns:tr="clr-namespace:Inv_M_Sys.ViewModels"
     Title="ProductsPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <Page.DataContext>
+        <tr:AwaitingPageViewModel />
+    </Page.DataContext>
 
     <Page.Resources>
         <!--  Action Buttons  -->
