@@ -53,6 +53,19 @@ namespace Inv_M_Sys.ViewModels
             set => SetProperty(ref _isNewMode, value);
         }
 
+        private Product _editableProduct;
+        public Product EditableProduct
+        {
+            get => _editableProduct;
+            set => SetProperty(ref _editableProduct, value);
+        }
+
+        private string _searchFilter = "Name";
+        public string SearchFilter
+        {
+            get => _searchFilter;
+            set => SetProperty(ref _searchFilter, value);
+        }
 
         public ICommand AddProductCommand { get; }
         public ICommand UpdateProductCommand { get; }
@@ -75,9 +88,6 @@ namespace Inv_M_Sys.ViewModels
             NewProductFormCommand = new RelayCommand(ShowNewProductForm);
             EditProductFormCommand = new RelayCommand(ShowEditProductForm);
             BackCommand = new RelayCommand(HideProductForm);
-
-            _ = LoadProductsAsync();
-            _ = LoadCategoriesAsync();
         }
 
         public async Task LoadProductsAsync()
@@ -88,11 +98,27 @@ namespace Inv_M_Sys.ViewModels
                 _allProductsCache = products; // Update cache
                 ProductsList = new ObservableCollection<Product>(products);
                 OnPropertyChanged(nameof(ProductsList));
+                CheckStockLevels();
             }
             catch (System.Exception ex)
             {
                 Log.Error(ex, "Failed to load products.");
                 MessageBox.Show("Failed to load products.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CheckStockLevels()
+        {
+            var lowStockProducts = ProductsList
+                .Where(p => p.Quantity <= p.MinQuantity)
+                .Select(p => $"- {p.Name} (Stock: {p.Quantity}, Min: {p.MinQuantity})")
+                .ToList();
+
+            if (lowStockProducts.Any())
+            {
+                string message = "⚠️ The following products are low in stock:\n\n";
+                message += string.Join("\n", lowStockProducts);
+                MessageBox.Show(message, "Stock Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -118,7 +144,7 @@ namespace Inv_M_Sys.ViewModels
 
         private void ShowNewProductForm()
         {
-            SelectedProduct = new Product();
+            EditableProduct = new Product();
             IsNewMode = true;
             IsEditMode = false;
             Messenger.Default.Send("ShowForm");
@@ -128,6 +154,19 @@ namespace Inv_M_Sys.ViewModels
         {
             if (SelectedProduct != null)
             {
+                // Clone the selected product into editable copy
+                EditableProduct = new Product
+                {
+                    Id = SelectedProduct.Id,
+                    Name = SelectedProduct.Name,
+                    CategoryId = SelectedProduct.CategoryId,
+                    Quantity = SelectedProduct.Quantity,
+                    Price = SelectedProduct.Price,
+                    MinQuantity = SelectedProduct.MinQuantity,
+                    Supplier = SelectedProduct.Supplier,
+                    Description = SelectedProduct.Description
+                };
+
                 IsNewMode = false;
                 IsEditMode = true;
                 Messenger.Default.Send("ShowForm");
@@ -140,7 +179,7 @@ namespace Inv_M_Sys.ViewModels
 
         private void HideProductForm()
         {
-            SelectedProduct = null;
+            EditableProduct = null;
             IsNewMode = false;
             IsEditMode = false;
             Messenger.Default.Send("HideForm");
@@ -148,39 +187,54 @@ namespace Inv_M_Sys.ViewModels
 
         private async Task AddProductAsync()
         {
-            SelectedProduct ??= new Product();
-
-            if (!ValidateProduct(SelectedProduct)) return;
+            if (!ValidateProduct(EditableProduct)) return;
 
             try
             {
-                await ProductService.AddProductAsync(SelectedProduct);
-                await LoadProductsAsync();
+                await ProductService.AddProductAsync(EditableProduct);
                 MessageBox.Show("Product added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                await LoadProductsAsync();
                 HideProductForm();
             }
             catch (System.Exception ex)
             {
                 Log.Error(ex, "Error adding product.");
-                MessageBox.Show("Error adding product.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); // Show real error
             }
         }
 
         private async Task UpdateProductAsync()
         {
-            if (!ValidateProduct(SelectedProduct)) return;
+            if (!ValidateProduct(EditableProduct)) return;
 
             try
             {
+                // Copy values back to SelectedProduct
+                SelectedProduct.Name = EditableProduct.Name;
+                SelectedProduct.CategoryId = EditableProduct.CategoryId;
+                SelectedProduct.Quantity = EditableProduct.Quantity;
+                SelectedProduct.Price = EditableProduct.Price;
+                SelectedProduct.MinQuantity = EditableProduct.MinQuantity;
+                SelectedProduct.Supplier = EditableProduct.Supplier;
+                SelectedProduct.Description = EditableProduct.Description;
+
                 await ProductService.UpdateProductAsync(SelectedProduct);
-                await LoadProductsAsync();
                 MessageBox.Show("Product updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                await LoadProductsAsync();
                 HideProductForm();
             }
             catch (System.Exception ex)
             {
-                Log.Error(ex, "Error updating product.");
-                MessageBox.Show("Error updating product.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(ex, "Error adding product.");
+
+                if (ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("A product with this name already exists in this category.", "Duplicate Product", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("An unexpected error occurred while adding the product.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -217,13 +271,12 @@ namespace Inv_M_Sys.ViewModels
                 return;
             }
 
-            var filtered = _allProductsCache
-                .Where(p =>
-                    p.Name.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase) ||
-                    p.CategoryName.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase) ||
-                    p.Supplier.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase) ||
-                    p.Id.ToString().Contains(SearchQuery))
-                .ToList();
+            var filtered = _allProductsCache.Where(p =>
+                (SearchFilter == "Name" && p.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                (SearchFilter == "Category" && p.CategoryName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                (SearchFilter == "Supplier" && p.Supplier.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                (SearchFilter == "ID" && p.Id.ToString().Contains(SearchQuery))
+            ).ToList();
 
             ProductsList = new ObservableCollection<Product>(filtered);
             OnPropertyChanged(nameof(ProductsList));

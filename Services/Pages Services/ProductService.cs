@@ -1,4 +1,5 @@
-﻿using Inv_M_Sys.Models;
+﻿using Dapper;
+using Inv_M_Sys.Models;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -38,11 +39,11 @@ namespace Inv_M_Sys.Services.Pages_Services
                         CatID = reader.GetInt32(2),
                         CategoryName = reader.GetString(3)
                     },
-                    Quantity = reader.GetInt32(4),
-                    Price = reader.GetDecimal(5),
-                    MinQuantity = reader.GetInt32(6),
-                    Supplier = reader.GetString(7),
-                    Description = reader.GetString(8)
+                    Quantity = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                    Price = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
+                    MinQuantity = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                    Supplier = reader.IsDBNull(7) ? null : reader.GetString(7),
+                    Description = reader.IsDBNull(8) ? null : reader.GetString(8)
                 });
             }
 
@@ -78,6 +79,15 @@ namespace Inv_M_Sys.Services.Pages_Services
             using var conn = DatabaseHelper.GetConnection();
             await conn.OpenAsync();
 
+            var exists = await conn.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS (SELECT 1 FROM Products WHERE ProductName = @name AND CategoryId = @categoryId)",
+                new { name = product.Name, categoryId = product.CategoryId });
+
+            if (exists)
+            {
+                throw new Exception("A product with this name already exists in the selected category.");
+            }
+
             var query = @"
                 INSERT INTO Products (ProductName, CategoryId, Quantity, Price, MinQuantity, Supplier, Description)
                 VALUES (@Name, @CategoryId, @Quantity, @Price, @MinQuantity, @Supplier, @Description)";
@@ -85,11 +95,11 @@ namespace Inv_M_Sys.Services.Pages_Services
             using var cmd = new NpgsqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Name", product.Name);
             cmd.Parameters.AddWithValue("@CategoryId", product.CategoryId);
-            cmd.Parameters.AddWithValue("@Quantity", product.Quantity);
-            cmd.Parameters.AddWithValue("@Price", product.Price);
-            cmd.Parameters.AddWithValue("@MinQuantity", product.MinQuantity);
-            cmd.Parameters.AddWithValue("@Supplier", product.Supplier);
-            cmd.Parameters.AddWithValue("@Description", product.Description);
+            cmd.Parameters.AddWithValue("@Quantity", product.Quantity ?? 0);
+            cmd.Parameters.AddWithValue("@Price", product.Price ?? 0);
+            cmd.Parameters.AddWithValue("@MinQuantity", product.MinQuantity ?? 0);
+            cmd.Parameters.AddWithValue("@Supplier", (object?)product.Supplier ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Description", (object?)product.Description ?? DBNull.Value);
 
             await cmd.ExecuteNonQueryAsync();
         }
@@ -99,6 +109,15 @@ namespace Inv_M_Sys.Services.Pages_Services
         {
             using var conn = DatabaseHelper.GetConnection();
             await conn.OpenAsync();
+
+            var exists = await conn.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS (SELECT 1 FROM Products WHERE ProductName = @name AND CategoryId = @categoryId AND Id != @id)",
+                new { name = product.Name, categoryId = product.CategoryId, id = product.Id });
+
+            if (exists)
+            {
+                throw new Exception("Another product with this name already exists in the selected category.");
+            }
 
             var query = @"
                 UPDATE Products
@@ -115,11 +134,11 @@ namespace Inv_M_Sys.Services.Pages_Services
             cmd.Parameters.AddWithValue("@Id", product.Id);
             cmd.Parameters.AddWithValue("@Name", product.Name);
             cmd.Parameters.AddWithValue("@CategoryId", product.CategoryId);
-            cmd.Parameters.AddWithValue("@Quantity", product.Quantity);
-            cmd.Parameters.AddWithValue("@Price", product.Price);
-            cmd.Parameters.AddWithValue("@MinQuantity", product.MinQuantity);
-            cmd.Parameters.AddWithValue("@Supplier", product.Supplier);
-            cmd.Parameters.AddWithValue("@Description", product.Description);
+            cmd.Parameters.AddWithValue("@Quantity", product.Quantity ?? 0);
+            cmd.Parameters.AddWithValue("@Price", product.Price ?? 0);
+            cmd.Parameters.AddWithValue("@MinQuantity", product.MinQuantity ?? 0);
+            cmd.Parameters.AddWithValue("@Supplier", (object?)product.Supplier ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Description", (object?)product.Description ?? DBNull.Value);
 
             await cmd.ExecuteNonQueryAsync();
         }
@@ -154,8 +173,8 @@ namespace Inv_M_Sys.Services.Pages_Services
                 {
                     Id = reader.GetInt32(0),
                     Name = reader.GetString(1),
-                    Price = reader.GetDecimal(2),
-                    Quantity = reader.GetInt32(3)
+                    Price = reader.IsDBNull(2) ? null : reader.GetDecimal(2),
+                    Quantity = reader.IsDBNull(3) ? null : reader.GetInt32(3)
                 });
             }
 
@@ -163,4 +182,3 @@ namespace Inv_M_Sys.Services.Pages_Services
         }
     }
 }
-

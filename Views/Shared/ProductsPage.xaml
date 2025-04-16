@@ -144,7 +144,7 @@
         </Style>
 
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
-        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
 
     <Grid Background="#E8E8E8">
@@ -297,11 +297,14 @@
                 FontWeight="SemiBold"
                 Foreground="Black"
                 IsEditable="False"
-                SelectedIndex="0">
+                SelectedIndex="0"
+                SelectedValue="{Binding SearchFilter, Mode=TwoWay}"
+                SelectedValuePath="Content">
                 <!--  IsEditable set to False to prevent typing  -->
                 <ComboBoxItem Content="Name" />
                 <ComboBoxItem Content="Category" />
                 <ComboBoxItem Content="Supplier" />
+                <ComboBoxItem Content="ID" />
             </ComboBox>
 
             <!--  search bar  -->
@@ -334,7 +337,8 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Border>
             </Grid>
@@ -504,14 +508,15 @@
                                         Foreground="Gray"
                                         IsHitTestVisible="False"
                                         Text="Product Name"
-                                        Visibility="{Binding SelectedProduct.Name, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                                        Visibility="{Binding Text, ElementName=ProductNameTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
+                                        x:Name="ProductNameTextBox"
                                         Padding="5,0"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        Text="{Binding SelectedProduct.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Text="{Binding EditableProduct.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -533,7 +538,7 @@
                                 DisplayMemberPath="CategoryName"
                                 FontSize="14"
                                 ItemsSource="{Binding Categories}"
-                                SelectedValue="{Binding SelectedProduct.CategoryId, Mode=TwoWay}"
+                                SelectedValue="{Binding EditableProduct.CategoryId, Mode=TwoWay}"
                                 SelectedValuePath="CatID" />
                         </StackPanel>
 
@@ -567,7 +572,7 @@
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        Text="{Binding SelectedProduct.Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Text="{Binding EditableProduct.Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -602,7 +607,7 @@
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        Text="{Binding SelectedProduct.Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Text="{Binding EditableProduct.Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -637,7 +642,7 @@
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        Text="{Binding SelectedProduct.MinQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Text="{Binding EditableProduct.MinQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -664,14 +669,15 @@
                                         Foreground="Gray"
                                         IsHitTestVisible="False"
                                         Text="Supplier"
-                                        Visibility="{Binding SelectedProduct.Supplier, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                                        Visibility="{Binding Text, ElementName=SupplierTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
+                                        x:Name="SupplierTextBox"
                                         Padding="5,0"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
-                                        Text="{Binding SelectedProduct.Supplier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Text="{Binding EditableProduct.Supplier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -698,7 +704,7 @@
                                     BorderThickness="0"
                                     FontSize="14"
                                     Foreground="Black"
-                                    Text="{Binding SelectedProduct.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding EditableProduct.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     TextWrapping="Wrap" />
                             </Border>
                         </StackPanel>

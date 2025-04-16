@@ -29,6 +29,12 @@ namespace Inv_M_Sys.Views.Shared
                 else if (message == "HideForm")
                     Info_Container.Visibility = Visibility.Collapsed;
             });
+
+            Loaded += async (s, e) =>
+            {
+                await vm.LoadProductsAsync();
+                await vm.LoadCategoriesAsync();
+            };
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
