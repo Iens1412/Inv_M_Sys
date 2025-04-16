@@ -183,7 +183,7 @@ namespace Inv_M_Sys.ViewModels
                 {
                     await DatabaseHelper.SaveDailyScheduleAsync(day, SelectedStaffId);
                 }
-                SaveStatus = "Changes saved";
+                SaveStatus = "Saving Changes";
                 await Task.Delay(2000);
                 SaveStatus = string.Empty;
                 OnPropertyChanged(nameof(TotalWeeklyHours));

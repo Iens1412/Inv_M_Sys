@@ -90,6 +90,7 @@ namespace Inv_M_Sys.ViewModels
             BackCommand = new RelayCommand(HideProductForm);
         }
 
+        //Load the products and check the stock level
         public async Task LoadProductsAsync()
         {
             try
@@ -107,6 +108,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //funciton for stock check
         private void CheckStockLevels()
         {
             var lowStockProducts = ProductsList
@@ -122,6 +124,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //Load the categories to add to the combobox
         public async Task LoadCategoriesAsync()
         {
             try
@@ -142,6 +145,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //open container to add new product
         private void ShowNewProductForm()
         {
             EditableProduct = new Product();
@@ -150,6 +154,7 @@ namespace Inv_M_Sys.ViewModels
             Messenger.Default.Send("ShowForm");
         }
 
+        //open container for editing a product
         private void ShowEditProductForm()
         {
             if (SelectedProduct != null)
@@ -177,6 +182,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //hide the container 
         private void HideProductForm()
         {
             EditableProduct = null;
@@ -185,6 +191,7 @@ namespace Inv_M_Sys.ViewModels
             Messenger.Default.Send("HideForm");
         }
 
+        //add the new product to the database
         private async Task AddProductAsync()
         {
             if (!ValidateProduct(EditableProduct)) return;
@@ -203,6 +210,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //update the product in the database
         private async Task UpdateProductAsync()
         {
             if (!ValidateProduct(EditableProduct)) return;
@@ -238,6 +246,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //delete product from the database
         private async Task DeleteProductAsync()
         {
             if (SelectedProduct == null)
@@ -262,6 +271,7 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
+        //filter the products to get the one needed
         private void SearchProducts()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -282,6 +292,7 @@ namespace Inv_M_Sys.ViewModels
             OnPropertyChanged(nameof(ProductsList));
         }
 
+        //make sure every info is correct
         private bool ValidateProduct(Product product)
         {
             if (product == null ||

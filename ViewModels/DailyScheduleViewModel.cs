@@ -62,18 +62,23 @@ namespace Inv_M_Sys.ViewModels
                 TimeSpan workEnd = new TimeSpan(WorkEndHour, WorkEndMinute, 0);
                 TimeSpan workDuration = workEnd - workStart;
 
+                if (workDuration.TotalMinutes <= 0)
+                    return 0;
+
                 if (HasRestTime)
                 {
                     TimeSpan restStart = new TimeSpan(RestStartHour, RestStartMinute, 0);
                     TimeSpan restEnd = new TimeSpan(RestEndHour, RestEndMinute, 0);
                     TimeSpan restDuration = restEnd - restStart;
 
-                    return (workDuration - restDuration).TotalHours;
+                    // Only subtract rest time if it's valid and inside work time
+                    if (restStart >= workStart && restEnd <= workEnd && restDuration.TotalMinutes > 0)
+                    {
+                        return (workDuration - restDuration).TotalHours;
+                    }
                 }
-                else
-                {
-                    return workDuration.TotalHours;
-                }
+
+                return workDuration.TotalHours;
             }
         }
 
