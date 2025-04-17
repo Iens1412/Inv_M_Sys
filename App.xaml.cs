@@ -19,9 +19,6 @@ namespace Inv_M_Sys
                 // ✅ Set up logging (Serilog)
                 LoggerSetup.SetupLogger();
 
-                // ✅ start docker
-                DatabaseHelper.StartDockerIfNotRunning();
-
                 // 🛠️ Then test DB connection (and initialize if needed)
                 DatabaseHelper.TestConnection();
 

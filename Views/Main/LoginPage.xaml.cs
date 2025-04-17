@@ -118,7 +118,15 @@ namespace Inv_M_Sys.Views.Main
                 return;
             }
 
-            // Check Owner first
+            // ✅ Check database connection before attempting login
+            if (!IsDatabaseOnline())
+            {
+                Log.Error("Login failed due to database being offline.");
+                MessageBox.Show("Cannot connect to the database. Please check your connection.", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // ✅ Attempt authentication (only once if DB is online)
             if (AuthenticateOwner(username, password))
             {
                 Log.Information("Owner login successful for user: {Username}", username);
@@ -236,6 +244,26 @@ namespace Inv_M_Sys.Views.Main
                     builder.Append(b.ToString("x2"));
                 }
                 return builder.ToString();
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private bool IsDatabaseOnline()
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 

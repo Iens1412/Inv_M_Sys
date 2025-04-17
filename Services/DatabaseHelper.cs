@@ -71,67 +71,6 @@ public static class DatabaseHelper
         }
     }
 
-    public static void StartDockerIfNotRunning()
-    {
-        try
-        {
-            var checkProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "docker",
-                    Arguments = "ps -q -f name=inventory_db",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-            checkProcess.Start();
-            string output = checkProcess.StandardOutput.ReadToEnd();
-            checkProcess.WaitForExit();
-
-            if (string.IsNullOrWhiteSpace(output))
-            {
-                MessageBox.Show("🔄 Starting Docker container...");
-
-                var startProcess = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "docker-compose",
-                        Arguments = "up -d",
-                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                startProcess.Start();
-                string log = startProcess.StandardOutput.ReadToEnd();
-                string err = startProcess.StandardError.ReadToEnd();
-                startProcess.WaitForExit();
-
-                if (startProcess.ExitCode == 0)
-                {
-                    MessageBox.Show("✅ Docker container started.");
-                }
-                else
-                {
-                    MessageBox.Show($"❌ Failed to start Docker:\n{err}", "Docker Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                Console.WriteLine("✅ Docker container is already running.");
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"❌ Error checking or starting Docker: {ex.Message}", "Docker Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
     // Update owner credentials (Username and Password)
     public static void UpdateOwnerCredentials(string newUsername, string newPassword)
     {
