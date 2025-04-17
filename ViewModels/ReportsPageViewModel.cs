@@ -58,36 +58,65 @@ namespace Inv_M_Sys.ViewModels
             get => _searchText;
             set => SetProperty(ref _searchText, value);
         }
+        
+        public bool IsAnyContainerVisible => IsGenerateVisible || IsExportVisible;
+
+        private void UpdateContainerVisibility()
+        {
+            OnPropertyChanged(nameof(IsAnyContainerVisible));
+        }
 
         private bool _isGenerateVisible;
         public bool IsGenerateVisible
         {
             get => _isGenerateVisible;
-            set => SetProperty(ref _isGenerateVisible, value);
+            set
+            {
+                if (SetProperty(ref _isGenerateVisible, value))
+                    UpdateContainerVisibility();
+            }
         }
 
         private bool _isExportVisible;
         public bool IsExportVisible
         {
             get => _isExportVisible;
-            set => SetProperty(ref _isExportVisible, value);
+            set
+            {
+                if (SetProperty(ref _isExportVisible, value))
+                    UpdateContainerVisibility();
+            }
         }
 
-
+        private string _searchCategory = "Reports";
+        public string SearchCategory
+        {
+            get => _searchCategory;
+            set => SetProperty(ref _searchCategory, value);
+        }
 
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string SelectedStatus { get; set; } = "All";
+        private List<Report> _allReports = new();
 
         public bool IsLoading { get => _isLoading; set => SetProperty(ref _isLoading, value); }
         private bool _isLoading;
+
+        public ObservableCollection<string> SearchCategories { get; } = new() { "Reports", "Details" };
+        public ObservableCollection<string> StatusOptions { get; } = new()
+        {
+            "All", "Pending", "Delivered", "Cancelled"
+        };
+
 
         public ICommand RefreshReportsCommand { get; }
         public ICommand DeleteReportCommand { get; }
         public ICommand GenerateReportCommand { get; }
         public ICommand ExpBackCommand { get; }
         public ICommand CancelGenerateCommand { get; }
+
         public ICommand ShowNewCommand => new RelayCommand(() => IsGenerateVisible = true);
         public ICommand ShowExportCommand => new RelayCommand(() => IsExportVisible = true);
 
@@ -109,9 +138,11 @@ namespace Inv_M_Sys.ViewModels
         {
             IsLoading = true;
             Reports.Clear();
-            var reports = await ReportsService.GetAllReportsAsync();
-            foreach (var report in reports)
+
+            _allReports = await ReportsService.GetAllReportsAsync();
+            foreach (var report in _allReports)
                 Reports.Add(report);
+
             IsLoading = false;
         }
 
@@ -150,6 +181,7 @@ namespace Inv_M_Sys.ViewModels
             SelectedReport = null;
         }
 
+        //Gernrate a report
         private async Task GenerateReportAsync()
         {
             if (string.IsNullOrWhiteSpace(ReportTitleInput))
@@ -162,6 +194,9 @@ namespace Inv_M_Sys.ViewModels
             try
             {
                 var reportId = await ReportGenerationService.GenerateReportAsync(ReportTitleInput, SelectedStatus, StartDate, EndDate);
+
+                await Task.Delay(2000);
+
                 MessageBox.Show("Report generated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadReportsAsync();
             }
@@ -175,44 +210,43 @@ namespace Inv_M_Sys.ViewModels
             }
         }
 
-        private void ExecuteExpBack()
-        {
-            var window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
-            if (window != null)
-            {
-                var exportContainer = (FrameworkElement)window.FindName("ExportReportContainer");
-                if (exportContainer != null)
-                    exportContainer.Visibility = Visibility.Collapsed;
-            }
-        }
+        //Commands for the back buttons in the containers
+        private void ExecuteExpBack() => IsExportVisible = false;
+        private void ExecuteGenerateBack() => IsGenerateVisible = false;
 
-        private void ExecuteGenerateBack()
-        {
-            var window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
-            if (window != null)
-            {
-                var generateContainer = (FrameworkElement)window.FindName("GenerateContainer");
-                if (generateContainer != null)
-                    generateContainer.Visibility = Visibility.Collapsed;
-            }
-        }
-        
+        //Search functions
         private void ExecuteSearch()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
-            {
                 return;
+
+            if (SearchCategory == "Reports")
+            {
+                var filtered = _allReports
+                    .Where(o =>
+                        o.Id.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        o.ReportTitle.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        o.Status.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        o.ReportType.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                Reports.Clear();
+                foreach (var report in filtered)
+                    Reports.Add(report);
             }
+            else if (SearchCategory == "Details")
+            {
+                var filteredOrders = SelectedReportOrders
+                    .Where(o =>
+                        o.Id.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        o.CustomerName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        o.Status.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
-            var filtered = Reports.Where(o =>
-                o.Id.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                o.ReportTitle.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                o.Status.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-            ).ToList();
-
-            Reports.Clear();
-            foreach (var item in filtered)
-                Reports.Add(item);
+                SelectedReportOrders.Clear();
+                foreach (var order in filteredOrders)
+                    SelectedReportOrders.Add(order);
+            }
         }
 
     }

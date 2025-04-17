@@ -6,15 +6,11 @@
     xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:other="clr-namespace:Inv_M_Sys.Converter"
-    xmlns:viewModels="clr-namespace:Inv_M_Sys.ViewModels"
     Title="ReportsPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Page.DataContext>
-        <viewModels:ReportsPageViewModel />
-    </Page.DataContext>
 
     <Page.Resources>
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
@@ -265,6 +261,26 @@
             </Grid>
         </Grid>
 
+        <!--  combobox for the search type  -->
+        <ComboBox
+            Grid.Row="1"
+            Width="120"
+            Height="30"
+            Margin="0,0,10,0"
+            FontFamily="Times New Roman"
+            FontSize="14"
+            FontWeight="Bold"
+            ItemsSource="{Binding SearchCategories}"
+            SelectedIndex="0"
+            SelectedItem="{Binding SearchCategory}" />
+
+        <ProgressBar
+            Grid.Row="2"
+            Margin="0,100,0,0"
+            Height="8"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <!--  Buttons  -->
         <Grid Grid.Row="2" Grid.Column="0">
             <StackPanel
@@ -291,7 +307,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
-                    Click="DelBtn_Click"
+                    Command="{Binding DeleteReportCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -391,7 +407,7 @@
                     <ListView
                         x:Name="ReportsListView"
                         ItemsSource="{Binding Reports}"
-                        SelectionChanged="ReportsListView_SelectionChanged">
+                        SelectedItem="{Binding SelectedReport}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
@@ -478,7 +494,7 @@
             Margin="20"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Visibility="Collapsed">
+            Visibility="{Binding IsAnyContainerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -544,7 +560,8 @@
                                     Height="35"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14" />
+                                    FontSize="14"
+                                    Text="{Binding ReportTitleInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <!--  Report Type (Fixed: Sales Report)  -->
@@ -581,7 +598,8 @@
                                     x:Name="StartDatePicker"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14" />
+                                    FontSize="14"
+                                    SelectedDate="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <!--  End Date  -->
@@ -598,7 +616,8 @@
                                     x:Name="EndDatePicker"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14" />
+                                    FontSize="14"
+                                    SelectedDate="{Binding EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <!--  Status Filter  -->
@@ -616,12 +635,9 @@
                                     Height="35"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14">
-                                    <ComboBoxItem Content="All" />
-                                    <ComboBoxItem Content="Pending" />
-                                    <ComboBoxItem Content="Delivered" />
-                                    <ComboBoxItem Content="Cancelled" />
-                                </ComboBox>
+                                    FontSize="14"
+                                    ItemsSource="{Binding StatusOptions}"
+                                    SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" />
                             </StackPanel>
                         </Grid>
                     </ScrollViewer>
@@ -711,7 +727,7 @@
                                     Margin="0,5,0,10"
                                     FontSize="14"
                                     Foreground="Gray"
-                                    Text="No Report Selected" />
+                                    Text="{Binding SelectedReportTitle}" />
 
                                 <TextBlock
                                     FontSize="16"
@@ -721,7 +737,7 @@
                                     x:Name="SelectedReportDetails"
                                     FontSize="14"
                                     Foreground="Gray"
-                                    Text="Select a report from the list." />
+                                    Text="{Binding SelectedReportDetails}" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -765,6 +781,5 @@
             </Border>
 
         </Grid>
-
     </Grid>
 </Page>
