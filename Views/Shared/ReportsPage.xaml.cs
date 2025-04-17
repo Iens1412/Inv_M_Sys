@@ -98,12 +98,21 @@ namespace Inv_M_Sys.Views.Shared
             {
                 try
                 {
-                    ReportExportService.ExportAsCsv(SalesList, dialog.FileName);
+                    var viewModel = DataContext as ReportsPageViewModel;
+                    if (viewModel?.SelectedReportOrders == null || viewModel.SelectedReportOrders.Count == 0)
+                    {
+                        MessageBox.Show("No data to export.");
+                        return;
+                    }
+
+                    ReportExportService.ExportAsCsv(viewModel.SelectedReportOrders, dialog.FileName);
                     MessageBox.Show("CSV report exported successfully.", "Exported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Log.Information("CSV report exported successfully");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("CSV export failed: " + ex.Message);
+                    Log.Error("CSV report couldn't Export" + ex.Message);
                 }
             }
         }
@@ -120,12 +129,21 @@ namespace Inv_M_Sys.Views.Shared
             {
                 try
                 {
-                    ReportExportService.ExportAsExcel(SalesList, dialog.FileName);
+                    var viewModel = DataContext as ReportsPageViewModel;
+                    if (viewModel?.SelectedReportOrders == null || viewModel.SelectedReportOrders.Count == 0)
+                    {
+                        MessageBox.Show("No data to export.");
+                        return;
+                    }
+
+                    ReportExportService.ExportAsExcel(viewModel.SelectedReportOrders, dialog.FileName);
                     MessageBox.Show("Excel report exported successfully.", "Exported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Log.Information("Excel report exported successfully");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Excel export failed: " + ex.Message);
+                    Log.Error("Excel report couldn't Export" + ex.Message);
                 }
             }
         }
@@ -142,13 +160,22 @@ namespace Inv_M_Sys.Views.Shared
             {
                 try
                 {
-                    string reportTitle = SelectedReportTitle.Text?.Trim() ?? "Sales Report";
-                    ReportExportService.ExportAsPdf(SalesList, dialog.FileName, reportTitle);
+                    var viewModel = DataContext as ReportsPageViewModel;
+                    if (viewModel?.SelectedReportOrders == null || viewModel.SelectedReportOrders.Count == 0)
+                    {
+                        MessageBox.Show("No data to export.");
+                        return;
+                    }
+
+                    string reportTitle = viewModel.SelectedReportTitle?.Trim() ?? "Sales Report";
+                    ReportExportService.ExportAsPdf(viewModel.SelectedReportOrders, dialog.FileName, reportTitle);
                     MessageBox.Show("PDF report exported successfully.", "Exported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Log.Information("PDF report exported successfully");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("PDF export failed: " + ex.Message);
+                    Log.Error("PDF report couldn't Export" + ex.Message);
                 }
             }
         }

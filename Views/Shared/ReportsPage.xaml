@@ -684,7 +684,7 @@
             <!--  Export Report Container  -->
             <Border
                 x:Name="ExportReportContainer"
-                Grid.Row="2"
+                Grid.Row="1"
                 Padding="20"
                 Background="#E8E8E8"
                 BorderBrush="Black"
