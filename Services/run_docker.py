@@ -1,4 +1,10 @@
 ﻿import subprocess
+import os
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
 
 def run_docker():
     try:

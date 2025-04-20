@@ -1,4 +1,10 @@
 import socket
+import os
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
 
 def start_server(port=9999):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

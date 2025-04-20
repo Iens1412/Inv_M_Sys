@@ -68,7 +68,7 @@
     <None Update="Services\run_docker.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\run_reset.bat">
+    <None Update="Services\ConfigFiles.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\test_db_and_encrypt.py">

@@ -1,6 +1,11 @@
 import socket
 import json
 import os
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
 
 def find_host_on_lan(port=9999):
     base_ip = "192.168.1."  # Adjust to your LAN subnet

@@ -2,6 +2,12 @@ import os
 import json
 import psycopg2
 from cryptography.fernet import Fernet
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
+
 
 CONFIG_PATH = os.path.join("Services", "appsettings.json")
 PASSWORD_FILE = "host_pass.txt"

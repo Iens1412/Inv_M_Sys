@@ -1,6 +1,12 @@
 import json
 import os
 import socket
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
+
 
 def get_local_ip():
     """Get the local IP address of this machine (client)."""
@@ -17,7 +23,8 @@ def get_local_ip():
 
 def update_appsettings(host_ip):
     """Update appsettings.json with the new host IP."""
-    settings_path = os.path.join("Services", "appsettings.json")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    settings_path = os.path.join(script_dir, "appsettings.json")
     if not os.path.exists(settings_path):
         print("❌ appsettings.json not found.")
         return False

@@ -2,6 +2,11 @@ import psycopg2
 import hashlib
 import json
 import os
+import sys
+
+if os.environ.get("ALLOW_RUN") != "YES":
+    print("❌ This script must be run through the official launcher.")
+    sys.exit(1)
 
 # Load database credentials from appsettings.json
 def load_config():
@@ -28,7 +33,7 @@ def reset_owner():
         cursor = conn.cursor()
 
         new_username = "admin"
-        new_password = hash_password("admin123")  # Change this as needed
+        new_password = hash_password("admin123") 
 
         cursor.execute("""
             UPDATE Owner 
