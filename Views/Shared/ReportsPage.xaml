@@ -1,0 +1,672 @@
+﻿<Page
+    x:Class="Inv_M_Sys.Views.Shared.ReportsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:other="clr-namespace:Inv_M_Sys.Converter"
+    Title="ReportsPage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Padding" Value="10,5" />
+
+            <!--  Hover Effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SrchRefButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="#02C125" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Padding" Value="10,5" />
+
+            <!--  Hover Effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!--  New OR Edit Buttons  -->
+        <Style x:Key="NewOrEditButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="#D88500" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Padding" Value="10,5" />
+
+            <!--  Hover Effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!--  Back Button  -->
+        <Style x:Key="BackButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Padding" Value="10,5" />
+
+            <!--  Hover Effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5F84FF" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!--  Export Buttons  -->
+        <Style x:Key="RoundedExportButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="5"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="10" />
+
+            <!--  Hover Effect  -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.8" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+
+    </Page.Resources>
+
+    <Grid Background="#E8E8E8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.07*" />
+            <RowDefinition Height="0.14*" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--  Top  -->
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Background="#57AEFF">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="0.6*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Log Out Button  -->
+            <Grid Grid.Column="2">
+                <Button
+                    Width="150"
+                    Margin="0,-1,79,-1"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Content="Log Out"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red" />
+
+                <Button
+                    Width="20"
+                    Margin="199,-1,10,-1"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Content="X"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    RenderTransformOrigin="-1.084,0.562" />
+
+                <Button
+                    Width="20"
+                    Margin="155,-1,54,-1"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Content="⬜"
+                    FontFamily="Times New Roman"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    RenderTransformOrigin="-1.084,0.562" />
+            </Grid>
+
+            <!--  Note And Home Buttons  -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <!--  Notifications Button  -->
+                <Button
+                    Grid.Column="1"
+                    Width="50"
+                    Height="30"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent">
+                    <Canvas Width="20" Height="20">
+                        <Path
+                            Canvas.Top="-2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"
+                            Fill="Yellow" />
+                    </Canvas>
+                </Button>
+
+                <!--  Home Button  -->
+                <Button
+                    Grid.Column="0"
+                    Width="50"
+                    Height="30"
+                    Background="#57AEFF"
+                    BorderBrush="Transparent"
+                    Content="Home"
+                    FontFamily="Times New Roman"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="Red" />
+            </Grid>
+        </Grid>
+
+        <!--  Buttons  -->
+        <Grid Grid.Row="2" Grid.Column="0">
+            <StackPanel
+                Width="Auto"
+                Height="auto"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Button
+                    Width="180"
+                    Height="32"
+                    Content="Export"
+                    FontFamily="Times New Roman"
+                    Style="{StaticResource RoundedButtonStyle}" />
+                <Button
+                    Width="180"
+                    Height="32"
+                    Margin="0,20,0,0"
+                    Content="New"
+                    FontFamily="Times New Roman"
+                    Style="{StaticResource RoundedButtonStyle}" />
+                <Button
+                    Width="180"
+                    Height="32"
+                    Margin="0,20,0,0"
+                    Content="Delete"
+                    FontFamily="Times New Roman"
+                    Style="{StaticResource RoundedButtonStyle}" />
+                <!--  Add spacer  -->
+                <Border Height="180" />
+            </StackPanel>
+        </Grid>
+
+        <!--  Search and Refresh  -->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15*" />
+                <ColumnDefinition Width="26*" />
+                <ColumnDefinition Width="19*" />
+                <ColumnDefinition Width="15*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  search bar  -->
+            <Grid Grid.Column="1">
+                <Border
+                    Width="200"
+                    Height="30"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="White"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    CornerRadius="15">
+                    <Grid>
+                        <!--  Placeholder Text  -->
+                        <TextBlock
+                            x:Name="PlaceholderText"
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Foreground="Gray"
+                            IsHitTestVisible="False"
+                            Text="Enter text here..."
+                            Visibility="{Binding Text, ElementName=RoundedTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                        <!--  TextBox  -->
+                        <TextBox
+                            x:Name="RoundedTextBox"
+                            Padding="10,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="Black" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!--  Buttons for search and Refresh  -->
+            <Grid Grid.Column="2" Grid.ColumnSpan="2">
+                <Button
+                    Width="120"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    Content="Search"
+                    FontFamily="Times new roman"
+                    Style="{StaticResource SrchRefButtonStyle}" />
+                <Button
+                    Width="120"
+                    Height="30"
+                    Margin="136,11,0,11"
+                    HorizontalAlignment="Left"
+                    Content="Refresh"
+                    FontFamily="Times new roman"
+                    Style="{StaticResource SrchRefButtonStyle}" />
+            </Grid>
+
+        </Grid>
+
+        <!--  List for the info  -->
+        <Grid Grid.Row="2" Grid.Column="1">
+            <!--  Outer Container  -->
+            <Border
+                Margin="10"
+                Padding="10"
+                Background="#FFFFFF"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                CornerRadius="15">
+
+                <StackPanel>
+                    <!--  Reports ListView  -->
+                    <ListView
+                        x:Name="SalesListView"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        AlternationCount="2"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Visibility="Visible">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn
+                                    Width="40"
+                                    DisplayMemberBinding="{Binding SaleID}"
+                                    Header="ID" />
+                                <GridViewColumn
+                                    Width="170"
+                                    DisplayMemberBinding="{Binding Product}"
+                                    Header="Title" />
+                                <GridViewColumn
+                                    Width="170"
+                                    DisplayMemberBinding="{Binding Amount}"
+                                    Header="Description" />
+                                <GridViewColumn
+                                    Width="170"
+                                    DisplayMemberBinding="{Binding Date}"
+                                    Header="Date" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!--  Continer To EXPORT and Generate Reports  -->
+        <Grid
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="20"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Visibility="Collapsed">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  Generate Report Container  -->
+            <Border
+                Grid.Row="0"
+                Margin="0,0,0,20"
+                Padding="20"
+                Background="#E8E8E8"
+                BorderBrush="Black"
+                BorderThickness="2"
+                CornerRadius="40"
+                Visibility="Collapsed">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Title  -->
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="0,10"
+                        HorizontalAlignment="Center"
+                        FontFamily="Times New Roman"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Text="Generate Report" />
+
+                    <!--  Scrollable Content  -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!--  Report Type Selection  -->
+                            <StackPanel
+                                Grid.Row="0"
+                                Grid.ColumnSpan="2"
+                                Margin="10">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Text="Select Report Type" />
+                                <ComboBox
+                                    x:Name="ReportTypeComboBox"
+                                    Height="35"
+                                    BorderBrush="Violet"
+                                    BorderThickness="1"
+                                    FontSize="14">
+                                    <ComboBoxItem Content="Sales Report" />
+                                    <ComboBoxItem Content="Stock Report" />
+                                    <ComboBoxItem Content="Restock Report" />
+                                    <ComboBoxItem Content="User Activity Report" />
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!--  Start Date  -->
+                            <StackPanel
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="10">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Text="Start Date" />
+                                <DatePicker
+                                    x:Name="StartDatePicker"
+                                    BorderBrush="Violet"
+                                    BorderThickness="1"
+                                    FontSize="14"
+                                    SelectedDate="{Binding StartDate}" />
+                            </StackPanel>
+
+                            <!--  End Date  -->
+                            <StackPanel
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="10">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Text="End Date" />
+                                <DatePicker
+                                    x:Name="EndDatePicker"
+                                    BorderBrush="Violet"
+                                    BorderThickness="1"
+                                    FontSize="14"
+                                    SelectedDate="{Binding EndDate}" />
+                            </StackPanel>
+
+                            <!--  Status Filter  -->
+                            <StackPanel
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Margin="10">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Text="Status" />
+                                <ComboBox
+                                    x:Name="StatusComboBox"
+                                    Height="35"
+                                    BorderBrush="Violet"
+                                    BorderThickness="1"
+                                    FontSize="14">
+                                    <ComboBoxItem Content="All" />
+                                    <ComboBoxItem Content="Pending" />
+                                    <ComboBoxItem Content="Completed" />
+                                    <ComboBoxItem Content="Cancelled" />
+                                </ComboBox>
+                            </StackPanel>
+
+                        </Grid>
+                    </ScrollViewer>
+
+                    <!--  Generate Report Button  -->
+                    <Button
+                        Grid.Row="2"
+                        Width="180"
+                        Height="40"
+                        Margin="0,20,0,20"
+                        HorizontalAlignment="Center"
+                        Click="GenerateReport_Click"
+                        Content="Generate Report"
+                        FontFamily="Times New Roman"
+                        Style="{StaticResource NewOrEditButtonStyle}" />
+                </Grid>
+            </Border>
+
+            <!--  Export Report Container  -->
+            <Border
+                x:Name="ExportReportContainer"
+                Grid.Row="2"
+                Padding="20"
+                Background="#E8E8E8"
+                BorderBrush="Black"
+                BorderThickness="2"
+                CornerRadius="40"
+                Visibility="Collapsed">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Title  -->
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="0,10"
+                        HorizontalAlignment="Center"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Text="Export Report" />
+
+                    <!--  Selected Report Information  -->
+                    <StackPanel Grid.Row="1" Margin="10">
+                        <Border
+                            Padding="10"
+                            Background="White"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            CornerRadius="15">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Text="Report Title:" />
+                                <TextBlock
+                                    x:Name="SelectedReportTitle"
+                                    Margin="0,5,0,10"
+                                    FontSize="14"
+                                    Foreground="Gray"
+                                    Text="No Report Selected" />
+
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Text="Details:" />
+                                <TextBlock
+                                    x:Name="SelectedReportDetails"
+                                    FontSize="14"
+                                    Foreground="Gray"
+                                    Text="Select a report from the list." />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!--  Export Buttons  -->
+                    <StackPanel
+                        Grid.Row="2"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Button
+                            Background="Red"
+                            Click="ExportPDF_Click"
+                            Content="Export as PDF"
+                            Style="{StaticResource RoundedExportButtonStyle}" />
+
+                        <Button
+                            Background="Green"
+                            Click="ExportExcel_Click"
+                            Content="Export as Excel"
+                            Style="{StaticResource RoundedExportButtonStyle}" />
+
+                        <Button
+                            Background="Orange"
+                            Click="ExportCSV_Click"
+                            Content="Export as CSV"
+                            Style="{StaticResource RoundedExportButtonStyle}" />
+
+                    </StackPanel>
+
+                    <!--  Back Button  -->
+                    <Button
+                        Grid.Row="3"
+                        Background="Gray"
+                        Click="BackToMainPage_Click"
+                        Content="Back"
+                        Style="{StaticResource RoundedExportButtonStyle}" />
+                </Grid>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+</Page>

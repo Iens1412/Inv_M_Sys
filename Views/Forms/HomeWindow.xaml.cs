@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inv_M_Sys.Views
+namespace Inv_M_Sys.Views.Forms
 {
     /// <summary>
-    /// Interaction logic for UsersPage.xaml
+    /// Interaction logic for HomeWindow.xaml
     /// </summary>
-    public partial class UsersPage : Page
+    public partial class HomeWindow : Window
     {
-        public UsersPage()
+        public HomeWindow()
         {
             InitializeComponent();
         }

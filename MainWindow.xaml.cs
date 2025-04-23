@@ -19,26 +19,18 @@ namespace Inv_M_Sys
         public MainWindow()
         {
             InitializeComponent();
+
+            // Navigate to the LoginPage when the application starts
+            MainFrame.Navigate(new Views.Main.LoginPage());
         }
 
-        private void NavigateToProducts(object sender, RoutedEventArgs e)
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.ProductsPage());
-        }
-
-        private void NavigateToCategories(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Views.CategoriesPage());
-        }
-
-        private void NavigateToReports(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Views.ReportsPage());
-        }
-
-        private void NavigateToUsers(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Views.UsersPage());
+            // Allows the window to be dragged
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
+            }
         }
     }
 }

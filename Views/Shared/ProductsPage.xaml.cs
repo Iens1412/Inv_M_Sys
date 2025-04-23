@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inv_M_Sys.Views
+namespace Inv_M_Sys.Views.Shared
 {
     /// <summary>
-    /// Interaction logic for ReportsPage.xaml
+    /// Interaction logic for ProductsPage.xaml
     /// </summary>
-    public partial class ReportsPage : Page
+    public partial class ProductsPage : Page
     {
-        public ReportsPage()
+        public ProductsPage()
         {
             InitializeComponent();
         }

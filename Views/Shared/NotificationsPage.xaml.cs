@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inv_M_Sys.Views
+namespace Inv_M_Sys.Views.Shared
 {
     /// <summary>
-    /// Interaction logic for SchedulePage.xaml
+    /// Interaction logic for NotificationsPage.xaml
     /// </summary>
-    public partial class SchedulePage : Page
+    public partial class NotificationsPage : Page
     {
-        public SchedulePage()
+        public NotificationsPage()
         {
             InitializeComponent();
         }
