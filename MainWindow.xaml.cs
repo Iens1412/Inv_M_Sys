@@ -1,13 +1,8 @@
-﻿using System.Text;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Inv_M_Sys.Services;
 
 namespace Inv_M_Sys
 {
@@ -21,7 +16,7 @@ namespace Inv_M_Sys
             InitializeComponent();
 
             // Navigate to the LoginPage when the application starts
-            MainFrame.Navigate(new Views.Main.LoginPage());
+            NavigateToPage(new Views.Main.LoginPage());
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -31,6 +26,12 @@ namespace Inv_M_Sys
             {
                 this.DragMove();
             }
+        }
+
+        // Method to navigate to different pages inside HomeWindow
+        public void NavigateToPage(Page page)
+        {
+            MainFrame.NavigationService.Navigate(page);
         }
     }
 }

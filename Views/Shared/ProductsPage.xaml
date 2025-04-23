@@ -6,10 +6,16 @@
     xmlns:local="clr-namespace:Inv_M_Sys.Views.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:other="clr-namespace:Inv_M_Sys.Converter"
+    xmlns:vm="clr-namespace:Inv_M_Sys.ViewModels"
     Title="ProductsPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Unloaded="Page_Unloaded"
     mc:Ignorable="d">
+
+    <Page.DataContext>
+        <vm:ProductsPageViewModel />
+    </Page.DataContext>
 
     <Page.Resources>
         <!--  Action Buttons  -->
@@ -138,7 +144,7 @@
         </Style>
 
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
-
+        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
 
     <Grid Background="#E8E8E8">
@@ -171,6 +177,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -182,6 +189,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -194,7 +202,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="--"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -202,28 +211,12 @@
                     RenderTransformOrigin="-1.084,0.562" />
             </Grid>
 
-            <!--  Note And Home Buttons  -->
+            <!--  Home Buttons  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <!--  Notifications Button  -->
-                <Button
-                    Grid.Column="1"
-                    Width="50"
-                    Height="30"
-                    Background="#57AEFF"
-                    BorderBrush="Transparent">
-                    <Canvas Width="20" Height="20">
-                        <Path
-                            Canvas.Top="-2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"
-                            Fill="Yellow" />
-                    </Canvas>
-                </Button>
 
                 <!--  Home Button  -->
                 <Button
@@ -232,6 +225,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -250,6 +244,7 @@
                 <Button
                     Width="180"
                     Height="32"
+                    Command="{Binding NewProductFormCommand}"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -257,6 +252,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Command="{Binding EditProductFormCommand}"
                     Content="Edit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -264,6 +260,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Command="{Binding DeleteProductCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -280,6 +277,35 @@
                 <ColumnDefinition Width="19*" />
                 <ColumnDefinition Width="15*" />
             </Grid.ColumnDefinitions>
+
+            <!--  ComboBox for Search  -->
+            <ComboBox
+                x:Name="SearchComboBox"
+                Grid.Column="0"
+                Width="150"
+                MinHeight="30"
+                MaxHeight="35"
+                Margin="-55,0,0,0"
+                Padding="10,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="White"
+                BorderBrush="#D1D1D1"
+                BorderThickness="1"
+                FontFamily="Segoe UI"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Foreground="Black"
+                IsEditable="False"
+                SelectedIndex="0"
+                SelectedValue="{Binding SearchFilter, Mode=TwoWay}"
+                SelectedValuePath="Content">
+                <!--  IsEditable set to False to prevent typing  -->
+                <ComboBoxItem Content="Name" />
+                <ComboBoxItem Content="Category" />
+                <ComboBoxItem Content="Supplier" />
+                <ComboBoxItem Content="ID" />
+            </ComboBox>
 
             <!--  search bar  -->
             <Grid Grid.Column="1">
@@ -311,7 +337,8 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Border>
             </Grid>
@@ -322,6 +349,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
+                    Command="{Binding SearchCommand}"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -330,6 +358,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
+                    Command="{Binding RefreshCommand}"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -351,39 +380,49 @@
                 <StackPanel>
                     <!--  Products ListView  -->
                     <ListView
-                        x:Name="SalesListView"
+                        x:Name="ProductListView"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
+                        ItemsSource="{Binding ProductsList}"
+                        SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                         Visibility="Visible">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="40"
-                                    DisplayMemberBinding="{Binding SaleID}"
-                                    Header=" ID" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Id}"
+                                    Header="ID" />
                                 <GridViewColumn
-                                    Width="140"
-                                    DisplayMemberBinding="{Binding Product}"
+                                    Width="200"
+                                    DisplayMemberBinding="{Binding Name}"
                                     Header="Name" />
                                 <GridViewColumn
-                                    Width="50"
-                                    DisplayMemberBinding="{Binding Amount}"
-                                    Header="Qnt" />
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding CategoryName}"
+                                    Header="Category" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
+                                    Width="80"
+                                    DisplayMemberBinding="{Binding Quantity}"
+                                    Header="Quantity" />
+                                <GridViewColumn
+                                    Width="80"
+                                    DisplayMemberBinding="{Binding MinQuantity}"
+                                    Header="MinQnt" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Price}"
                                     Header="Price" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Description" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Supplier}"
+                                    Header="Supplier" />
                                 <GridViewColumn
-                                    Width="110"
-                                    DisplayMemberBinding="{Binding Date}"
-                                    Header="Category" />
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Description}"
+                                    Header="Description" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -391,17 +430,21 @@
             </Border>
         </Grid>
 
+        <!--  Container for the add or update  -->
         <Border
+            x:Name="Info_Container"
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
+            MaxWidth="700"
+            MaxHeight="600"
             Margin="20"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Background="#E8E8E8"
             BorderBrush="Black"
             BorderThickness="2"
-            CornerRadius="40"
+            CornerRadius="20"
             Visibility="Collapsed">
 
             <!--  Grid to Hold Everything  -->
@@ -448,6 +491,11 @@
                             Grid.Row="0"
                             Grid.ColumnSpan="2"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Product Name" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -467,12 +515,13 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding EditableProduct.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
-                        <!--  Category (Dropdown)  -->
+                        <!--  Category  -->
                         <StackPanel
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
@@ -483,13 +532,14 @@
                                 FontWeight="Bold"
                                 Text="Category" />
                             <ComboBox
-                                x:Name="CategoryComboBox"
                                 Height="35"
                                 BorderBrush="Violet"
                                 BorderThickness="1"
+                                DisplayMemberPath="CategoryName"
                                 FontSize="14"
                                 ItemsSource="{Binding Categories}"
-                                SelectedIndex="0" />
+                                SelectedValue="{Binding EditableProduct.CategoryId, Mode=TwoWay}"
+                                SelectedValuePath="CatID" />
                         </StackPanel>
 
                         <!--  Quantity  -->
@@ -497,6 +547,11 @@
                             Grid.Row="2"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Quantity" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -516,7 +571,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding EditableProduct.Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -526,6 +582,11 @@
                             Grid.Row="2"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Price" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -545,7 +606,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding EditableProduct.Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -555,6 +617,11 @@
                             Grid.Row="3"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Min Quantity" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -574,7 +641,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding EditableProduct.MinQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -584,6 +652,11 @@
                             Grid.Row="3"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Text="Supplier" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -603,12 +676,13 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding EditableProduct.Supplier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
-                        <!--  Description (Multiline)  -->
+                        <!--  Description  -->
                         <StackPanel
                             Grid.Row="4"
                             Grid.ColumnSpan="2"
@@ -623,14 +697,14 @@
                                 BorderBrush="Violet"
                                 BorderThickness="0,0,0,2">
                                 <TextBox
-                                    x:Name="DescriptionTextBox"
-                                    Height="60"
+                                    Height="Auto"
                                     Padding="5,0"
                                     AcceptsReturn="True"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
                                     Foreground="Black"
+                                    Text="{Binding EditableProduct.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     TextWrapping="Wrap" />
                             </Border>
                         </StackPanel>
@@ -645,33 +719,37 @@
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
                     <Button
+                        x:Name="Submit_Btn"
                         Width="150"
                         Height="40"
+                        Command="{Binding AddProductCommand}"
                         Content="Submit"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
-                        Visibility="Visible" />
+                        Visibility="{Binding IsNewMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <Button
+                        x:Name="Update_Btn"
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
+                        Command="{Binding UpdateProductCommand}"
                         Content="Update"
                         FontFamily="Times New Roman"
                         Style="{StaticResource NewOrEditButtonStyle}"
-                        Visibility="Collapsed" />
+                        Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <Button
                         Width="150"
                         Height="40"
                         Margin="10,0,0,0"
+                        Command="{Binding BackCommand}"
                         Content="Back"
                         FontFamily="Times New Roman"
                         Style="{StaticResource BackButtonStyle}" />
                 </StackPanel>
             </Grid>
         </Border>
-
 
     </Grid>
 </Page>

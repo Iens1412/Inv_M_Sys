@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Serilog;
+using System;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Inv_M_Sys.Services;
+using Inv_M_Sys.Views.Forms;
+using Npgsql;
 
 namespace Inv_M_Sys.Views.Main
 {
@@ -25,6 +20,9 @@ namespace Inv_M_Sys.Views.Main
             InitializeComponent();
         }
 
+        #region Placeholder Logic
+
+        // Username Placeholder Logic
         private void UsernameTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (UsernameTextBox.Text == "Username" || string.IsNullOrWhiteSpace(UsernameTextBox.Text))
@@ -41,25 +39,28 @@ namespace Inv_M_Sys.Views.Main
             }
         }
 
+        // Password Placeholder Logic
         private void PasswordBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            // Hide the placeholder when the PasswordBox gains focus
             PasswordPlaceholder.Visibility = Visibility.Collapsed;
         }
 
         private void PasswordBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            // Show the placeholder if the PasswordBox is empty
             if (string.IsNullOrWhiteSpace(PasswordBox.Password))
             {
                 PasswordPlaceholder.Visibility = Visibility.Visible;
             }
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            PasswordPlaceholder.Visibility = PasswordBox.Password.Length > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        #endregion
+
+        #region Show/Hide Password Logic
 
         private void ShowPasswordCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -75,48 +76,197 @@ namespace Inv_M_Sys.Views.Main
             PasswordTextBox.Visibility = Visibility.Collapsed;
         }
 
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (PasswordBox.Password.Length > 0)
-            {
-                PasswordPlaceholder.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                PasswordPlaceholder.Visibility = Visibility.Visible;
-            }
-        }
+        #endregion
+
+        #region Clear Input Fields
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            // Clear the username field
-            UsernameTextBox.Text = string.Empty;
-
-            // Clear the password field
-            PasswordBox.Clear();
-
-            // Reset the placeholders
+            UsernameTextBox.Text = "";
+            PasswordBox.Password = "";
             UsernamePlaceholder.Visibility = Visibility.Visible;
             PasswordPlaceholder.Visibility = Visibility.Visible;
 
-            // If using the Show Password option, clear the visible password field
             if (PasswordTextBox.Visibility == Visibility.Visible)
             {
-                PasswordTextBox.Text = string.Empty;
+                PasswordTextBox.Text = "";
             }
         }
 
+        #endregion
+
+        #region Exit Application
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        #endregion
+
+        #region Login Button Click
+
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            // Create an instance of the HomeWindow
-            Views.Forms.HomeWindow homeWindow = new Views.Forms.HomeWindow();
+            string username = UsernameTextBox.Text.Trim();
+            string password = PasswordBox.Password.Trim();
 
-            // Show the HomeWindow
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                Log.Warning("Login attempt failed: Username or password is empty.");
+                MessageBox.Show("Please enter both username and password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // ✅ Check database connection before attempting login
+            if (!IsDatabaseOnline())
+            {
+                Log.Error("Login failed due to database being offline.");
+                MessageBox.Show("Cannot connect to the database. Please check your connection.", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // ✅ Attempt authentication (only once if DB is online)
+            if (AuthenticateOwner(username, password))
+            {
+                Log.Information("Owner login successful for user: {Username}", username);
+                Services.SessionManager.CreateOwnerSession(username);
+                OpenHomeWindow();
+            }
+            else if (AuthenticateUser(username, password))
+            {
+                Log.Information("User login successful for user: {Username}", username);
+                Services.SessionManager.CreateUserSession(username);
+                OpenHomeWindow();
+            }
+            else
+            {
+                Log.Warning("Invalid login attempt for username: {Username}", username);
+                MessageBox.Show("Invalid credentials. Please try again.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
+        #region Open Home Window
+
+        private void OpenHomeWindow()
+        {
+            Window parentWindow = Window.GetWindow(this);
+            HomeWindow homeWindow = new HomeWindow();
+
+            // Check if logged in as Owner
+            if (SessionManager.CurrentOwnerId.HasValue)
+            {
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
+            }
+            // Check if logged in as Admin
+            else if (SessionManager.CurrentUserRole == "Admin")
+            {
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
+            }
+            // Default User Role (Regular User)
+            else
+            {
+                homeWindow.NavigateToPage(new Views.Main.DashboardPage(homeWindow));
+            }
+
             homeWindow.Show();
-
-            // Close the current window hosting this page
-            System.Windows.Window parentWindow = System.Windows.Window.GetWindow(this);
             parentWindow?.Close();
         }
+
+        #endregion
+
+        #region Authentication Methods
+
+        // Authentication for Owner
+        private bool AuthenticateOwner(string username, string password)
+        {
+            string query = "SELECT Password FROM Owner WHERE Username = @username";
+            return Authenticate(query, username, password);
+        }
+
+        // Authentication for User
+        private bool AuthenticateUser(string username, string password)
+        {
+            string query = "SELECT Password FROM Users WHERE Username = @username";
+            return Authenticate(query, username, password);
+        }
+
+        // Common Authentication Logic
+        private bool Authenticate(string query, string username, string password)
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        var storedPassword = cmd.ExecuteScalar()?.ToString();
+
+                        if (storedPassword != null && VerifyPassword(password, storedPassword))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Database error during authentication.");
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region Password Verification
+
+        // Hash Password for Verification
+        private bool VerifyPassword(string inputPassword, string storedPassword)
+        {
+            return HashPassword(inputPassword) == storedPassword;
+        }
+
+        // Secure Password Hashing
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+                foreach (var b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private bool IsDatabaseOnline()
+        {
+            try
+            {
+                using (var conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

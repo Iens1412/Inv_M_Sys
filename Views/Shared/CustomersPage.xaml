@@ -170,6 +170,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -181,6 +182,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -193,7 +195,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="_"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -201,28 +204,12 @@
                     RenderTransformOrigin="-1.084,0.562" />
             </Grid>
 
-            <!--  Note And Home Buttons  -->
+            <!--  Home Buttons  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <!--  Notifications Button  -->
-                <Button
-                    Grid.Column="1"
-                    Width="50"
-                    Height="30"
-                    Background="#57AEFF"
-                    BorderBrush="Transparent">
-                    <Canvas Width="20" Height="20">
-                        <Path
-                            Canvas.Top="-2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"
-                            Fill="Yellow" />
-                    </Canvas>
-                </Button>
 
                 <!--  Home Button  -->
                 <Button
@@ -231,6 +218,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -242,18 +230,27 @@
         <!--  **Sidebar Buttons**  -->
         <Grid Grid.Row="2" Grid.Column="0">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!--  Button New  -->
                 <Button
+                    x:Name="newbtn"
                     Width="180"
+                    Click="New_Click"
                     Content="New Customer"
                     Style="{StaticResource RoundedButtonStyle}" />
+                <!--  Button Edit  -->
                 <Button
+                    x:Name="EditBtn"
                     Width="180"
                     Margin="0,10,0,0"
+                    Click="Edit_Click"
                     Content="Edit Customer"
                     Style="{StaticResource RoundedButtonStyle}" />
+                <!--  Button Delete  -->
                 <Button
+                    x:Name="DeleteBtn"
                     Width="180"
                     Margin="0,10,0,0"
+                    Click="Delete_Click"
                     Content="Delete Customer"
                     Style="{StaticResource RoundedButtonStyle}" />
             </StackPanel>
@@ -270,6 +267,8 @@
             <Border
                 Width="250"
                 Height="30"
+                Margin="10"
+                HorizontalAlignment="Right"
                 Background="White"
                 BorderBrush="Gray"
                 BorderThickness="1"
@@ -296,14 +295,28 @@
                 </Grid>
             </Border>
 
-            <!--  Refresh Button  -->
-            <Button
-                Grid.Column="1"
-                Width="120"
-                Height="30"
-                Margin="10,0,0,0"
-                Content="Refresh"
-                Style="{StaticResource SrchRefButtonStyle}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                <!--  Search Button  -->
+                <Button
+                    Grid.Column="1"
+                    Width="120"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    Click="Search_Click"
+                    Content="Search"
+                    Style="{StaticResource SrchRefButtonStyle}" />
+                <!--  Refresh Button  -->
+                <Button
+                    Grid.Column="1"
+                    Width="120"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    Click="Refresh_Click"
+                    Content="Refresh"
+                    Style="{StaticResource SrchRefButtonStyle}" />
+            </StackPanel>
         </Grid>
 
         <!--  **Customers List**  -->
@@ -326,7 +339,7 @@
                         <GridView>
                             <GridViewColumn
                                 Width="50"
-                                DisplayMemberBinding="{Binding CustomerID}"
+                                DisplayMemberBinding="{Binding Id}"
                                 Header="ID" />
                             <GridViewColumn
                                 Width="150"
@@ -338,7 +351,7 @@
                                 Header="Last Name" />
                             <GridViewColumn
                                 Width="150"
-                                DisplayMemberBinding="{Binding LastName}"
+                                DisplayMemberBinding="{Binding CompanyName}"
                                 Header="Company Name" />
                             <GridViewColumn
                                 Width="200"
@@ -346,7 +359,7 @@
                                 Header="Email" />
                             <GridViewColumn
                                 Width="150"
-                                DisplayMemberBinding="{Binding Phone}"
+                                DisplayMemberBinding="{Binding PhoneNumber}"
                                 Header="Phone" />
                         </GridView>
                     </ListView.View>
@@ -356,16 +369,19 @@
 
         <!--  Container to Add or Update Customer  -->
         <Border
+            x:Name="Customer_Container"
             Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="20"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            Width="850"
+            Height="650"
+            Margin="40,40,40,20"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
             Background="#E8E8E8"
             BorderBrush="Black"
             BorderThickness="2"
-            CornerRadius="40"
+            CornerRadius="30"
             Visibility="Collapsed">
 
             <!--  Grid to Hold Everything  -->
@@ -411,6 +427,10 @@
                             Grid.Row="0"
                             Grid.ColumnSpan="2"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Company Name" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -430,7 +450,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding CompanyName, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -440,6 +461,10 @@
                             Grid.Row="1"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="First Name" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -459,7 +484,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -469,6 +495,10 @@
                             Grid.Row="1"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Last Name" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -488,7 +518,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -498,6 +529,10 @@
                             Grid.Row="2"
                             Grid.Column="0"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Email" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -517,7 +552,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -527,6 +563,10 @@
                             Grid.Row="2"
                             Grid.Column="1"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Phone Number" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -546,7 +586,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -556,6 +597,10 @@
                             Grid.Row="3"
                             Grid.ColumnSpan="2"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Address" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -575,7 +620,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
-                                        Foreground="Black" />
+                                        Foreground="Black"
+                                        Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -585,6 +631,10 @@
                             Grid.Row="4"
                             Grid.ColumnSpan="2"
                             Margin="10">
+                            <TextBlock
+                                Margin="5,0,0,3"
+                                FontWeight="Bold"
+                                Text="Notes" />
                             <Border
                                 Padding="5"
                                 BorderBrush="Violet"
@@ -600,13 +650,14 @@
                                         Visibility="{Binding Text, ElementName=NotesTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}" />
                                     <TextBox
                                         x:Name="NotesTextBox"
-                                        Height="60"
+                                        Height="Auto"
                                         Padding="5,0"
                                         AcceptsReturn="True"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         FontSize="14"
                                         Foreground="Black"
+                                        Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                                         TextWrapping="Wrap" />
                                 </Grid>
                             </Border>
@@ -617,22 +668,26 @@
 
                 <!--  Buttons (Outside ScrollViewer)  -->
                 <Button
+                    x:Name="SubmitBtn"
                     Grid.Row="2"
                     Width="150"
                     Height="40"
                     Margin="80,20,0,20"
                     HorizontalAlignment="Left"
+                    Click="Submit_Click"
                     Content="Submit"
                     FontFamily="Times New Roman"
                     Style="{StaticResource NewOrEditButtonStyle}"
                     Visibility="Visible" />
 
                 <Button
+                    x:Name="UpdateBtn"
                     Grid.Row="2"
                     Width="150"
                     Height="40"
                     Margin="80,20,0,20"
                     HorizontalAlignment="Left"
+                    Click="Update_Click"
                     Content="Update"
                     FontFamily="Times New Roman"
                     Style="{StaticResource NewOrEditButtonStyle}"
@@ -644,6 +699,7 @@
                     Height="40"
                     Margin="0,20,80,20"
                     HorizontalAlignment="Right"
+                    Click="Back_Click"
                     Content="Back"
                     FontFamily="Times New Roman"
                     Style="{StaticResource BackButtonStyle}" />

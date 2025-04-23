@@ -11,6 +11,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
+
     <Page.Resources>
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
             <Setter Property="Template">
@@ -168,6 +169,7 @@
             </Style.Triggers>
         </Style>
 
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
 
     </Page.Resources>
@@ -202,6 +204,7 @@
                     Margin="0,-1,79,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Logout_Click"
                     Content="Log Out"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -213,6 +216,7 @@
                     Margin="199,-1,10,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Close_Click"
                     Content="X"
                     FontFamily="Times New Roman"
                     FontSize="20"
@@ -225,7 +229,8 @@
                     Margin="155,-1,54,-1"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
-                    Content="⬜"
+                    Click="Minimize_Click"
+                    Content="--"
                     FontFamily="Times New Roman"
                     FontSize="20"
                     FontWeight="Bold"
@@ -233,28 +238,12 @@
                     RenderTransformOrigin="-1.084,0.562" />
             </Grid>
 
-            <!--  Note And Home Buttons  -->
+            <!--  Home Buttons  -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <!--  Notifications Button  -->
-                <Button
-                    Grid.Column="1"
-                    Width="50"
-                    Height="30"
-                    Background="#57AEFF"
-                    BorderBrush="Transparent">
-                    <Canvas Width="20" Height="20">
-                        <Path
-                            Canvas.Top="-2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Data="M12 2a7 7 0 00-7 7v2a5 5 0 00-2 4v1h18v-1a5 5 0 00-2-4V9a7 7 0 00-7-7z M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"
-                            Fill="Yellow" />
-                    </Canvas>
-                </Button>
 
                 <!--  Home Button  -->
                 <Button
@@ -263,6 +252,7 @@
                     Height="30"
                     Background="#57AEFF"
                     BorderBrush="Transparent"
+                    Click="Home_Click"
                     Content="Home"
                     FontFamily="Times New Roman"
                     FontSize="16"
@@ -270,6 +260,26 @@
                     Foreground="Red" />
             </Grid>
         </Grid>
+
+        <!--  combobox for the search type  -->
+        <ComboBox
+            Grid.Row="1"
+            Width="120"
+            Height="30"
+            Margin="0,0,10,0"
+            FontFamily="Times New Roman"
+            FontSize="14"
+            FontWeight="Bold"
+            ItemsSource="{Binding SearchCategories}"
+            SelectedIndex="0"
+            SelectedItem="{Binding SearchCategory}" />
+
+        <ProgressBar
+            Grid.Row="2"
+            Margin="0,100,0,0"
+            Height="8"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <!--  Buttons  -->
         <Grid Grid.Row="2" Grid.Column="0">
@@ -281,6 +291,7 @@
                 <Button
                     Width="180"
                     Height="32"
+                    Command="{Binding ShowExportCommand}"
                     Content="Export"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -288,6 +299,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Command="{Binding ShowNewCommand}"
                     Content="New"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -295,6 +307,7 @@
                     Width="180"
                     Height="32"
                     Margin="0,20,0,0"
+                    Command="{Binding DeleteReportCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
                     Style="{StaticResource RoundedButtonStyle}" />
@@ -342,7 +355,8 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0"
-                            Foreground="Black" />
+                            Foreground="Black"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Border>
             </Grid>
@@ -353,6 +367,7 @@
                     Width="120"
                     Height="30"
                     HorizontalAlignment="Left"
+                    Command="{Binding SearchCommand}"
                     Content="Search"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -361,6 +376,7 @@
                     Height="30"
                     Margin="136,11,0,11"
                     HorizontalAlignment="Left"
+                    Command="{Binding ClearSearchCommand}"
                     Content="Refresh"
                     FontFamily="Times new roman"
                     Style="{StaticResource SrchRefButtonStyle}" />
@@ -370,17 +386,69 @@
 
         <!--  List for the info  -->
         <Grid Grid.Row="2" Grid.Column="1">
-            <!--  Outer Container  -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Saved Reports  -->
             <Border
+                Grid.Column="0"
                 Margin="10"
                 Padding="10"
-                Background="#FFFFFF"
-                BorderBrush="#CCCCCC"
-                BorderThickness="1"
-                CornerRadius="15">
-
+                Background="White"
+                CornerRadius="10">
                 <StackPanel>
-                    <!--  Reports ListView  -->
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Text="Saved Reports" />
+                    <ListView
+                        x:Name="ReportsListView"
+                        ItemsSource="{Binding Reports}"
+                        SelectedItem="{Binding SelectedReport}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn
+                                    Width="50"
+                                    DisplayMemberBinding="{Binding Id}"
+                                    Header="ID" />
+                                <GridViewColumn
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding ReportTitle}"
+                                    Header="Title" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding ReportType}"
+                                    Header="Type" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Status}"
+                                    Header="Status" />
+                                <GridViewColumn
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding Date}"
+                                    Header="Created" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+            <!--  Report Details  -->
+            <Border
+                Grid.Column="1"
+                Margin="10"
+                Padding="10"
+                Background="White"
+                CornerRadius="10">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Text="Report Details" />
                     <ListView
                         x:Name="SalesListView"
                         HorizontalAlignment="Stretch"
@@ -388,25 +456,29 @@
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
-                        Visibility="Visible">
+                        ItemsSource="{Binding SelectedReportOrders}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn
-                                    Width="40"
-                                    DisplayMemberBinding="{Binding SaleID}"
-                                    Header="ID" />
+                                    Width="50"
+                                    DisplayMemberBinding="{Binding Id}"
+                                    Header="Order ID" />
                                 <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Product}"
-                                    Header="Title" />
+                                    Width="150"
+                                    DisplayMemberBinding="{Binding CustomerName}"
+                                    Header="Customer" />
                                 <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Amount}"
-                                    Header="Description" />
-                                <GridViewColumn
-                                    Width="170"
-                                    DisplayMemberBinding="{Binding Date}"
+                                    Width="130"
+                                    DisplayMemberBinding="{Binding DeliveryDate}"
                                     Header="Date" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding TotalPrice}"
+                                    Header="Total" />
+                                <GridViewColumn
+                                    Width="100"
+                                    DisplayMemberBinding="{Binding Status}"
+                                    Header="Status" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -422,7 +494,7 @@
             Margin="20"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Visibility="Collapsed">
+            Visibility="{Binding IsAnyContainerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -432,6 +504,7 @@
 
             <!--  Generate Report Container  -->
             <Border
+                x:Name="GenerateContainer"
                 Grid.Row="0"
                 Margin="0,0,0,20"
                 Padding="20"
@@ -439,7 +512,7 @@
                 BorderBrush="Black"
                 BorderThickness="2"
                 CornerRadius="40"
-                Visibility="Collapsed">
+                Visibility="{Binding IsGenerateVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -469,9 +542,10 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!--  Report Type Selection  -->
+                            <!--  Report Title Input  -->
                             <StackPanel
                                 Grid.Row="0"
                                 Grid.ColumnSpan="2"
@@ -480,23 +554,39 @@
                                     Margin="0,0,0,5"
                                     FontSize="14"
                                     FontWeight="Bold"
-                                    Text="Select Report Type" />
-                                <ComboBox
-                                    x:Name="ReportTypeComboBox"
+                                    Text="Report Title" />
+                                <TextBox
+                                    x:Name="ReportTitleTextBox"
                                     Height="35"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14">
-                                    <ComboBoxItem Content="Sales Report" />
-                                    <ComboBoxItem Content="Stock Report" />
-                                    <ComboBoxItem Content="Restock Report" />
-                                    <ComboBoxItem Content="User Activity Report" />
-                                </ComboBox>
+                                    FontSize="14"
+                                    Text="{Binding ReportTitleInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+
+                            <!--  Report Type (Fixed: Sales Report)  -->
+                            <StackPanel
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="10">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Text="Report Type" />
+                                <TextBox
+                                    Height="35"
+                                    Background="#EEE"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    FontSize="14"
+                                    IsReadOnly="True"
+                                    Text="Sales Report" />
                             </StackPanel>
 
                             <!--  Start Date  -->
                             <StackPanel
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="0"
                                 Margin="10">
                                 <TextBlock
@@ -509,12 +599,12 @@
                                     BorderBrush="Violet"
                                     BorderThickness="1"
                                     FontSize="14"
-                                    SelectedDate="{Binding StartDate}" />
+                                    SelectedDate="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <!--  End Date  -->
                             <StackPanel
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="1"
                                 Margin="10">
                                 <TextBlock
@@ -527,12 +617,12 @@
                                     BorderBrush="Violet"
                                     BorderThickness="1"
                                     FontSize="14"
-                                    SelectedDate="{Binding EndDate}" />
+                                    SelectedDate="{Binding EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <!--  Status Filter  -->
                             <StackPanel
-                                Grid.Row="2"
+                                Grid.Row="3"
                                 Grid.ColumnSpan="2"
                                 Margin="10">
                                 <TextBlock
@@ -545,41 +635,62 @@
                                     Height="35"
                                     BorderBrush="Violet"
                                     BorderThickness="1"
-                                    FontSize="14">
-                                    <ComboBoxItem Content="All" />
-                                    <ComboBoxItem Content="Pending" />
-                                    <ComboBoxItem Content="Completed" />
-                                    <ComboBoxItem Content="Cancelled" />
-                                </ComboBox>
+                                    FontSize="14"
+                                    ItemsSource="{Binding StatusOptions}"
+                                    SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" />
                             </StackPanel>
-
                         </Grid>
                     </ScrollViewer>
 
-                    <!--  Generate Report Button  -->
-                    <Button
+                    <!--  Buttons  -->
+                    <StackPanel
                         Grid.Row="2"
-                        Width="180"
-                        Height="40"
-                        Margin="0,20,0,20"
                         HorizontalAlignment="Center"
-                        Click="GenerateReport_Click"
-                        Content="Generate Report"
-                        FontFamily="Times New Roman"
-                        Style="{StaticResource NewOrEditButtonStyle}" />
+                        Orientation="Horizontal">
+                        <Button
+                            Width="180"
+                            Height="40"
+                            Margin="0,20,0,20"
+                            HorizontalAlignment="Center"
+                            Command="{Binding GenerateReportCommand}"
+                            Content="Generate Report"
+                            FontFamily="Times New Roman"
+                            IsEnabled="{Binding IsNotGenerating}"
+                            Style="{StaticResource NewOrEditButtonStyle}" />
+
+                        <Button
+                            Width="180"
+                            Height="40"
+                            Margin="0,20,0,20"
+                            HorizontalAlignment="Center"
+                            Command="{Binding CancelGenerateCommand}"
+                            Content="Back"
+                            FontFamily="Times New Roman"
+                            Style="{StaticResource NewOrEditButtonStyle}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" HorizontalAlignment="Center">
+                        <ProgressBar
+                            Height="8"
+                            Margin="10,0"
+                            IsIndeterminate="True"
+                            Visibility="{Binding IsGenerating, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    </StackPanel>
+
                 </Grid>
             </Border>
+
 
             <!--  Export Report Container  -->
             <Border
                 x:Name="ExportReportContainer"
-                Grid.Row="2"
+                Grid.Row="1"
                 Padding="20"
                 Background="#E8E8E8"
                 BorderBrush="Black"
                 BorderThickness="2"
                 CornerRadius="40"
-                Visibility="Collapsed">
+                Visibility="{Binding IsExportVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -616,7 +727,7 @@
                                     Margin="0,5,0,10"
                                     FontSize="14"
                                     Foreground="Gray"
-                                    Text="No Report Selected" />
+                                    Text="{Binding SelectedReportTitle}" />
 
                                 <TextBlock
                                     FontSize="16"
@@ -626,7 +737,7 @@
                                     x:Name="SelectedReportDetails"
                                     FontSize="14"
                                     Foreground="Gray"
-                                    Text="Select a report from the list." />
+                                    Text="{Binding SelectedReportDetails}" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -638,20 +749,23 @@
                         Orientation="Horizontal">
                         <Button
                             Background="Red"
-                            Click="ExportPDF_Click"
+                            Click="ExportAsPDF_Click"
                             Content="Export as PDF"
+                            IsEnabled="{Binding CanExport}"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Green"
-                            Click="ExportExcel_Click"
+                            Click="ExportAsExcel_Click"
                             Content="Export as Excel"
+                            IsEnabled="{Binding CanExport}"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                         <Button
                             Background="Orange"
-                            Click="ExportCSV_Click"
+                            Click="ExportAsCSV_Click"
                             Content="Export as CSV"
+                            IsEnabled="{Binding CanExport}"
                             Style="{StaticResource RoundedExportButtonStyle}" />
 
                     </StackPanel>
@@ -660,13 +774,12 @@
                     <Button
                         Grid.Row="3"
                         Background="Gray"
-                        Click="BackToMainPage_Click"
+                        Command="{Binding ExpBackCommand}"
                         Content="Back"
                         Style="{StaticResource RoundedExportButtonStyle}" />
                 </Grid>
             </Border>
 
         </Grid>
-
     </Grid>
 </Page>

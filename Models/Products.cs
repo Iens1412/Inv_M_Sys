@@ -8,17 +8,15 @@ namespace Inv_M_Sys.Models
 {
     public class Product
     {
-        public int ProductID { get; set; }
+        public int Id { get; set; }  // Corrected the name to ProductID
         public string Name { get; set; }
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; } // Foreign key (referencing Category)
+        public string CategoryName { get; set; } // For displaying CategoryName
         public Category Category { get; set; }
-        public int Quantity { get; set; }
-        public decimal PurchasePrice { get; set; }
-        public decimal SellingPrice { get; set; }
-        public int ReorderLevel { get; set; }
-        public string SupplierName { get; set; }
+        public int? Quantity { get; set; }
+        public decimal? Price { get; set; }
+        public int? MinQuantity { get; set; }
+        public string Supplier { get; set; }
         public string Description { get; set; }
-        public string Location { get; set; }
-        public DateTime ExpirationDate { get; set; }
     }
 }

@@ -13,13 +13,12 @@ namespace Inv_M_Sys.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseNpgsql("Host=172.18.0.2;Port=5432;Database=DevDB;Username=dev_user;Password=DevPassword123");
-            optionsBuilder.UseSqlite("Data Source=Services/DevDB.db");
         }
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,8 +27,8 @@ namespace Inv_M_Sys.Models
             // Define the relationship between Product and Category
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)  // A Product has one Category
-                .WithMany(c => c.Products)  // A Category has many Products
-                .HasForeignKey(p => p.CategoryID)  // Foreign key in Product
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)  // Foreign key in Product
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
         }
 
