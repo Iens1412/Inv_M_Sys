@@ -86,9 +86,13 @@ namespace Inv_M_Sys.ViewModels
             {
                 if (SetProperty(ref _selectedFilter, value))
                     _ = LoadOrdersAsync();
+                OnPropertyChanged(nameof(IsDeleteVisible));
+                OnPropertyChanged(nameof(IsStatusEditable));
+                OnPropertyChanged(nameof(IsUpdateEnabled));
             }
         }
         private string _selectedFilter = "Active Orders";
+
 
         private bool _isBusy;
         public bool IsBusy
@@ -98,8 +102,11 @@ namespace Inv_M_Sys.ViewModels
         }
 
         public ICommand RestoreCommand { get; }
-        
+
         //for the combobox and status
+        public bool IsStatusEditable => SelectedFilter != "Deleted Orders";
+        public bool IsDeleteVisible => SelectedFilter != "Deleted Orders";
+        public bool IsUpdateEnabled => SelectedFilter != "Deleted Orders";
         public ObservableCollection<string> SearchCriteriaOptions { get; } = new(new[] { "Order ID", "Customer", "Delivery Date", "Status" });
         public ObservableCollection<string> FilterOptions { get; } = new(new[] { "All Orders", "Active Orders", "Deleted Orders" });
         public ObservableCollection<OrderStatus> StatusOptions { get; } =

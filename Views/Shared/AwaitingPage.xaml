@@ -139,6 +139,7 @@
 
         <other:RestoreButtonVisibilityConverter x:Key="RestoreButtonVisibilityConverter" />
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
     </Page.Resources>
 
@@ -250,7 +251,8 @@
                     Command="{Binding DeleteCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
-                    Style="{StaticResource RoundedButtonStyle}" />
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsDeleteVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <!--  Add spacer  -->
                 <Border Height="180" />
                 <Button
@@ -555,6 +557,7 @@
                                 BorderBrush="Violet"
                                 BorderThickness="1"
                                 FontSize="14"
+                                IsEnabled="{Binding IsStatusEditable}"
                                 ItemsSource="{Binding StatusOptions}"
                                 SelectedItem="{Binding SelectedOrder.Status, Mode=TwoWay}" />
                         </StackPanel>
@@ -620,6 +623,7 @@
                         Command="{Binding UpdateStatusCommand}"
                         Content="Update"
                         FontFamily="Times New Roman"
+                        IsEnabled="{Binding IsUpdateEnabled}"
                         Style="{StaticResource NewOrEditButtonStyle}" />
                     <Button
                         Width="150"
