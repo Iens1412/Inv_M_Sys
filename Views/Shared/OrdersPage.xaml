@@ -254,17 +254,28 @@
                 BorderBrush="#CCCCCC"
                 BorderThickness="1"
                 CornerRadius="15">
-                <StackPanel>
+
+                <!--  ✅ Use Grid to allow stretching  -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
                     <TextBlock
+                        Grid.Row="0"
                         Margin="0,0,0,5"
                         FontSize="16"
                         FontWeight="Bold"
                         Text="Select Customer" />
+
                     <ListView
                         x:Name="CustomersListView"
-                        Height="auto"
+                        Grid.Row="1"
                         Background="Transparent"
                         BorderThickness="0"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
                         SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
                         SelectionChanged="CustomersListView_SelectionChanged">
                         <ListView.View>
@@ -284,17 +295,19 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 
         <!--  **Product Selection & Quantity Input**  -->
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <!--  Takes full height  -->
                 <RowDefinition Height="Auto" />
-                <!--  Quantity & Add button at bottom  -->
+                <!--  Label  -->
+                <RowDefinition Height="Auto" />
+                <!--  ComboBox  -->
+                <RowDefinition Height="*" />
+                <!--  ListView here  -->
             </Grid.RowDefinitions>
 
             <!--  Product Selection (Stretches to Fill Available Space)  -->
@@ -338,11 +351,14 @@
                     <!--  Product List  -->
                     <ListView
                         x:Name="ProductsListView"
-                        Grid.Row="3"
+                        Grid.Row="2"
+                        Height="600"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Background="Transparent"
                         BorderThickness="0"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
                         SelectionChanged="ProductsListView_SelectionChanged">
                         <ListView.View>
                             <GridView>

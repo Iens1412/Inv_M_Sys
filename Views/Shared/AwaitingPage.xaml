@@ -139,6 +139,7 @@
 
         <other:RestoreButtonVisibilityConverter x:Key="RestoreButtonVisibilityConverter" />
         <other:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter" />
+        <other:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
     </Page.Resources>
 
@@ -250,7 +251,8 @@
                     Command="{Binding DeleteCommand}"
                     Content="Delete"
                     FontFamily="Times New Roman"
-                    Style="{StaticResource RoundedButtonStyle}" />
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsDeleteVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <!--  Add spacer  -->
                 <Border Height="180" />
                 <Button
@@ -383,7 +385,7 @@
                 BorderThickness="1"
                 CornerRadius="15">
 
-                <StackPanel>
+                <Grid>
                     <!--  Orders ListView  -->
                     <ListView
                         x:Name="OrdersListView"
@@ -420,7 +422,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 
@@ -555,12 +557,13 @@
                                 BorderBrush="Violet"
                                 BorderThickness="1"
                                 FontSize="14"
+                                IsEnabled="{Binding IsStatusEditable}"
                                 ItemsSource="{Binding StatusOptions}"
                                 SelectedItem="{Binding SelectedOrder.Status, Mode=TwoWay}" />
                         </StackPanel>
 
                         <!--  Order Items  -->
-                        <StackPanel
+                        <Grid
                             Grid.Row="3"
                             Grid.ColumnSpan="2"
                             Margin="10">
@@ -569,12 +572,13 @@
                                 FontWeight="Bold"
                                 Text="Order Items" />
                             <ListView
-                                Height="150"
+                                VerticalAlignment="Stretch"
                                 AlternationCount="2"
                                 Background="White"
                                 BorderBrush="Violet"
                                 BorderThickness="1"
-                                ItemsSource="{Binding OrderItems}">
+                                ItemsSource="{Binding OrderItems}"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn
@@ -593,10 +597,17 @@
                                             Width="100"
                                             DisplayMemberBinding="{Binding TotalPrice}"
                                             Header="Total" />
+                                        <GridViewColumn Width="40" Header="✓">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
 
@@ -612,6 +623,7 @@
                         Command="{Binding UpdateStatusCommand}"
                         Content="Update"
                         FontFamily="Times New Roman"
+                        IsEnabled="{Binding IsUpdateEnabled}"
                         Style="{StaticResource NewOrEditButtonStyle}" />
                     <Button
                         Width="150"

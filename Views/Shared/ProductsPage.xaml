@@ -377,8 +377,7 @@
                 BorderThickness="1"
                 CornerRadius="15">
 
-                <StackPanel>
-                    <!--  Products ListView  -->
+                <Grid>
                     <ListView
                         x:Name="ProductListView"
                         HorizontalAlignment="Stretch"
@@ -387,6 +386,8 @@
                         Background="Transparent"
                         BorderThickness="0"
                         ItemsSource="{Binding ProductsList}"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
                         SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                         Visibility="Visible">
                         <ListView.View>
@@ -426,7 +427,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 

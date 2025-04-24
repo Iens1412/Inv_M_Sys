@@ -91,7 +91,7 @@ namespace Inv_M_Sys.Views.Forms
                 page.Loaded += (s, e) =>
                 {
                     var rand = new Random();
-                    int animationType = rand.Next(0, 8);
+                    int animationType = rand.Next(0, 6);
 
                     var duration = TimeSpan.FromSeconds(2); // Slowed down
 
@@ -164,36 +164,6 @@ namespace Inv_M_Sys.Views.Forms
                                 EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut }
                             };
                             page.BeginAnimation(MarginProperty, slideFromTop);
-                            break;
-
-                        case 6: // Rotate in
-                            var rotate = new RotateTransform(0);
-                            page.RenderTransformOrigin = new Point(0.5, 0.5);
-                            page.RenderTransform = rotate;
-
-                            var rotateAnim = new DoubleAnimation(0, 360, duration)
-                            {
-                                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseOut }
-                            };
-                            rotate.BeginAnimation(RotateTransform.AngleProperty, rotateAnim);
-
-                            var fadeInWithRotate = new DoubleAnimation(0.5, 1, duration);
-                            page.BeginAnimation(Page.OpacityProperty, fadeInWithRotate);
-                            break;
-
-                        case 7: // Flip in horizontally
-                            var flip = new ScaleTransform(0.5, 1);
-                            page.RenderTransformOrigin = new Point(0.5, 0.5);
-                            page.RenderTransform = flip;
-
-                            var flipAnim = new DoubleAnimation(0.5, 1, duration)
-                            {
-                                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-                            };
-                            flip.BeginAnimation(ScaleTransform.ScaleXProperty, flipAnim);
-
-                            var flipFade = new DoubleAnimation(0.5, 1, duration);
-                            page.BeginAnimation(Page.OpacityProperty, flipFade);
                             break;
                     }
                 };
