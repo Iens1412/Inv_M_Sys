@@ -346,8 +346,8 @@
                 BorderThickness="1"
                 CornerRadius="15">
 
-                <StackPanel>
-                    <!--  Categorys ListView  -->
+
+                <Grid>
                     <ListView
                         x:Name="CategorysListView"
                         HorizontalAlignment="Stretch"
@@ -355,6 +355,8 @@
                         AlternationCount="2"
                         Background="Transparent"
                         BorderThickness="0"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
                         SelectionChanged="CategorysListView_SelectionChanged"
                         Visibility="Visible">
                         <ListView.View>
@@ -370,7 +372,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 

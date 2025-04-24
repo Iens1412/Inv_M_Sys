@@ -276,8 +276,8 @@
 
         <ProgressBar
             Grid.Row="2"
-            Margin="0,100,0,0"
             Height="8"
+            Margin="0,100,0,0"
             IsIndeterminate="True"
             Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
@@ -398,7 +398,7 @@
                 Padding="10"
                 Background="White"
                 CornerRadius="10">
-                <StackPanel>
+                <Grid>
                     <TextBlock
                         Margin="0,0,0,10"
                         FontSize="16"
@@ -433,7 +433,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
 
             <!--  Report Details  -->
@@ -443,7 +443,7 @@
                 Padding="10"
                 Background="White"
                 CornerRadius="10">
-                <StackPanel>
+                <Grid>
                     <TextBlock
                         Margin="0,0,0,10"
                         FontSize="16"
@@ -482,7 +482,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 

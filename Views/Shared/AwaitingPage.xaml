@@ -383,7 +383,7 @@
                 BorderThickness="1"
                 CornerRadius="15">
 
-                <StackPanel>
+                <Grid>
                     <!--  Orders ListView  -->
                     <ListView
                         x:Name="OrdersListView"
@@ -420,7 +420,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 
@@ -560,7 +560,7 @@
                         </StackPanel>
 
                         <!--  Order Items  -->
-                        <StackPanel
+                        <Grid
                             Grid.Row="3"
                             Grid.ColumnSpan="2"
                             Margin="10">
@@ -569,12 +569,13 @@
                                 FontWeight="Bold"
                                 Text="Order Items" />
                             <ListView
-                                Height="150"
+                                VerticalAlignment="Stretch"
                                 AlternationCount="2"
                                 Background="White"
                                 BorderBrush="Violet"
                                 BorderThickness="1"
-                                ItemsSource="{Binding OrderItems}">
+                                ItemsSource="{Binding OrderItems}"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn
@@ -593,10 +594,17 @@
                                             Width="100"
                                             DisplayMemberBinding="{Binding TotalPrice}"
                                             Header="Total" />
+                                        <GridViewColumn Width="40" Header="✓">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
 

@@ -68,7 +68,7 @@ namespace Inv_M_Sys.Services.Pages_Services
 
                 int reportId = Convert.ToInt32(await insertReportCmd.ExecuteScalarAsync());
 
-                foreach (var order in filtered)
+                foreach (var order in filtered.OrderBy(o => o.Id))
                 {
                     string insertDetailQuery = @"
                         INSERT INTO ReportDetails (ReportId, OrderId, CustomerName, DeliveryDate, TotalPrice, Status)
