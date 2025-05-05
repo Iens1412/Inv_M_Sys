@@ -1,4 +1,6 @@
-﻿import os
+﻿# -*- coding: utf-8 -*-
+
+import os
 import sys
 from cryptography.fernet import Fernet
 import getpass

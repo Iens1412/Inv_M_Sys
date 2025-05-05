@@ -10,8 +10,9 @@ echo 1. Run as HOST (Start DB Server)
 echo 2. Run as CLIENT (Connect Only)
 echo 3. Reset Owner Credentials (Admin Only)
 echo 4. Change Admin Menu Password
+echo 5. Setup Environment (Install Tools)
 echo =======================================
-set /p choice=Enter your choice (1-4): 
+set /p choice=Enter your choice (1-5): 
 
 if "%choice%"=="1" (
     call :checkAdmin
@@ -48,10 +49,17 @@ if "%choice%"=="4" (
     goto menu
 )
 
+if "%choice%"=="5" (
+    set ALLOW_SETUP=YES
+    python setup_environment.py
+    pause
+    goto menu
+)
+
 goto :eof
 
 :checkAdmin
-python password_manager.py > nul
+python password_manager.py
 if %ERRORLEVEL% == 0 (
     set auth=true
 ) else (
